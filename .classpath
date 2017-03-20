@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="Checkers/app/build/generated/source/buildConfig/androidTest/debug"/>
+	<classpathentry kind="src" path="Checkers/app/build/generated/source/buildConfig/debug"/>
+	<classpathentry kind="src" path="Checkers/app/build/generated/source/r/androidTest/debug"/>
+	<classpathentry kind="src" path="Checkers/app/build/generated/source/r/debug"/>
+	<classpathentry kind="src" path="Checkers/app/src/androidTest/java"/>
+	<classpathentry kind="src" path="Checkers/app/src/main/java"/>
+	<classpathentry kind="src" path="Checkers/app/src/test/java"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support.constraint/constraint-layout/1.0.0-beta4/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support.test.espresso/espresso-core/2.2.2/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support.test.espresso/espresso-idling-resource/2.2.2/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support.test/exposed-instrumentation-api-publish/0.5/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support.test/rules/0.5/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support.test/runner/0.5/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/design/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/support-compat/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/support-fragment/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/support-v4/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/app/build/intermediates/exploded-aar/com.android.support/transition/25.1.0/jars/classes.jar"/>
+	<classpathentry kind="lib" path="Checkers/build/generated/mockable-android-25.jar"/>
+	<classpathentry kind="lib" path="Checkers/gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

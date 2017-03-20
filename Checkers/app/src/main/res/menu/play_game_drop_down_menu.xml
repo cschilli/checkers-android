@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item  android:id="@+id/saveGame"
+    android:title="Save Game"/>
+<item  android:id="@+id/loadGame"
+    android:title="Load Game"/>
+<item  android:id="@+id/restartMatch"
+    android:title="Restart Match"/>
+<item  android:id="@+id/quitMatch"
+    android:title="Quit Match"/>
+</menu>

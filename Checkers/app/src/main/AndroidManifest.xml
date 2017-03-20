@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.example.dylan.checkers">
+
+    <!-- Beginning of program -->
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/checkers_launch_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+
+        <!-- SplashScreen.java -->
+        <activity android:name=".SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <!-- MainActivity.java -->
+        <activity
+            android:name=".MainActivity"
+            android:label="Main Menu"
+            android:theme="@style/MainMenuTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />  <!-- Change "LAUNCHER" to "DEFAULT" to enable SplashScreen.java -->
+            </intent-filter>
+        </activity>
+
+
+        <!-- ButtonBoard.java -->
+        <activity
+            android:name=".ButtonBoard"
+            android:label="Board"
+            android:theme="@style/MainMenuTheme">
+            <!-- Adds back button in top left corner -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+
+        <!-- GameOptions.java -->
+        <activity
+            android:name=".GameOptions"
+            android:label="Game Options"
+            android:theme="@style/GameOptionsTheme">
+            <!-- Adds back button in top left corner -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <!-- Settings.java -->
+        <activity
+            android:name=".Settings"
+            android:label="Settings"
+            android:theme="@style/MainMenuTheme">
+            <!-- Adds back button in top left corner -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+
+        <!-- Settings.java -->
+
+
+    </application>
+
+</manifest>
