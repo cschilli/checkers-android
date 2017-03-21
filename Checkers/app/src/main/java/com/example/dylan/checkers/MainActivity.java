@@ -6,14 +6,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.content.Intent;
 import android.widget.Button;
+import android.content.Context;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private Board board;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_screen);
+
+        board = new Board();
 
         // Play Game
         Button play = (Button) findViewById(R.id.playButton);
@@ -23,6 +26,15 @@ public class MainActivity extends AppCompatActivity {
                 playGame();
             }
         }); // End Play Game button
+
+        // Load Saved Game
+        Button load = (Button) findViewById(R.id.loadButton);
+        load.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadGame();
+            }
+        }); // End Load Saved Game button
 
 
         //  Game Options button
@@ -50,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void playGame() {
         Intent intent = new Intent(this, ButtonBoard.class);
+        startActivity(intent);
+    }
+
+    // TODO: If there is no saved game (look for saved.dat file), make this un-clickable
+    private void loadGame() {
+        Intent intent = new Intent(this, ButtonBoard.class);
+        String loadSwitch = null;
+        intent.putExtra("LOAD", loadSwitch);
         startActivity(intent);
     }
 

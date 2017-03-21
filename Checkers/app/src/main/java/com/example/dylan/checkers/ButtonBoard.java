@@ -1,5 +1,6 @@
 package com.example.dylan.checkers;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -9,6 +10,8 @@ import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 import java.util.ArrayList;
+import android.widget.TextView;
+import android.content.Context;
 
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game board
@@ -38,13 +41,13 @@ public class ButtonBoard extends AppCompatActivity {
 
     // Add the buttons into an array by their specific id in integer form
     private final int[] buttons_id = {R.id.button0,  R.id.button2,  R.id.button4,  R.id.button6,
-                                      R.id.button9,  R.id.button11, R.id.button13, R.id.button15,
-                                      R.id.button16, R.id.button18, R.id.button20, R.id.button22,
-                                      R.id.button25, R.id.button27, R.id.button29, R.id.button31,
-                                      R.id.button32, R.id.button34, R.id.button36, R.id.button38,
-                                      R.id.button41, R.id.button43, R.id.button45, R.id.button47,
-                                      R.id.button48, R.id.button50, R.id.button52, R.id.button54,
-                                      R.id.button57, R.id.button59, R.id.button61, R.id.button63};
+            R.id.button9,  R.id.button11, R.id.button13, R.id.button15,
+            R.id.button16, R.id.button18, R.id.button20, R.id.button22,
+            R.id.button25, R.id.button27, R.id.button29, R.id.button31,
+            R.id.button32, R.id.button34, R.id.button36, R.id.button38,
+            R.id.button41, R.id.button43, R.id.button45, R.id.button47,
+            R.id.button48, R.id.button50, R.id.button52, R.id.button54,
+            R.id.button57, R.id.button59, R.id.button61, R.id.button63};
 
     private final Button[][] buttonIndexes = new Button[BOARD_SIZE][BOARD_SIZE];        // stores the Button objects with their indexes
     private final Board board = new Board();
@@ -62,7 +65,15 @@ public class ButtonBoard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.board);
         fillButtonIndexArray(listener);             // fill the board with the correct indexes
-        updateBoard(buttonIndexes, board);          // Initial board setup
+
+        // If the load message was loaded, we load the game, otherwise a new game is created
+        if(getIntent().getExtras() != null ) {
+            board.LoadGameState(getApplicationContext());
+        }
+
+        updateBoard(buttonIndexes, board);
+
+
     }
 
 
@@ -77,6 +88,7 @@ public class ButtonBoard extends AppCompatActivity {
             int xCord = tag/10;
             int yCord = tag%10;
             Cell possMoves;     // stores all of the possible moves for a piece
+
 
             // If piece exists, highlight piece next choose a piece to swap it with
             if (board.getCell(xCord, yCord).containsPiece() && counter == 0) {
@@ -110,7 +122,7 @@ public class ButtonBoard extends AppCompatActivity {
                         buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.dark_piece_pressed);
                     }
 
-                    Toast.makeText(getApplicationContext(), "" + board.getCell(xCord, yCord), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "" + board.getCell(xCord, yCord), Toast.LENGTH_SHORT).show();
                     xCord2 = xCord; // stores coordinates of first click
                     yCord2 = yCord; // stores coordinates or second click
                     counter++;
@@ -123,8 +135,6 @@ public class ButtonBoard extends AppCompatActivity {
                 if(!(board.getCell(xCord, yCord).containsPiece()) && counter == 1 && moves.contains(board.getCell(xCord, yCord))){
                     board.movePiece(xCord2, yCord2, xCord, yCord);
                     counter--;
-                    //System.out.println(board.getPieces(Piece.DARK).size());   // Test pieces remaining
-                    //System.out.println(board.getPieces(Piece.LIGHT).size());  // Test pieces remaining
                     updateBoard(buttonIndexes, board);
                 }
                 if(board.getCell(xCord, yCord) == board.getCell(xCord2, yCord2)){
@@ -161,6 +171,7 @@ public class ButtonBoard extends AppCompatActivity {
      * Updates the game pieces on the UI Board according to Game.java Cell[][] array
      * @param Button[][] buttonIndexes, Board board
      */
+    // TODO: Update game piece images when swapping instead of refreshing entire board
     public void updateBoard(Button[][] buttonIndexes, Board board){
         // Initially set all black squares to blank_square spaces, and is used to remove a piece (sets button to blank_square)
         for(int column = 0; column < 8; column+= 2){
@@ -180,7 +191,6 @@ public class ButtonBoard extends AppCompatActivity {
         // Places the pieces on the black squares according to location
         for(int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                //System.out.println("Index (" + i + "," + j + ") " + buttonIndexes[i][j]);   // Print contents of the 2d array with button ids at the indexes (Testing)
 
                 // Fills the light pieces in on the board
                 if ((board.getCell(i, j).containsPiece()) && (board.getCell(i, j).getPiece().getColor().equals(Piece.LIGHT))) {
@@ -213,11 +223,13 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
-     /*
-     * Adds Quick Menu at top-right corner with following options: Save, Load, Restart, Quit
-     * @param Menu menu
-     * @ret boolean
-     */
+
+
+    /*
+    * Adds Quick Menu at top-right corner with following options: Save, Load, Restart, Quit
+    * @param Menu menu
+    * @ret boolean
+    */
     @Override
     public boolean onCreateOptionsMenu (Menu menu){
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -235,12 +247,17 @@ public class ButtonBoard extends AppCompatActivity {
     public boolean onOptionsItemSelected (MenuItem item){
         switch (item.getItemId()) {
             case R.id.saveGame:
+                board.SaveGameState(getApplicationContext());
                 Toast.makeText(getApplicationContext(), "Game Saved!", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.loadGame:
+                board.LoadGameState(getApplicationContext());
+                updateBoard(buttonIndexes, board);
                 Toast.makeText(getApplicationContext(), "Game Loaded!", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.restartMatch:
+                Intent intent = new Intent(this, ButtonBoard.class);
+                startActivity(intent);
                 Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.quitMatch:
