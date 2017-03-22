@@ -11,6 +11,8 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 import java.util.ArrayList;
 import android.widget.TextView;
+import android.app.Dialog;
+import android.widget.RadioButton;
 
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game board
@@ -55,6 +57,7 @@ public class ButtonBoard extends AppCompatActivity {
     int xCordCapturedPiece = 0;
     int yCordCapturedPiece = 0;
     int counter = 0;
+    int roundCounter = 0;
 
     private enum GameStatus {DRAW, OVER, RUNNING};
     private GameStatus gameStatus;
@@ -72,6 +75,19 @@ public class ButtonBoard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        Dialog dialog = new Dialog(this);
+//        dialog.setContentView(R.layout.initial_playgame_menu);
+//        dialog.setTitle("This is my custom dialog box");
+//        dialog.setCancelable(true);
+//        // there are a lot of settings, for dialog, check them all out!
+//        // set up radiobutton
+//        RadioButton rd1 = (RadioButton) dialog.findViewById(R.id.light_option);
+//        RadioButton rd2 = (RadioButton) dialog.findViewById(R.id.dark_option);
+//
+//        // now that the dialog is set up, it's time to show it
+//        dialog.show();
+
         setContentView(R.layout.board);
         fillButtonIndexArray(listener);             // fill the board with the correct indexes
 
@@ -83,8 +99,6 @@ public class ButtonBoard extends AppCompatActivity {
         this.currentPlayer = player1;
         updateTurnTracker();
         updateBoard(buttonIndexes, board);
-        gameStatus = GameStatus.RUNNING;
-
     }
 
 
@@ -139,10 +153,12 @@ public class ButtonBoard extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-                int tag = (Integer) v.getTag();
-                int xCord = tag / 10;
-                int yCord = tag % 10;
+            int tag = (Integer) v.getTag();
+            int xCord = tag / 10;
+            int yCord = tag % 10;
 
+            // If both players have pieces and game is currently running
+            if(!board.getPieces(Piece.LIGHT).isEmpty() && !board.getPieces(Piece.DARK).isEmpty()){
 
                 currentPlayer = getCurrentPlayer();     // gets the current player
 
@@ -193,7 +209,6 @@ public class ButtonBoard extends AppCompatActivity {
                     // Capture move was not made, they moved to empty spot
                     else {
                         hasAnotherTurn = false;
-                        gameStatus = getGameStatus();
                         changeTurn();
                     }
 
@@ -209,7 +224,6 @@ public class ButtonBoard extends AppCompatActivity {
                         if (moves.isEmpty()) {
                             System.out.println("Can NOT make another move!");
                             hasAnotherTurn = false;
-                            gameStatus = getGameStatus();
                             changeTurn();
                         }
                         // Else, we can go forward and let them capture another piece
@@ -225,7 +239,20 @@ public class ButtonBoard extends AppCompatActivity {
                     counter--;
                     updateBoard(buttonIndexes, board);
                 }
+            }
 
+        // If player who is light runs out of pieces, they lose
+        if(board.getPieces(Piece.LIGHT).isEmpty() && !board.getPieces(Piece.DARK).isEmpty()) {
+            System.out.println("Dark player wins! \nPlay Again or Quit");
+        }
+        // If player who is dark runs out of pieces, they lose
+        else if(!board.getPieces(Piece.LIGHT).isEmpty() && board.getPieces(Piece.DARK).isEmpty()) {
+            System.out.println("Light player wins! Play Again or Quit");
+        }
+        // If BOTH players each have 1 piece left AND the round is over 30, call it a draw
+        else if(board.getPieces(Piece.LIGHT).size() == 1 && board.getPieces(Piece.DARK).size() == 1 && roundCounter > 40){
+            System.out.println("Draw! Play Again or Quit");
+        }
 
         }
     };
@@ -236,12 +263,12 @@ public class ButtonBoard extends AppCompatActivity {
         TextView p2 = (TextView) findViewById(R.id.playerTwoTurn);
 
         if(currentPlayer.getColor().equals(Piece.LIGHT)){
-            p1.setText("Player 1 Turn");
+            p1.setText(player1.getColor() + "'s Turn");
             p2.setText("");
 
         }
         else{
-            p2.setText("Player 2 Turn");
+            p2.setText(player2.getColor() + "'s Turn");
             p1.setText("");
         }
 
@@ -261,10 +288,12 @@ public class ButtonBoard extends AppCompatActivity {
                     index++;
                     buttonIndexes[i][j].setTag(i*10 +j);
                     buttonIndexes[i][j].setOnClickListener(listener);
+
                 }
             }
         }
     }
+
 
 
     /*
@@ -324,128 +353,6 @@ public class ButtonBoard extends AppCompatActivity {
     }
 
 
-    //TODO: complete this method
-    public void run(){
-        while(this.gameStatus == GameStatus.RUNNING){
-
-            boolean validMove = false;
-            int[] givenMove= null;
-
-            while(!validMove){
-                givenMove = this.currentPlayer.getMove(this.board);
-                validMove = checkIfValidMove(this.currentPlayer, givenMove);
-                if(!validMove){
-                    System.out.print("The move is not valid. Please try again. ");
-                }
-            }
-            boolean capturingMove = this.board.isCaptureMove(givenMove);
-            this.board.movePiece(givenMove);
-
-            if(capturingMove){
-                boolean hopAgain = (this.board.getCaptureMoves(givenMove[2], givenMove[3]).size() > 0);
-
-                int[] srcCell = {givenMove[0], givenMove[1]};;
-                int[] dstCell  = {givenMove[2], givenMove[2]};;
-                //TODO make sure that the next move will have the same srccells
-                while(hopAgain){
-                    System.out.println("You just captured opponent piece and have 1 or more capturing moves. Please select one of the capturing move.");
-                    srcCell = dstCell;
-                    validMove = false;
-                    while(!validMove){
-                        dstCell = this.currentPlayer.getMoveDstCell(this.board);
-                        validMove = checkIfValidMove(this.currentPlayer, srcCell, dstCell);
-                        if(!validMove || !this.board.isCaptureMove(givenMove)){
-                            validMove = false;
-                            System.out.print("The move is not valid. Please select again. ");
-                        }
-                        else{
-                            int[] move = {srcCell[0], srcCell[1], dstCell[0], dstCell[1]};
-                            this.board.movePiece(move);
-                            hopAgain = (this.board.getCaptureMoves(dstCell[0], dstCell[1]).size() > 0);
-                        }
-                    }
-                }
-            }
-            this.gameStatus = getGameStatus();
-            changeTurn();
-        }
-
-
-        if(this.gameStatus == GameStatus.DRAW){
-            System.out.println("The game is draw.");
-        }
-        else if(hasMoves(this.player1)){
-            System.out.println(this.player1.getColor() + " has won!");
-        }
-        else{
-            System.out.println(this.player2.getColor() + "has won! ");
-        }
-    }
-
-
-    public boolean checkIfValidMove(Player givenPlayer, int[] srcCell, int[] dstCell){
-        int[] move = {srcCell[0], srcCell[1], dstCell[0], dstCell[1]};
-        return checkIfValidMove(givenPlayer, move );
-    }
-
-    public boolean checkIfValidMove(Player givenPlayer, int[] givenMove){
-        Cell srcCell = this.board.getCell(givenMove[0], givenMove[1]);
-        Cell dstCell = this.board.getCell(givenMove[2], givenMove[3]);
-
-        if(srcCell == null || dstCell == null || (srcCell.getPiece() == null)){
-            return false;
-        }
-
-        else if(!srcCell.getPiece().getColor().equals(givenPlayer.getColor())){
-            return false;
-        }
-
-        ArrayList<Cell> moves = this.board.possibleMoves(srcCell);
-        for(Cell temp: moves){
-            if(temp.getX() == dstCell.getX() && temp.getY() == dstCell.getY()){
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    public GameStatus getGameStatus(){
-        boolean player1HasMove = hasMoves(this.player1);
-        boolean player2HasMove = hasMoves(this.player2);
-
-        if(!player1HasMove && !player2HasMove ){
-            return GameStatus.DRAW;
-        }
-
-        else if((player1HasMove && !player2HasMove) || (player2HasMove && !player1HasMove)){
-            return GameStatus.OVER;
-        }
-
-        return GameStatus.RUNNING;
-    }
-
-
-
-
-
-    public boolean hasMoves(Player givenPlayer){
-        ArrayList<Piece> pieces = this.board.getPieces(givenPlayer.getColor());
-        if(pieces.size() > 0){
-            for(Piece piece: pieces){
-                if(this.board.possibleMoves(piece).size() > 0){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-
-
-
-
     /*
     * Adds Quick Menu at top-right corner with following options: Save, Load, Restart, Quit
     * @param Menu menu
@@ -470,11 +377,6 @@ public class ButtonBoard extends AppCompatActivity {
             case R.id.saveGame:
                 board.SaveGameState(getApplicationContext());
                 Toast.makeText(getApplicationContext(), "Game Saved!", Toast.LENGTH_LONG).show();
-                return true;
-            case R.id.loadGame:
-                board.LoadGameState(getApplicationContext());
-                updateBoard(buttonIndexes, board);
-                Toast.makeText(getApplicationContext(), "Game Loaded!", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.restartMatch:
                 Intent intent = new Intent(this, ButtonBoard.class);

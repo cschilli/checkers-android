@@ -13,8 +13,6 @@ public class Board{
 	private Cell[][] board;
 	private ArrayList<Piece> lightPieces;
 	private ArrayList<Piece> darkPieces;
-	int lightPieceCount;
-	int darkPieceCount;
 
 
 	private static int BOARD_SIZE = 8;
@@ -24,6 +22,7 @@ public class Board{
 		this.darkPieces = new ArrayList<Piece>();
 		board = new Cell[Board.BOARD_SIZE][Board.BOARD_SIZE];
 		initialBoardSetup();
+		//winScenarioTest();
 	}
 
 	//sets up the board in intial configuration which is as follows.
@@ -65,6 +64,30 @@ public class Board{
 			darkPieces.add(this.board[5][column].getPiece());
 			darkPieces.add(this.board[7][column].getPiece());
 		}
+	}// end of initialBoardSetup
+
+	public void winScenarioTest(){
+		for(int i=0; i < Board.BOARD_SIZE; i++) {
+			for (int j = 0; j < Board.BOARD_SIZE; j++) {
+				this.board[i][j] = new Cell(i, j);
+			}
+		}
+
+		this.board[1][1].placePiece(new Piece(Piece.LIGHT));
+		this.board[1][3].placePiece(new Piece(Piece.LIGHT));
+		this.board[1][1].getPiece().makeKing();
+		this.board[1][3].getPiece().makeKing();
+		lightPieces.add(this.board[1][1].getPiece());
+		lightPieces.add(this.board[1][3].getPiece());
+
+		this.board[2][2].placePiece(new Piece(Piece.DARK));
+		this.board[2][4].placePiece(new Piece(Piece.DARK));
+		this.board[2][2].getPiece().makeKing();
+		this.board[2][4].getPiece().makeKing();
+		darkPieces.add(this.board[2][2].getPiece());
+		darkPieces.add(this.board[2][4].getPiece());
+
+
 	}// end of initialBoardSetup
 
 
@@ -496,7 +519,7 @@ public class Board{
 		String saveData = "";
 
 		try {
-			InputStream inputStream = context.openFileInput("saved.dat");
+			InputStream inputStream = context.openFileInput("savedFile.dat");
 
 			if ( inputStream != null ) {
 				InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -574,10 +597,10 @@ public class Board{
 		}
 
 		try {
-			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("saved.dat", Context.MODE_PRIVATE));
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("savedFile.dat", Context.MODE_PRIVATE));
 			outputStreamWriter.write(newString);
 			outputStreamWriter.close();
-			System.out.println("Saved! Location: " + context.getFilesDir() + "/saved.dat");
+			System.out.println("Saved! Location: " + context.getFilesDir() + "/savedFile.dat");
 		}
 		catch (IOException e) {
 			System.out.println("Error writing to file! " + e.getMessage());

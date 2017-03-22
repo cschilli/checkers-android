@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+
+        android:layout_marginTop="158dp" >
+
+        <RadioButton
+            android:id="@+id/light_option"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Light"
+            android:layout_weight="1" />
+
+        <RadioButton
+            android:id="@+id/dark_option"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dark"
+            android:layout_weight="1" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+
+        android:layout_marginTop="220dp" >
+
+        <RadioButton
+            android:id="@+id/light_option2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Light"
+            android:layout_weight="1" />
+
+        <RadioButton
+            android:id="@+id/dark_option2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dark"
+            android:layout_weight="1" />
+    </RadioGroup>
+
+    <TextView
+        android:text="Player 2 Color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="158dp"
+        android:layout_marginTop="227dp"
+        android:id="@+id/textView2"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:text="Player 1 Color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="158dp"
+        android:layout_marginTop="165dp"
+        android:id="@+id/textView3"
+        android:textColor="@android:color/black" />
+
+
+</RelativeLayout>
