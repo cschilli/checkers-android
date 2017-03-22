@@ -39,4 +39,5 @@ android:
 before_install:
 - cd ./Checkers
 - chmod +x ./gradlew
+- chmod +x ./gradle/wrapper/gradle-wrapper.jar
 # - chmod +x build
