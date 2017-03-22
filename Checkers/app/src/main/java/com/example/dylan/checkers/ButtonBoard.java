@@ -11,7 +11,6 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 import java.util.ArrayList;
 import android.widget.TextView;
-import android.content.Context;
 
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game board
@@ -20,9 +19,6 @@ import android.content.Context;
  *                  - Initializes the game piece images on the board (12 dark pieces and 12 light pieces)
  */
 public class ButtonBoard extends AppCompatActivity {
-
-    private static int BOARD_SIZE = 8;      // board is 8x8, 64 spaces (buttons)
-    private int TOTAL_SQUARES = 32;         // total amount of squares on game board
 
     // Game board layout of the black squares by square ID
     // 0-63  --> black button squares, used for indexing      _ -->  red button squares, are not used in indexing
@@ -49,12 +45,25 @@ public class ButtonBoard extends AppCompatActivity {
             R.id.button48, R.id.button50, R.id.button52, R.id.button54,
             R.id.button57, R.id.button59, R.id.button61, R.id.button63};
 
+
+    private static int BOARD_SIZE = 8;                                                  // board is 8x8, 64 spaces (buttons)
     private final Button[][] buttonIndexes = new Button[BOARD_SIZE][BOARD_SIZE];        // stores the Button objects with their indexes
-    private final Board board = new Board();
-    ArrayList<Cell> moves = new ArrayList<>();  // stores the possible moves for a piece
+    private Board board = new Board();
+    private ArrayList<Cell> moves = new ArrayList<>();                                          // stores the possible moves for a piece
     int xCord2 = 0;
     int yCord2 = 0;
+    int xCordCapturedPiece = 0;
+    int yCordCapturedPiece = 0;
     int counter = 0;
+
+    private enum GameStatus {DRAW, OVER, RUNNING};
+    private GameStatus gameStatus;
+    private Player player1 = new PlayerTUI(Piece.LIGHT);
+    private Player player2 = new PlayerTUI(Piece.DARK);
+    private Player currentPlayer;
+    private boolean hasAnotherTurn = false;
+    Cell possMoves;     // stores all of the possible moves for a piece
+
 
     /*
     * Creates the activity for the game board, then sets up game piece images on game board
@@ -71,11 +80,56 @@ public class ButtonBoard extends AppCompatActivity {
             board.LoadGameState(getApplicationContext());
         }
 
+        this.currentPlayer = player1;
+        updateTurnTracker();
         updateBoard(buttonIndexes, board);
-
+        gameStatus = GameStatus.RUNNING;
 
     }
 
+
+    public Player getCurrentPlayer(){
+        return this.currentPlayer;
+    }
+
+
+    public void changeTurn(){
+        if(this.currentPlayer.equals(player1)){
+            this.currentPlayer = player2;
+            updateTurnTracker();
+        }
+        else{
+            this.currentPlayer = player1;
+            updateTurnTracker();
+        }
+    }
+
+    public void onFirstClick(int xCord, int yCord){
+        // Draw the possible moves on the board
+        int xPossMoves;  // stores X coord of possible moves
+        int yPossMoves; // stores Y coord of possible moves
+
+        // For all of the moves that a piece has, get the X and Y coord and color piece in
+        for(int i = 0; i < moves.size(); i++){
+            possMoves = moves.get(i);       // get first set of moves
+            xPossMoves = possMoves.getX();  // get x coord of possible move
+            yPossMoves = possMoves.getY();  // get y coord of possible move
+            buttonIndexes[xPossMoves][yPossMoves].setBackgroundResource(R.drawable.possible_moves_image);   // color possible moves square
+        }
+
+        // If current player is light AND the piece selected is a light piece, player can ONLY move light pieces and can jump ONLY dark pieces
+        if(currentPlayer.getColor().equals(Piece.LIGHT) && board.getCell(xCord, yCord).getPiece().getColor().equals(Piece.LIGHT)){
+            buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.light_piece_pressed);  // fill selected light piece as pressed piece image
+        }
+        // If current player is dark AND the piece selected is a dark piece, player can ONLY move dark pieces and can jump ONLY light pieces
+        if(currentPlayer.getColor().equals(Piece.DARK) && board.getCell(xCord, yCord).getPiece().getColor().equals(Piece.DARK)){
+            buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.dark_piece_pressed);   // fill selected dark piece as pressed piece image
+        }
+        xCord2 = xCord; // stores coordinates of first click
+        yCord2 = yCord; // stores coordinates or second click
+        counter++;      // increment counter so user can click a target cell
+
+    }
 
     /*
      * Creates listener to perform action when user clicks a game piece
@@ -84,67 +138,114 @@ public class ButtonBoard extends AppCompatActivity {
     private View.OnClickListener listener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            int tag = (Integer)v.getTag();
-            int xCord = tag/10;
-            int yCord = tag%10;
-            Cell possMoves;     // stores all of the possible moves for a piece
+
+                int tag = (Integer) v.getTag();
+                int xCord = tag / 10;
+                int yCord = tag % 10;
 
 
-            // If piece exists, highlight piece next choose a piece to swap it with
-            if (board.getCell(xCord, yCord).containsPiece() && counter == 0) {
-                moves = board.possibleMoves(xCord, yCord);  // stores possible moves for a cell
+                currentPlayer = getCurrentPlayer();     // gets the current player
 
-                // If no possible moves, cannot move piece must choose new piece
-                if(moves.isEmpty()){
-                    Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
-                    updateBoard(buttonIndexes, board);
+                // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
+                if (board.getCell(xCord, yCord).containsPiece() && board.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && counter == 0 && !hasAnotherTurn) {
+                    moves = board.possibleMoves(xCord, yCord);  // stores possible moves for a cell
+
+                    // If player has no possible moves AND is NOT on their second turn, cannot move piece so player must choose new piece
+                    if (moves.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
+                        updateBoard(buttonIndexes, board);
+                    }
+
+                    // Else, we can move piece because we have possible moves
+                    else {
+                        onFirstClick(xCord, yCord);
+                    }
                 }
-                // Else, we can move piece because we have possible moves
-                else {
-                    // Draw the possible moves on the board
-                    int xPossMoves;  // stores X coord of possible moves
-                    int yPossMoves; // stores Y coord of possible moves
 
-                    // For all of the moves that a piece has, get the X and Y coord and color piece
-                    for(int i = 0; i < moves.size(); i++){
-                        possMoves = moves.get(i);       // get first set of moves
-                        xPossMoves = possMoves.getX();  // get x coord of possible move
-                        yPossMoves = possMoves.getY();  // get y coord of possible move
-                        buttonIndexes[xPossMoves][yPossMoves].setBackgroundResource(R.drawable.possible_moves_image);   // color possible moves square
+                // If after a player captures a move, they can ONLY move the piece that performed the capture
+                else if (board.getCell(xCord, yCord).containsPiece() && board.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && counter == 0 && hasAnotherTurn &&
+                        board.getCell(xCordCapturedPiece, yCordCapturedPiece) == board.getCell(xCord, yCord)) {
+
+                    moves = board.getCaptureMoves(xCord, yCord);  // stores possible capture moves for a cell
+
+                    // If player has no possible moves AND is NOT on their second turn, cannot move piece so player must choose new piece
+                    if (moves.isEmpty()) {
+                        changeTurn();
+                        System.out.println("Cannot capture, switch turns");
                     }
 
-                    // If pressed piece is light, color it with light pressed piece
-                    if(board.getCell(xCord, yCord).getPiece().getColor().equals(Piece.LIGHT)){
-                        buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.light_piece_pressed);
+                    // Else, we can move piece because we have possible moves
+                    else if (!moves.isEmpty()) {
+                        onFirstClick(xCord, yCord);
                     }
-                    // Else, pressed piece is dark, so we color is dark
-                    else{
-                        buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.dark_piece_pressed);
-                    }
-
-                    //Toast.makeText(getApplicationContext(), "" + board.getCell(xCord, yCord), Toast.LENGTH_SHORT).show();
-                    xCord2 = xCord; // stores coordinates of first click
-                    yCord2 = yCord; // stores coordinates or second click
-                    counter++;
                 }
-            }
 
-            // If piece doesn't exist, refresh the board and unhighlight piece
-            else{
-                // If user is on second click, check if space is empty, and if user selected a possible move
-                if(!(board.getCell(xCord, yCord).containsPiece()) && counter == 1 && moves.contains(board.getCell(xCord, yCord))){
+                // If the clicked destination cell IS empty AND player has possible moves AND if counter == 1, then user can move piece
+                else if (!(board.getCell(xCord, yCord).containsPiece()) && moves.contains(board.getCell(xCord, yCord)) && counter == 1) {
+
+                    // If user does a capture move, we want to allow them to click another piece
+                    if (board.isCaptureMove(board.getCell(xCord2, yCord2), board.getCell(xCord, yCord))) {
+                        System.out.println("User must make another move using the same piece!");
+                        xCordCapturedPiece = xCord;
+                        yCordCapturedPiece = yCord;
+                        hasAnotherTurn = true;
+                    }
+                    // Capture move was not made, they moved to empty spot
+                    else {
+                        hasAnotherTurn = false;
+                        gameStatus = getGameStatus();
+                        changeTurn();
+                    }
+
                     board.movePiece(xCord2, yCord2, xCord, yCord);
                     counter--;
                     updateBoard(buttonIndexes, board);
+
+                    // If player has another turn, check to see if they have any future captures
+                    if (hasAnotherTurn) {
+                        moves = board.getCaptureMoves(xCord, yCord);    // stores the future capture moves of the cell
+
+                        // If the piece that captured opponents piece has no capture moves, end turn
+                        if (moves.isEmpty()) {
+                            System.out.println("Can NOT make another move!");
+                            hasAnotherTurn = false;
+                            gameStatus = getGameStatus();
+                            changeTurn();
+                        }
+                        // Else, we can go forward and let them capture another piece
+                        else {
+                            System.out.println("Can make another move!");
+                            hasAnotherTurn = true;
+                        }
+                    }
                 }
-                if(board.getCell(xCord, yCord) == board.getCell(xCord2, yCord2)){
+
+                // If player clicks on the same piece twice, we simply want to de-select it since they have not made a move yet
+                else if (board.getCell(xCord, yCord) == board.getCell(xCord2, yCord2)) {
                     counter--;
                     updateBoard(buttonIndexes, board);
-
                 }
-            }
+
+
         }
     };
+
+
+    public void updateTurnTracker() {
+        TextView p1 = (TextView) findViewById(R.id.playerOneTurn);
+        TextView p2 = (TextView) findViewById(R.id.playerTwoTurn);
+
+        if(currentPlayer.getColor().equals(Piece.LIGHT)){
+            p1.setText("Player 1 Turn");
+            p2.setText("");
+
+        }
+        else{
+            p2.setText("Player 2 Turn");
+            p1.setText("");
+        }
+
+    }
 
 
     /*
@@ -164,7 +265,6 @@ public class ButtonBoard extends AppCompatActivity {
             }
         }
     }
-
 
 
     /*
@@ -222,6 +322,127 @@ public class ButtonBoard extends AppCompatActivity {
             }
         }
     }
+
+
+    //TODO: complete this method
+    public void run(){
+        while(this.gameStatus == GameStatus.RUNNING){
+
+            boolean validMove = false;
+            int[] givenMove= null;
+
+            while(!validMove){
+                givenMove = this.currentPlayer.getMove(this.board);
+                validMove = checkIfValidMove(this.currentPlayer, givenMove);
+                if(!validMove){
+                    System.out.print("The move is not valid. Please try again. ");
+                }
+            }
+            boolean capturingMove = this.board.isCaptureMove(givenMove);
+            this.board.movePiece(givenMove);
+
+            if(capturingMove){
+                boolean hopAgain = (this.board.getCaptureMoves(givenMove[2], givenMove[3]).size() > 0);
+
+                int[] srcCell = {givenMove[0], givenMove[1]};;
+                int[] dstCell  = {givenMove[2], givenMove[2]};;
+                //TODO make sure that the next move will have the same srccells
+                while(hopAgain){
+                    System.out.println("You just captured opponent piece and have 1 or more capturing moves. Please select one of the capturing move.");
+                    srcCell = dstCell;
+                    validMove = false;
+                    while(!validMove){
+                        dstCell = this.currentPlayer.getMoveDstCell(this.board);
+                        validMove = checkIfValidMove(this.currentPlayer, srcCell, dstCell);
+                        if(!validMove || !this.board.isCaptureMove(givenMove)){
+                            validMove = false;
+                            System.out.print("The move is not valid. Please select again. ");
+                        }
+                        else{
+                            int[] move = {srcCell[0], srcCell[1], dstCell[0], dstCell[1]};
+                            this.board.movePiece(move);
+                            hopAgain = (this.board.getCaptureMoves(dstCell[0], dstCell[1]).size() > 0);
+                        }
+                    }
+                }
+            }
+            this.gameStatus = getGameStatus();
+            changeTurn();
+        }
+
+
+        if(this.gameStatus == GameStatus.DRAW){
+            System.out.println("The game is draw.");
+        }
+        else if(hasMoves(this.player1)){
+            System.out.println(this.player1.getColor() + " has won!");
+        }
+        else{
+            System.out.println(this.player2.getColor() + "has won! ");
+        }
+    }
+
+
+    public boolean checkIfValidMove(Player givenPlayer, int[] srcCell, int[] dstCell){
+        int[] move = {srcCell[0], srcCell[1], dstCell[0], dstCell[1]};
+        return checkIfValidMove(givenPlayer, move );
+    }
+
+    public boolean checkIfValidMove(Player givenPlayer, int[] givenMove){
+        Cell srcCell = this.board.getCell(givenMove[0], givenMove[1]);
+        Cell dstCell = this.board.getCell(givenMove[2], givenMove[3]);
+
+        if(srcCell == null || dstCell == null || (srcCell.getPiece() == null)){
+            return false;
+        }
+
+        else if(!srcCell.getPiece().getColor().equals(givenPlayer.getColor())){
+            return false;
+        }
+
+        ArrayList<Cell> moves = this.board.possibleMoves(srcCell);
+        for(Cell temp: moves){
+            if(temp.getX() == dstCell.getX() && temp.getY() == dstCell.getY()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public GameStatus getGameStatus(){
+        boolean player1HasMove = hasMoves(this.player1);
+        boolean player2HasMove = hasMoves(this.player2);
+
+        if(!player1HasMove && !player2HasMove ){
+            return GameStatus.DRAW;
+        }
+
+        else if((player1HasMove && !player2HasMove) || (player2HasMove && !player1HasMove)){
+            return GameStatus.OVER;
+        }
+
+        return GameStatus.RUNNING;
+    }
+
+
+
+
+
+    public boolean hasMoves(Player givenPlayer){
+        ArrayList<Piece> pieces = this.board.getPieces(givenPlayer.getColor());
+        if(pieces.size() > 0){
+            for(Piece piece: pieces){
+                if(this.board.possibleMoves(piece).size() > 0){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
 
 
 

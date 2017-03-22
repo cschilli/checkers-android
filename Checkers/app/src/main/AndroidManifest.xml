@@ -11,13 +11,13 @@
         android:theme="@style/AppTheme">
 
 
-        <!-- SplashScreen.java -->
+        <!-- SplashScreen.java
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity> -->
 
 
         <!-- MainActivity.java -->
@@ -27,7 +27,7 @@
             android:theme="@style/MainMenuTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />  <!-- Change "LAUNCHER" to "DEFAULT" to enable SplashScreen.java -->
+                <category android:name="android.intent.category.LAUNCHER" />  <!-- Change "LAUNCHER" to "DEFAULT" to enable SplashScreen.java -->
             </intent-filter>
         </activity>
 
