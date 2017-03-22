@@ -6,7 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="500dp"
     android:paddingTop="0dp"
-    android:background="@android:color/background_light">
+    android:background="@drawable/blank_square">
+
+
+
+    <ImageView
+        android:layout_width="355dp"
+        android:layout_height="355dp"
+        android:layout_gravity="center"
+        app:srcCompat="@android:color/black"
+        android:background="@drawable/round_outline"
+        android:clipToOutline="true"
+        android:id="@+id/imageView7" />
 
     <ImageView
         android:layout_width="350dp"
@@ -15,6 +26,8 @@
         app:srcCompat="@drawable/checkers_board_final"
         android:id="@+id/imageView9" />
     <!-- android:background="#FF3F3F3F" -->
+
+
 
     <LinearLayout
         android:id="@+id/parent_layout"
@@ -687,5 +700,28 @@
 
 
     </LinearLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="158dp"
+            android:layout_height="53dp"
+            android:id="@+id/playerOneTurn"
+            android:textSize="26sp"
+            android:textColorHint="@android:color/background_dark"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="158dp"
+            android:layout_height="53dp"
+            android:id="@+id/playerTwoTurn"
+            android:textSize="26sp"
+            android:textColorHint="@android:color/background_dark"
+            android:textColor="@android:color/black"
+            android:layout_row="26"
+            android:layout_column="0" />
+    </GridLayout>
 
 </FrameLayout>
