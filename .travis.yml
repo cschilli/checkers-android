@@ -34,7 +34,8 @@ android:
     - sys-img-armeabi-v7a-android-17
 
 before_install:
-- chmod +x gradlew
+- chmod +x ./gradlew
+- chmod +x ./build.sh
 
 before_script:
-- cd Checkers
+- cd ./Checkers
