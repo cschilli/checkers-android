@@ -13,7 +13,6 @@
         android:layout_width="355dp"
         android:layout_height="355dp"
         android:layout_gravity="center"
-<<<<<<< HEAD
         android:background="@drawable/round_outline"
         app:srcCompat="@android:color/black" />
 =======
