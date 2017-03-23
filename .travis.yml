@@ -40,4 +40,5 @@ before_install:
 - cd ./Checkers
 - chmod +x ./gradlew
 - chmod +x ./gradle/wrapper/gradle-wrapper.jar
+- bash .travis-android-license-bugfix.sh
 # - chmod +x build
