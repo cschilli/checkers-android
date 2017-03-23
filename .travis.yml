@@ -33,12 +33,9 @@ android:
     - sys-img-armeabi-v7a-android-22
     - sys-img-armeabi-v7a-android-17
 
-# before_script:
-
 
 before_install:
 - bash .travis-android-license-bugfix.sh
 - cd ./Checkers
 - chmod +x ./gradlew
 - chmod +x ./gradle/wrapper/gradle-wrapper.jar
-# - chmod +x build
