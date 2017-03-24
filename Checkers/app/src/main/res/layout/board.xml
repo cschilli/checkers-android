@@ -15,8 +15,6 @@
         android:layout_height="355dp"
         android:layout_gravity="center"
         app:srcCompat="@android:color/black"
-        android:background="@drawable/round_outline"
-        android:clipToOutline="true"
         android:id="@+id/imageView7" />
 
     <ImageView
