@@ -1,71 +1,82 @@
 
 package com.example.dylan.checkers;
 
-import java.util.ArrayList;
-
+/**
+ * Class representing a piece in Checker. A piece can have one of the two colors: Light (given by Piece.LIGHT) and Dark (given by Piece.DARK).
+ * A piece can become king if it reaches the opposite end.
+ */
 
 public class Piece{
-	
+
 	private String color;
 	private boolean isKing;
 	private Cell placedCell;
-	
-	
+
+
 	public static final String DARK = "Dark";
 	public static final String LIGHT = "Light";
-	
-	
+
 	/**
-	 * @param color
+	 * Creates an instance of Piece with given color.
+	 * @param color The color of the piece (has to be Piece.LIGHT or Piece.DARK).
+	 * @throws IllegalArgumentException Throws IllegalArgumentException if the given color is not equal to Piece.LIGHT or Piece.DARK
 	 */
-	public Piece(String color){
+	public Piece(String color) throws IllegalArgumentException{
 		if(!(color.equals(Piece.DARK) || color.equals(Piece.LIGHT))){
-			System.out.println("The provided color for piece is not valid: " + color);
-			return;
+			throw new IllegalArgumentException("The provided color for piece is not valid: " + color);
 		}
 		this.color = color;
 		this.isKing = false;
 		this.placedCell = null;
 	}
-	
+
 	/**
-	 * @param givenCell
+	 * Sets the placed piece of the given Cell to be this Piece.
+	 * @param givenCell The Cell in which this Piece is to be placed.
 	 */
 	public void setCell(Cell givenCell){
 		this.placedCell = givenCell;
 	}
-	
+
 	/**
-	 * @return
+	 * @return Returns the cell on which this Piece is placed.
 	 */
 	public Cell getCell(){
 		return this.placedCell;
 	}
-	
+
+
 	/**
-	 * @return
+	 * @return Returns the color of this Piece (either Piece.LIGHT or Piece.DARK).
 	 */
 	public String getColor(){
 		return this.color;
 	}
-	
+
+
 	/**
-	 * @return
+	 * @return Returns if this Piece is a King. Returns true if this Piece is King, false otherwise.
 	 */
 	public boolean isKing(){
 		return this.isKing;
 	}
 
-	//sets this piece as king
+
 	/**
-	 * 
+	 * Makes this piece a King.
 	 */
 	public void makeKing(){
 		this.isKing = true;
 	}
-	
-	
+
+
+
+
+
+	//TODO this method is not suitable here so move it elsewhere.
+
 	/**
+	 * Returns the color of the opponent player i.e. returns the color opposite of this Piece
 	 * @param: Color of the player
 	 * @return: opponent's color
 	 */
@@ -81,19 +92,21 @@ public class Piece{
 			return null;
 		}
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
+
+	/**
+	 * Checks if the given Object is equal to this Piece.
+	 * @param obj Object to be compared
+	 * @return Returns true if the given object is equal to this Piece, false otherwise.
+	 *          The given object is equal to this Piece if the given object is an instance of Piece, has the same color as this Piece and is located in the same Cell location as this Piece.
 	 */
 	@Override
 	public boolean equals(Object obj){
 		if(!(obj instanceof Piece)){
 			return false;
 		}
-		
+
 		Piece givenPiece =  (Piece) obj;
-		
+
 		if(givenPiece.getColor().equals(this.color) && givenPiece.isKing() == this.isKing &&
 				givenPiece.getCell().getX() == this.placedCell.getX() && givenPiece.getCell().getY() == this.placedCell.getY()){
 			return true;
