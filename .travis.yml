@@ -48,7 +48,6 @@ before_script:
   - adb devices
   - adb shell input keyevent 82 &
 
-#script:
-#  - echo $ADB_INSTALL_TIMEOUT
-#  - android list target
-#  - ./gradlew connectedAndroidTest
+script:
+  - ./gradlew connectedAndroidTest
+  - ./gradlew test
