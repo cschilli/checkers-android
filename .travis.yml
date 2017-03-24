@@ -1,5 +1,6 @@
 language: android
-
+sudo: false
+jdk: oraclejdk8
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -15,12 +16,13 @@ android:
     # use the latest revision of Android SDK Tools
     - platform-tools
     - tools
+    - tools
 
     # The BuildTools version used by your project
-    - build-tools-19.1.0
+    - build-tools-25.0.2
 
     # The SDK version used to compile your project
-    - android-22
+    - android-25.3
 
     # Additional components
     - extra-google-google_play_services
@@ -32,3 +34,10 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-22
     - sys-img-armeabi-v7a-android-17
+
+
+before_install:
+- bash .travis-android-license-bugfix.sh
+- cd ./Checkers
+- chmod +x ./gradlew
+- chmod +x ./gradle/wrapper/gradle-wrapper.jar
