@@ -40,4 +40,3 @@ before_install:
 - bash .travis-android-license-bugfix.sh
 - cd ./Checkers
 - chmod +x ./gradlew
-- chmod +x ./gradle/wrapper/gradle-wrapper.jar
