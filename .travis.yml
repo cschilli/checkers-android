@@ -38,17 +38,17 @@ android:
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-google_apis-25
-    - sys-img-armeabi-v7a-google_apis-25
+    #- sys-img-armeabi-v7a-google_apis-25
+    #- sys-img-armeabi-v7a-google_apis-25
 
-before_script:
-  - echo no | android create avd --force -n test -t "android-25" --abi armeabi-v7a --tag google_apis
-  - emulator -avd test -no-skin -no-audio -no-window -gpu off
-  - android-wait-for-emulator
-  - adb devices
-  - adb shell input keyevent 82 &
+#before_script:
+#  - echo no | android create avd --force -n test -t "android-25" --abi armeabi-v7a --tag google_apis
+#  - emulator -avd test -no-skin -no-audio -no-window -gpu off
+#  - android-wait-for-emulator
+#  - adb devices
+#  - adb shell input keyevent 82 &
 
-script:
-  - echo $ADB_INSTALL_TIMEOUT
-  - android list target
-  - ./gradlew connectedAndroidTest
+#script:
+#  - echo $ADB_INSTALL_TIMEOUT
+#  - android list target
+#  - ./gradlew connectedAndroidTest
