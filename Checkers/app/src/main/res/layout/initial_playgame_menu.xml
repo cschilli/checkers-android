@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-<<<<<<< HEAD
-    android:layout_height="wrap_content" >
-=======
     android:layout_height="wrap_content">
->>>>>>> 5a2e4f4c72d74a2133daf0df52c133d8f4d128dd
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
-<<<<<<< HEAD
-
-=======
         android:layout_marginLeft="158dp"
->>>>>>> 5a2e4f4c72d74a2133daf0df52c133d8f4d128dd
         android:layout_marginTop="158dp" >
 
         <RadioButton
@@ -39,11 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
-<<<<<<< HEAD
-
-=======
         android:layout_marginLeft="158dp"
->>>>>>> 5a2e4f4c72d74a2133daf0df52c133d8f4d128dd
         android:layout_marginTop="220dp" >
 
         <RadioButton
@@ -62,24 +50,11 @@
     </RadioGroup>
 
     <TextView
-<<<<<<< HEAD
-        android:text="Player 2 Color"
-=======
         android:text="Player 1 Color"
->>>>>>> 5a2e4f4c72d74a2133daf0df52c133d8f4d128dd
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-<<<<<<< HEAD
-        android:layout_marginLeft="158dp"
-        android:layout_marginTop="227dp"
-        android:id="@+id/textView2"
-        android:textColor="@android:color/black" />
-
-    <TextView
-        android:text="Player 1 Color"
-=======
         android:layout_marginLeft="50dp"
         android:layout_marginTop="166dp"
         android:id="@+id/textView3"
@@ -87,19 +62,10 @@
 
     <TextView
         android:text="Player 2 Color"
->>>>>>> 5a2e4f4c72d74a2133daf0df52c133d8f4d128dd
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-<<<<<<< HEAD
-        android:layout_marginLeft="158dp"
-        android:layout_marginTop="165dp"
-        android:id="@+id/textView3"
-        android:textColor="@android:color/black" />
-
-
-=======
         android:layout_marginLeft="50dp"
         android:layout_marginTop="227dp"
         android:id="@+id/textView2"
@@ -108,5 +74,4 @@
 
 
 
->>>>>>> 5a2e4f4c72d74a2133daf0df52c133d8f4d128dd
 </RelativeLayout>

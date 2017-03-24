@@ -563,16 +563,6 @@ public class Board{
 						this.board[i][j].placePiece(new Piece(Piece.DARK));
 						darkPieces.add(this.board[i][j].getPiece());
 						//place a black piece at i, j
-					} else if (thisRow[j].equalsIgnoreCase("LK")) {
-						this.board[i][j].placePiece(new Piece(Piece.LIGHT));
-						lightPieces.add(this.board[i][j].getPiece());
-						this.board[i][j].getPiece().makeKing();
-						//place a red piece at i, j
-					} else if (thisRow[j].equalsIgnoreCase("DK")) {
-						this.board[i][j].placePiece(new Piece(Piece.DARK));
-						darkPieces.add(this.board[i][j].getPiece());
-						this.board[i][j].getPiece().makeKing();
-						//place a black piece at i, j
 					} else if (thisRow[j].equalsIgnoreCase("_")) {
 						//do nothing
 					}
@@ -596,18 +586,10 @@ public class Board{
 					string.append("_,");
 				}
 				else if (cell.getPiece().getColor().equals(Piece.LIGHT)){
-					if (cell.getPiece().isKing()) {
-						string.append("LK,");
-					} else {
-						string.append("L,");
-					}
+					string.append("L,");
 				}
 				else if(cell.getPiece().getColor().equals(Piece.DARK)){
-					if (cell.getPiece().isKing()) {
-						string.append("DK,");
-					} else {
-						string.append("D,");
-					}
+					string.append("D,");
 				}
 			}
 			string.append(";");
