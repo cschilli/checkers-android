@@ -68,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
     // TODO: If there is no saved game (look for saved.dat file), make this un-clickable
     private void loadGame() {
         Intent intent = new Intent(this, ButtonBoard.class);
-        String loadSwitch = null;
-        intent.putExtra("LOAD", loadSwitch);
+        intent.putExtra("LOAD", true);
         startActivity(intent);
     }
 

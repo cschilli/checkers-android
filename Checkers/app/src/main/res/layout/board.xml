@@ -13,9 +13,12 @@
         android:layout_width="355dp"
         android:layout_height="355dp"
         android:layout_gravity="center"
+<<<<<<< HEAD
         android:background="@drawable/round_outline"
         app:srcCompat="@android:color/black" />
 =======
+=======
+>>>>>>> 5a2e4f4c72d74a2133daf0df52c133d8f4d128dd
         app:srcCompat="@android:color/black"
         android:id="@+id/imageView7" />
 >>>>>>> ed3876529c9a113a2525cc696cc3055ae3cc12b3

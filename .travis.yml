@@ -35,9 +35,6 @@ android:
     - sys-img-armeabi-v7a-android-22
     - sys-img-armeabi-v7a-android-17
 
-before_script:
-- bash .travis-android-emulator-bugfix.sh
-
 
 before_install:
 - bash .travis-android-license-bugfix.sh
