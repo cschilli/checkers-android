@@ -21,6 +21,7 @@ import android.widget.TextView;
 public class ButtonBoard extends AppCompatActivity {
 
     private ArrayList<Cell> moves;
+    private ArrayList<Cell> captureMoves;
     private Player player1;
     private Player player2;
     private Player currentPlayer;
@@ -240,6 +241,42 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
+
+    /*
+     * When the player clicks a game piece on the board we want to color in that piece
+     * Colors the piece/cell that the user presses
+     * @param int xCord - The x-coordinate of the source cell that we want to change to pressed piece graphic
+     * @param int yCord - The y-coordinate of the source cell that we want to change to pressed piece graphic
+     */
+    public void updatePiecePressed(int xCord, int yCord){
+        // If current player is light AND the piece selected is a light piece, player can ONLY move light pieces and can jump ONLY dark pieces
+        if(currentPlayer.getColor().equals(Piece.LIGHT) && board.getCell(xCord, yCord).getPiece().getColor().equals(Piece.LIGHT)){
+
+            // If light AND king
+            if (board.getCell(xCord, yCord).getPiece().isKing()) {
+                buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.light_king_piece_pressed);
+            }
+            // If only light
+            else {
+                buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.light_piece_pressed);  // fill selected light piece as pressed piece image
+            }
+        }
+        // If current player is dark AND the piece selected is a dark piece, player can ONLY move dark pieces and can jump ONLY light pieces
+        if(currentPlayer.getColor().equals(Piece.DARK) && board.getCell(xCord, yCord).getPiece().getColor().equals(Piece.DARK)){
+
+            // If dark AND king
+            if (board.getCell(xCord, yCord).getPiece().isKing()) {
+                buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.dark_king_piece_pressed);
+            }
+            // If only dark
+            else {
+                buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.dark_piece_pressed);   // fill selected dark piece as pressed piece image
+            }
+        }
+
+    }
+
+
     /*
      * Gets the player whos turn it is
      * @ret Player currentPlayer - Returns the current player
@@ -305,47 +342,24 @@ public class ButtonBoard extends AppCompatActivity {
     */
     public void getCaptureMoves(int xCord, int yCord){
         Cell captureMoves;                                 // stores all of the possible moves for a piece
-        this.moves = board.getCaptureMoves(xCord, yCord);  // stores possible capture moves for a cell
+        this.captureMoves = board.getCaptureMoves(xCord, yCord);  // stores possible capture moves for a cell
 
         // For all of the moves that a piece has, get the X and Y coord and color piece in
-        for (int i = 0; i < this.moves.size(); i++) {
-            captureMoves = this.moves.get(i);       // get first set of moves
+        for (int i = 0; i < this.captureMoves.size(); i++) {
+            captureMoves = this.captureMoves.get(i);       // get first set of moves
             buttonIndexes[captureMoves.getX()][captureMoves.getY()].setBackgroundResource(R.drawable.possible_moves_image);   // color possible moves square
         }
     }
 
+
     /*
      * When the player clicks a game piece on the board to perform a move
-     * Colors the piece/cell that the user presses, stores the coordinates of source cell clicked
+     * Calls the color piece method to color piece that the user presses, stores the coordinates of source cell clicked
      * @param int xCord - Stores x-coordinate of the source cell the user clicks
      * @param int yCord - Stores the y-coordinate of the source cell the user clicks
      */
     public void onFirstClick(int xCord, int yCord){
-
-        // If current player is light AND the piece selected is a light piece, player can ONLY move light pieces and can jump ONLY dark pieces
-        if(currentPlayer.getColor().equals(Piece.LIGHT) && board.getCell(xCord, yCord).getPiece().getColor().equals(Piece.LIGHT)){
-
-            // If light AND king
-            if (board.getCell(xCord, yCord).getPiece().isKing()) {
-                buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.light_king_piece_pressed);
-            }
-            // If only light
-            else {
-                buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.light_piece_pressed);  // fill selected light piece as pressed piece image
-            }
-        }
-        // If current player is dark AND the piece selected is a dark piece, player can ONLY move dark pieces and can jump ONLY light pieces
-        if(currentPlayer.getColor().equals(Piece.DARK) && board.getCell(xCord, yCord).getPiece().getColor().equals(Piece.DARK)){
-
-            // If dark AND king
-            if (board.getCell(xCord, yCord).getPiece().isKing()) {
-                buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.dark_king_piece_pressed);
-            }
-            // If only dark
-            else {
-                buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.dark_piece_pressed);   // fill selected dark piece as pressed piece image
-            }
-        }
+        updatePiecePressed(xCord, yCord);      // colors the piece pressed
         xCordSrcPiece = xCord; // stores coordinates of first click x coordinate
         yCordSrcPiece = yCord; // stores coordinates or first click y coordinate
         counter++;            // increment counter so user can click a destination cell
@@ -358,11 +372,11 @@ public class ButtonBoard extends AppCompatActivity {
      * @param int xCord - Stores x-coordinate of the destination cell the user clicks
      * @param int yCord - Stores the y-coordinate of the destination cell the user clicks
      */
-    public void onSecondClick(int xCord, int yCord){
+    public void onSecondClick(int xCordDstPiece, int yCordDstPiece){
         // If user does a capture move, we want to allow them to click another piece
-        if (board.isCaptureMove(board.getCell(xCordSrcPiece, yCordSrcPiece), board.getCell(xCord, yCord))) {
-            xCordCapturingPiece = xCord;
-            yCordCapturingPiece = yCord;
+        if (board.isCaptureMove(board.getCell(xCordSrcPiece, yCordSrcPiece), board.getCell(xCordDstPiece, yCordDstPiece))) {
+            xCordCapturingPiece = xCordDstPiece;
+            yCordCapturingPiece = yCordDstPiece;
             hasAnotherTurn = true;
         }
         // Capture move was not made, they moved to empty spot
@@ -371,24 +385,28 @@ public class ButtonBoard extends AppCompatActivity {
             changeTurn();
         }
 
-        ArrayList<Cell> pieceCaptured = board.movePiece(xCordSrcPiece, yCordSrcPiece, xCord, yCord);    // moves piece, store captured piece into array list
-        Cell piece = pieceCaptured.get(0);                                                              // get the piece captured
-        updatePieces(xCordSrcPiece, yCordSrcPiece, xCord, yCord, piece);                                // updates the graphical cells
+        ArrayList<Cell> pieceCaptured = board.movePiece(xCordSrcPiece, yCordSrcPiece, xCordDstPiece, yCordDstPiece);    // moves piece, store captured piece into array list
+        updatePieces(xCordSrcPiece, yCordSrcPiece, xCordDstPiece, yCordDstPiece, pieceCaptured.get(0));                 // updates the graphical pieces
         counter--;
         //updateBoard(buttonIndexes, board);
 
-        // If player has another turn, check to see if they have any future captures
+        // If player has another turn, check to see if they have any future captures before determining if they can go again
         if (hasAnotherTurn) {
-            moves = board.getCaptureMoves(xCord, yCord);    // stores the future capture moves of the cell
+            captureMoves = board.getCaptureMoves(xCordDstPiece, yCordDstPiece);    // stores the future capture moves of the cell
 
             // If the piece that captured opponents piece has no capture moves, end turn
-            if (moves.isEmpty()) {
+            if (captureMoves.isEmpty()) {
                 hasAnotherTurn = false;
                 changeTurn();
             }
             // Else, we can go forward and let them capture another piece
             else {
                 hasAnotherTurn = true;
+                getCaptureMoves(xCordCapturingPiece, yCordCapturingPiece);
+                updatePiecePressed(xCordCapturingPiece, yCordCapturingPiece);
+                xCordSrcPiece = xCordDstPiece;
+                yCordSrcPiece = yCordDstPiece;
+                counter++;
             }
         }
     }
@@ -410,7 +428,7 @@ public class ButtonBoard extends AppCompatActivity {
 
                 // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
                 if (board.getCell(xCord, yCord).containsPiece() && board.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && counter == 0 && !hasAnotherTurn) {
-                    getPossibleMoves(xCord, yCord);
+                    getPossibleMoves(xCord, yCord);     // get all the possible moves, paints the piece
 
                     // If player has no possible moves AND is not on their second turn, cannot move piece so player must choose new piece
                     if (moves.isEmpty()) {
@@ -425,29 +443,17 @@ public class ButtonBoard extends AppCompatActivity {
                 }
 
                 // If after a player captures a move, they can ONLY move the piece that performed the capture
-                else if (board.getCell(xCord, yCord).containsPiece() && board.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && counter == 0 && hasAnotherTurn &&
-                        board.getCell(xCordCapturingPiece, yCordCapturingPiece) == board.getCell(xCord, yCord)) {
-
-                    getCaptureMoves(xCord, yCord);  // get all the possible capture moves
-
-                    // If player has no possible capture moves AND is NOT on their second turn, cannot move piece so player switches turns
-                    if (moves.isEmpty()) {
-                        Toast.makeText(getApplicationContext(), "No possible capture moves!", Toast.LENGTH_SHORT).show();
-                        changeTurn();
-                    }
-                    // Else, we can move piece because we have possible moves
-                    else {
-                        onFirstClick(xCord, yCord);
-                    }
+                else if (!board.getCell(xCord, yCord).containsPiece() && counter == 1 && hasAnotherTurn && captureMoves.contains(board.getCell(xCord, yCord))) {
+                    onSecondClick(xCord, yCord);
                 }
 
                 // If the clicked destination cell IS empty AND player has possible moves AND if counter == 1, then user can move piece
-                else if (!(board.getCell(xCord, yCord).containsPiece()) && moves.contains(board.getCell(xCord, yCord)) && counter == 1) {
+                else if (!(board.getCell(xCord, yCord).containsPiece()) && moves.contains(board.getCell(xCord, yCord)) && counter == 1 && !hasAnotherTurn) {
                     onSecondClick(xCord, yCord);
                 }
 
                 // If player clicks on the same piece twice, we simply want to de-select it since they have not made a move yet
-                else if (board.getCell(xCordSrcPiece, yCordSrcPiece) == board.getCell(xCord, yCord)) {
+                else if (board.getCell(xCordSrcPiece, yCordSrcPiece) == board.getCell(xCord, yCord) && !hasAnotherTurn) {
                     counter--;
                     updatePieces(xCordSrcPiece, yCordSrcPiece); // updates the graphical pieces
                     //updateBoard(buttonIndexes, board);
