@@ -11,6 +11,9 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 import java.util.ArrayList;
 import android.widget.TextView;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.view.Gravity;
 
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game board
@@ -71,12 +74,9 @@ public class ButtonBoard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // If orientation i
         setContentView(R.layout.board);
 
-        // If user chooses to exit the game
-        if (getIntent().getBooleanExtra("EXIT", false)) {
-            this.finish();
-        }
         // If the load message was loaded, we load the game, otherwise a new game is created
         if(getIntent().getBooleanExtra("LOAD", false)) {
             board.LoadGameState(getApplicationContext());
@@ -87,7 +87,7 @@ public class ButtonBoard extends AppCompatActivity {
         player2 = new PlayerTUI(Piece.DARK);        // init player 2
         this.currentPlayer = player1;               // init current player
         fillButtonIndexArray(listener);
-        updateTurnTracker();
+        updateTurnTracker(true);
         updateBoard(buttonIndexes, board);
     }
 
@@ -289,32 +289,43 @@ public class ButtonBoard extends AppCompatActivity {
      * Switches currentPlayer to the other player
      */
     public void changeTurn(){
-        if(this.currentPlayer.equals(player1)){
-            this.currentPlayer = player2;
-            updateTurnTracker();
-        }
-        else{
-            this.currentPlayer = player1;
-            updateTurnTracker();
+        // If both players have pieces, we can switch turns
+        if(!board.getPieces(Piece.LIGHT).isEmpty() && !board.getPieces(Piece.DARK).isEmpty()) {
+            if (this.currentPlayer.equals(player1)) {
+                this.currentPlayer = player2;
+                updateTurnTracker(true);
+            } else {
+                this.currentPlayer = player1;
+                updateTurnTracker(true);
+            }
         }
     }
 
     /*
      * Updates the player turn tracker
+     * @param boolean updateTracker - Controls if we want to update text or remove text
      */
-    public void updateTurnTracker() {
+    public void updateTurnTracker(boolean updateText) {
         TextView p1 = (TextView) findViewById(R.id.playerOneTurn);
         TextView p2 = (TextView) findViewById(R.id.playerTwoTurn);
 
-        // If current player is light
-        if(this.currentPlayer.getColor().equals(Piece.LIGHT)){
-            p1.setText(String.format("%s's Turn", this.player1.getColor()));
-            p2.setText("");
+        // If we want to update text
+        if(updateText) {
+            // If current player is light
+            if (this.currentPlayer.getColor().equals(Piece.LIGHT)) {
+                p1.setText(String.format("%s's Turn", this.player1.getColor()));
+                p2.setText("");
+            }
+            // Else if current player is dark
+            else {
+                p2.setText(String.format("%s's Turn", this.player2.getColor()));
+                p1.setText("");
+            }
         }
-        // Else if current player is dark
+        // If we want to remove the text
         else{
-            p2.setText(String.format("%s's Turn", this.player2.getColor()));
             p1.setText("");
+            p2.setText("");
         }
 
     }
@@ -461,22 +472,12 @@ public class ButtonBoard extends AppCompatActivity {
             }
 
             // If player who is light runs out of pieces, they lose
-            //TODO: When player wins, what should we do next?
             if(board.getPieces(Piece.LIGHT).isEmpty() && !board.getPieces(Piece.DARK).isEmpty()) {
-                Toast.makeText(getApplicationContext(), "DARK PLAYER WINS!", Toast.LENGTH_LONG).show();
-//                Intent exitGame = new Intent(ButtonBoard.this, MainActivity.class);
-//                exitGame.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                exitGame.putExtra("EXIT", true);
-//                startActivity(exitGame);
+                gameOverDialog();
             }
             // If player who is dark runs out of pieces, they lose
-            //TODO: When player wins, what should we do next?
             else if(!board.getPieces(Piece.LIGHT).isEmpty() && board.getPieces(Piece.DARK).isEmpty()) {
-                Toast.makeText(getApplicationContext(), "LIGHT PLAYER WINS!", Toast.LENGTH_LONG).show();
-//                Intent exitGame = new Intent(ButtonBoard.this, MainActivity.class);
-//                exitGame.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                exitGame.putExtra("EXIT", true);
-//                startActivity(exitGame);
+                gameOverDialog();
             }
             // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
             //TODO: When draw occurs, what should we do next?
@@ -486,6 +487,49 @@ public class ButtonBoard extends AppCompatActivity {
         }
     };
 
+    /*
+     * The dialog menu that pops up after a game has ended
+     */
+    public void gameOverDialog(){
+        updateTurnTracker(false);
+        final CharSequence choices[] = new CharSequence[] {"Play Again", "Return to Main Menu"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+        builder.setCancelable(false);
+        builder.setTitle(this.currentPlayer.getColor() + " Player Wins!");
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int clickValue) {
+
+                // If user clicks New Match, create a new match
+                if(clickValue == 0){
+                    restartMatch();
+                }
+                // If user chooses to Return to Main Menu
+                else if(clickValue == 1){
+                    quitMatch();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    /*
+     * Restarts the match
+     */
+    public void restartMatch(){
+        Intent restartMatch = new Intent(ButtonBoard.this, ButtonBoard.class);
+        startActivity(restartMatch);
+    }
+    /*
+     * Quits the match, returns to MainMenu.java activity
+     */
+    public void quitMatch(){
+        Intent exitGame = new Intent(ButtonBoard.this, MainActivity.class);
+        exitGame.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        exitGame.putExtra("EXIT", true);
+        startActivity(exitGame);
+    }
 
     /*
     * Adds Quick Menu at top-right corner with following options: Save, Load, Restart, Quit
@@ -507,23 +551,18 @@ public class ButtonBoard extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected (MenuItem item){
-        Intent restartGame = new Intent(ButtonBoard.this, ButtonBoard.class);
-        Intent exitGame = new Intent(ButtonBoard.this, MainActivity.class);
-
         switch (item.getItemId()) {
             case R.id.saveGame:
                 board.SaveGameState(getApplicationContext());
                 Toast.makeText(getApplicationContext(), "Match Saved!", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.restartMatch:
-                startActivity(restartGame);
+                restartMatch();
                 Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.quitMatch:
                 Toast.makeText(getApplicationContext(), "Quitting Match!", Toast.LENGTH_SHORT).show();
-                exitGame.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                exitGame.putExtra("EXIT", true);
-                startActivity(exitGame);
+                quitMatch();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
