@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item  android:id="@+id/saveGame"
-    android:title="Save Game"/>
-<item  android:id="@+id/restartMatch"
-    android:title="Restart Match"/>
-<item  android:id="@+id/quitMatch"
-    android:title="Quit Match"/>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/saveGame"
+        android:checkable="false"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="Save Game"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/restartMatch"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:title="Restart Match"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/quitMatch"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="Quit Match"
+        android:visible="true"
+        app:showAsAction="always" />
 </menu>

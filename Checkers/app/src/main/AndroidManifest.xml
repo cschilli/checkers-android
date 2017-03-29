@@ -35,12 +35,8 @@
         <!-- ButtonBoard.java -->
         <activity
             android:name=".ButtonBoard"
-            android:label="Board"
-            android:theme="@style/MainMenuTheme">
-            <!-- Adds back button in top left corner -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+            android:label=""
+            android:theme="@style/ButtonBoardTheme">
         </activity>
 
 

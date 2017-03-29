@@ -9,6 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/board_background"
     tools:context="com.example.dylan.checkers.MainActivity">
 
     <RelativeLayout
@@ -16,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/linearLayout"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="61dp"
         android:layout_below="@+id/imageView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
@@ -28,8 +29,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-
-            android:elevation="0dp"
             android:text="Play Game"
             android:textAllCaps="false"
             android:textSize="24sp" />

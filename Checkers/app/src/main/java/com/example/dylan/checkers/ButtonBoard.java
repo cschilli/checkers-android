@@ -87,8 +87,8 @@ public class ButtonBoard extends AppCompatActivity {
         player2 = new PlayerTUI(Piece.DARK);        // init player 2
         this.currentPlayer = player1;               // init current player
         fillButtonIndexArray(listener);
-        updateTurnTracker();
         updateBoard(buttonIndexes, board);
+        updateTurnTracker();
     }
 
 
@@ -276,7 +276,6 @@ public class ButtonBoard extends AppCompatActivity {
 
     }
 
-
     /*
      * Gets the player whos turn it is
      * @ret Player currentPlayer - Returns the current player
@@ -304,8 +303,30 @@ public class ButtonBoard extends AppCompatActivity {
     /*
      * Updates the player turn tracker
      * @param boolean updateTracker - Controls if we want to update text or remove text
+     * TODO: Remove the update text feature, replace with ability to highlight pieces that CAN be moved on players turn
      */
     public void updateTurnTracker() {
+//        ArrayList<Cell> moveablePieces = new ArrayList<>();
+//        // Get all the pieces of the current player that can move & highlight them
+//        for(int i = 0; i < 8; i++ ){
+//            for(int j = 0; j < 8; j++){
+//
+//                if(currentPlayer.getColor().equals(Piece.LIGHT) && board.getCell(i, j).containsPiece()
+//                        && !board.possibleMoves(i,j).isEmpty() && board.getCell(i,j).getPiece().getColor().equals(Piece.LIGHT)){
+//
+//                    buttonIndexes[i][j].setBackgroundResource(R.drawable.light_piece_highlighted);
+//                    System.out.println(i + "," + j);
+//                }
+//                // Else, highlight possible dark moves
+//                else if(currentPlayer.getColor().equals(Piece.DARK) && board.getCell(i, j).containsPiece()
+//                        && !board.possibleMoves(i,j).isEmpty() && board.getCell(i,j).getPiece().getColor().equals(Piece.DARK)){
+//
+//                    buttonIndexes[i][j].setBackgroundResource(R.drawable.dark_piece_highlighted);
+//                }
+//            }
+//        }
+
+
         TextView p1 = (TextView) findViewById(R.id.playerOneTurn);
         TextView p2 = (TextView) findViewById(R.id.playerTwoTurn);
 
@@ -562,7 +583,7 @@ public class ButtonBoard extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.quitMatch:
-                Toast.makeText(getApplicationContext(), "Quitting Match!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Quitting Match!", Toast.LENGTH_SHORT).show();
                 quitMatch();
                 return true;
             default:
