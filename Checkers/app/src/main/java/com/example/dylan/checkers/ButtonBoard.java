@@ -24,7 +24,6 @@ import android.view.Gravity;
 public class ButtonBoard extends AppCompatActivity {
 
     private ArrayList<Cell> moves;
-    private ArrayList<Cell> captureMoves;
     private Player player1;
     private Player player2;
     private Player currentPlayer;
@@ -63,6 +62,7 @@ public class ButtonBoard extends AppCompatActivity {
     private final Button[][] buttonIndexes = new Button[8][8];        // stores the Button objects with their indexes
     private Board board = new Board();
     private int counter = 0;
+    private boolean updateText = true;
     int roundCounter = 0;
 
 
@@ -82,12 +82,12 @@ public class ButtonBoard extends AppCompatActivity {
             board.LoadGameState(getApplicationContext());
         }
 
-        moves = new ArrayList<>();                  // init moves arraylist
+        this.moves = new ArrayList<>();                  // init moves arraylist
         player1 = new PlayerTUI(Piece.LIGHT);       // init player 1
         player2 = new PlayerTUI(Piece.DARK);        // init player 2
         this.currentPlayer = player1;               // init current player
         fillButtonIndexArray(listener);
-        updateTurnTracker(true);
+        updateTurnTracker();
         updateBoard(buttonIndexes, board);
     }
 
@@ -293,10 +293,10 @@ public class ButtonBoard extends AppCompatActivity {
         if(!board.getPieces(Piece.LIGHT).isEmpty() && !board.getPieces(Piece.DARK).isEmpty()) {
             if (this.currentPlayer.equals(player1)) {
                 this.currentPlayer = player2;
-                updateTurnTracker(true);
+                updateTurnTracker();
             } else {
                 this.currentPlayer = player1;
-                updateTurnTracker(true);
+                updateTurnTracker();
             }
         }
     }
@@ -305,7 +305,7 @@ public class ButtonBoard extends AppCompatActivity {
      * Updates the player turn tracker
      * @param boolean updateTracker - Controls if we want to update text or remove text
      */
-    public void updateTurnTracker(boolean updateText) {
+    public void updateTurnTracker() {
         TextView p1 = (TextView) findViewById(R.id.playerOneTurn);
         TextView p2 = (TextView) findViewById(R.id.playerTwoTurn);
 
@@ -353,11 +353,11 @@ public class ButtonBoard extends AppCompatActivity {
     */
     public void getCaptureMoves(int xCord, int yCord){
         Cell captureMoves;                                 // stores all of the possible moves for a piece
-        this.captureMoves = board.getCaptureMoves(xCord, yCord);  // stores possible capture moves for a cell
+        this.moves = board.getCaptureMoves(xCord, yCord);  // stores possible capture moves for a cell
 
         // For all of the moves that a piece has, get the X and Y coord and color piece in
-        for (int i = 0; i < this.captureMoves.size(); i++) {
-            captureMoves = this.captureMoves.get(i);       // get first set of moves
+        for (int i = 0; i < this.moves.size(); i++) {
+            captureMoves = this.moves.get(i);       // get first set of moves
             buttonIndexes[captureMoves.getX()][captureMoves.getY()].setBackgroundResource(R.drawable.possible_moves_image);   // color possible moves square
         }
     }
@@ -403,10 +403,10 @@ public class ButtonBoard extends AppCompatActivity {
 
         // If player has another turn, check to see if they have any future captures before determining if they can go again
         if (hasAnotherTurn) {
-            captureMoves = board.getCaptureMoves(xCordDstPiece, yCordDstPiece);    // stores the future capture moves of the cell
+            moves = board.getCaptureMoves(xCordDstPiece, yCordDstPiece);    // stores the future capture moves of the cell
 
             // If the piece that captured opponents piece has no capture moves, end turn
-            if (captureMoves.isEmpty()) {
+            if (moves.isEmpty()) {
                 hasAnotherTurn = false;
                 changeTurn();
             }
@@ -454,7 +454,7 @@ public class ButtonBoard extends AppCompatActivity {
                 }
 
                 // If after a player captures a move, they can ONLY move the piece that performed the capture
-                else if (!board.getCell(xCord, yCord).containsPiece() && counter == 1 && hasAnotherTurn && captureMoves.contains(board.getCell(xCord, yCord))) {
+                else if (!board.getCell(xCord, yCord).containsPiece() && counter == 1 && hasAnotherTurn && moves.contains(board.getCell(xCord, yCord))) {
                     onSecondClick(xCord, yCord);
                 }
 
@@ -491,7 +491,8 @@ public class ButtonBoard extends AppCompatActivity {
      * The dialog menu that pops up after a game has ended
      */
     public void gameOverDialog(){
-        updateTurnTracker(false);
+        updateText = false;
+        updateTurnTracker();
         final CharSequence choices[] = new CharSequence[] {"Play Again", "Return to Main Menu"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
         builder.setCancelable(false);
