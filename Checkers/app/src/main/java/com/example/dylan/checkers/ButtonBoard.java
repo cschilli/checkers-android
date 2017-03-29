@@ -24,6 +24,7 @@ import android.view.Gravity;
 public class ButtonBoard extends AppCompatActivity {
 
     private ArrayList<Cell> moves;
+    private ArrayList<Cell> highlightedPieces = new ArrayList<>();
     private Player player1;
     private Player player2;
     private Player currentPlayer;
@@ -33,6 +34,7 @@ public class ButtonBoard extends AppCompatActivity {
     private int xCordCapturingPiece;    // stores the new source x-coordinate of the first piece that captured an opponent piece
     private int yCordCapturingPiece;    // stores the new source y-coordinate of the first piece that captured an opponent piece
     Cell possMoves;                                 // stores all of the possible moves for a piece
+    Cell highlightedPiece;
 
     // Game board layout of the black squares by square ID
     // 0-63  --> black button squares, used for indexing      _ -->  red button squares, are not used in indexing
@@ -175,7 +177,7 @@ public class ButtonBoard extends AppCompatActivity {
         }
 
         // If the piece is light
-        if(board.getCell(xCord, yCord).getPiece().getColor() == Piece.LIGHT) {
+        if(board.getCell(xCord, yCord).getPiece().getColor() == Piece.LIGHT && board.getCell(xCord, yCord).containsPiece()) {
             // If piece is light AND is king
             if (board.getCell(xCord, yCord).getPiece().isKing()) {
                 buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.light_king_piece);
@@ -273,7 +275,6 @@ public class ButtonBoard extends AppCompatActivity {
                 buttonIndexes[xCord][yCord].setBackgroundResource(R.drawable.dark_piece_pressed);   // fill selected dark piece as pressed piece image
             }
         }
-
     }
 
     /*
@@ -300,55 +301,46 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
+    public void unHighlightPieces(){
+        for(int i = 0; i < highlightedPieces.size(); i++){
+            highlightedPiece = highlightedPieces.get(i);
+            if(board.getCell(highlightedPiece.getX(), highlightedPiece.getY()).getPiece().getColor().equals(Piece.LIGHT)){
+                buttonIndexes[highlightedPiece.getX()][highlightedPiece.getY()].setBackgroundResource(R.drawable.light_piece);
+            }
+            else if(board.getCell(highlightedPiece.getX(), highlightedPiece.getY()).getPiece().getColor().equals(Piece.DARK)){
+                buttonIndexes[highlightedPiece.getX()][highlightedPiece.getY()].setBackgroundResource(R.drawable.dark_piece);
+            }
+        }
+        highlightedPieces = new ArrayList<>();
+    }
+
+
     /*
      * Updates the player turn tracker
-     * @param boolean updateTracker - Controls if we want to update text or remove text
      * TODO: Remove the update text feature, replace with ability to highlight pieces that CAN be moved on players turn
      */
     public void updateTurnTracker() {
-//        ArrayList<Cell> moveablePieces = new ArrayList<>();
-//        // Get all the pieces of the current player that can move & highlight them
-//        for(int i = 0; i < 8; i++ ){
-//            for(int j = 0; j < 8; j++){
-//
-//                if(currentPlayer.getColor().equals(Piece.LIGHT) && board.getCell(i, j).containsPiece()
-//                        && !board.possibleMoves(i,j).isEmpty() && board.getCell(i,j).getPiece().getColor().equals(Piece.LIGHT)){
-//
-//                    buttonIndexes[i][j].setBackgroundResource(R.drawable.light_piece_highlighted);
-//                    System.out.println(i + "," + j);
-//                }
-//                // Else, highlight possible dark moves
-//                else if(currentPlayer.getColor().equals(Piece.DARK) && board.getCell(i, j).containsPiece()
-//                        && !board.possibleMoves(i,j).isEmpty() && board.getCell(i,j).getPiece().getColor().equals(Piece.DARK)){
-//
-//                    buttonIndexes[i][j].setBackgroundResource(R.drawable.dark_piece_highlighted);
-//                }
-//            }
-//        }
+        // Get all the pieces of the current player that can move & highlight them
+        for(int i = 0; i < 8; i++ ){
+            for(int j = 0; j < 8; j++){
 
+                // If player is light, get every piece of that color that CAN be moved
+                if(currentPlayer.getColor().equals(Piece.LIGHT) && board.getCell(i, j).containsPiece() && board.getCell(i, j) != null
+                        && !board.possibleMoves(i,j).isEmpty() && board.getCell(i,j).getPiece().getColor().equals(Piece.LIGHT)){
 
-        TextView p1 = (TextView) findViewById(R.id.playerOneTurn);
-        TextView p2 = (TextView) findViewById(R.id.playerTwoTurn);
+                    System.out.println(i + "," + j);
+                    buttonIndexes[i][j].setBackgroundResource(R.drawable.light_piece_highlighted);
+                    highlightedPieces.add(board.getCell(i,j));
+                }
+                // Else, highlight possible dark moves
+                else if(currentPlayer.getColor().equals(Piece.DARK) && board.getCell(i, j).containsPiece() && board.getCell(i, j) != null
+                        && !board.possibleMoves(i,j).isEmpty() && board.getCell(i,j).getPiece().getColor().equals(Piece.DARK)){
 
-        // If we want to update text
-        if(updateText) {
-            // If current player is light
-            if (this.currentPlayer.getColor().equals(Piece.LIGHT)) {
-                p1.setText(String.format("%s's Turn", this.player1.getColor()));
-                p2.setText("");
-            }
-            // Else if current player is dark
-            else {
-                p2.setText(String.format("%s's Turn", this.player2.getColor()));
-                p1.setText("");
+                    buttonIndexes[i][j].setBackgroundResource(R.drawable.dark_piece_highlighted);
+                    highlightedPieces.add(board.getCell(i,j));
+                }
             }
         }
-        // If we want to remove the text
-        else{
-            p1.setText("");
-            p2.setText("");
-        }
-
     }
 
     /*
@@ -405,6 +397,7 @@ public class ButtonBoard extends AppCompatActivity {
      * @param int yCord - Stores the y-coordinate of the destination cell the user clicks
      */
     public void onSecondClick(int xCordDstPiece, int yCordDstPiece){
+        unHighlightPieces();
         // If user does a capture move, we want to allow them to click another piece
         if (board.isCaptureMove(board.getCell(xCordSrcPiece, yCordSrcPiece), board.getCell(xCordDstPiece, yCordDstPiece))) {
             xCordCapturingPiece = xCordDstPiece;
@@ -414,11 +407,14 @@ public class ButtonBoard extends AppCompatActivity {
         // Capture move was not made, they moved to empty spot
         else {
             hasAnotherTurn = false;
-            changeTurn();
         }
 
         ArrayList<Cell> pieceCaptured = board.movePiece(xCordSrcPiece, yCordSrcPiece, xCordDstPiece, yCordDstPiece);    // moves piece, store captured piece into array list
-        updatePieces(xCordSrcPiece, yCordSrcPiece, xCordDstPiece, yCordDstPiece, pieceCaptured.get(0));                 // updates the graphical pieces
+
+        // If we capture a piece, we want to update board to reflect this change
+        if(!pieceCaptured.isEmpty()) {
+            updatePieces(xCordSrcPiece, yCordSrcPiece, xCordDstPiece, yCordDstPiece, pieceCaptured.get(0));                 // updates the graphical pieces
+        }
         counter--;
         //updateBoard(buttonIndexes, board);
 
@@ -440,6 +436,10 @@ public class ButtonBoard extends AppCompatActivity {
                 yCordSrcPiece = yCordDstPiece;
                 counter++;
             }
+        }
+        // If player does not have another turn, change turns
+        else{
+            changeTurn();
         }
     }
 
@@ -475,19 +475,20 @@ public class ButtonBoard extends AppCompatActivity {
                 }
 
                 // If after a player captures a move, they can ONLY move the piece that performed the capture
-                else if (!board.getCell(xCord, yCord).containsPiece() && counter == 1 && hasAnotherTurn && moves.contains(board.getCell(xCord, yCord))) {
+                else if (!board.getCell(xCord, yCord).containsPiece() && moves.contains(board.getCell(xCord, yCord)) && counter == 1 && hasAnotherTurn) {
                     onSecondClick(xCord, yCord);
                 }
 
                 // If the clicked destination cell IS empty AND player has possible moves AND if counter == 1, then user can move piece
-                else if (!(board.getCell(xCord, yCord).containsPiece()) && moves.contains(board.getCell(xCord, yCord)) && counter == 1 && !hasAnotherTurn) {
+                else if (!board.getCell(xCord, yCord).containsPiece() && moves.contains(board.getCell(xCord, yCord)) && counter == 1 && !hasAnotherTurn) {
                     onSecondClick(xCord, yCord);
                 }
 
                 // If player clicks on the same piece twice, we simply want to de-select it since they have not made a move yet
-                else if (board.getCell(xCordSrcPiece, yCordSrcPiece) == board.getCell(xCord, yCord) && !hasAnotherTurn) {
+                else if (board.getCell(xCordSrcPiece, yCordSrcPiece) == board.getCell(xCord, yCord) && counter == 1 && !hasAnotherTurn) {
                     counter--;
                     updatePieces(xCordSrcPiece, yCordSrcPiece); // updates the graphical pieces
+                    updateTurnTracker();
                     //updateBoard(buttonIndexes, board);
                 }
             }
