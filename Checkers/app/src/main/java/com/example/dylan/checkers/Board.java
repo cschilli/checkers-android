@@ -1,6 +1,8 @@
 package com.example.dylan.checkers;
 
 import android.content.Context;
+import android.widget.Button;
+
 import java.util.ArrayList;
 import java.io.OutputStreamWriter;
 import java.io.InputStream;
@@ -8,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.File;
 
 /**
  * A class representing a Board in Checker.
@@ -17,7 +20,6 @@ public class Board{
 	private Cell[][] board;
 	private ArrayList<Piece> lightPieces;
 	private ArrayList<Piece> darkPieces;
-
 
 	private static int BOARD_SIZE = 8;
 
@@ -705,7 +707,7 @@ public class Board{
 		String saveData = "";
 
 		try {
-			InputStream inputStream = context.openFileInput("savedFile.dat");
+			InputStream inputStream = context.openFileInput("savedGame.dat");
 
 			if ( inputStream != null ) {
 				InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -749,7 +751,17 @@ public class Board{
 						this.board[i][j].placePiece(new Piece(Piece.DARK));
 						darkPieces.add(this.board[i][j].getPiece());
 						//place a black piece at i, j
-					} else if (thisRow[j].equalsIgnoreCase("_")) {
+					} else if (thisRow[j].equalsIgnoreCase("LK")) {
+                        this.board[i][j].placePiece(new Piece(Piece.LIGHT));
+                        lightPieces.add(this.board[i][j].getPiece());
+                        this.board[i][j].getPiece().makeKing();
+                        //place a red piece at i, j
+                    } else if (thisRow[j].equalsIgnoreCase("DK")) {
+                        this.board[i][j].placePiece(new Piece(Piece.DARK));
+                        darkPieces.add(this.board[i][j].getPiece());
+                        this.board[i][j].getPiece().makeKing();
+                        //place a black piece at i, j
+                    } else if (thisRow[j].equalsIgnoreCase("_")) {
 						//do nothing
 					}
 				}
@@ -763,34 +775,39 @@ public class Board{
 	}
 
 	public void SaveGameState(Context context) {
-		StringBuilder string = new StringBuilder();
-		String newString = null;
-		for(int i=0; i< Board.BOARD_SIZE; i++){
-			for(int j=0; j <Board.BOARD_SIZE; j++){
-				Cell cell = this.board[i][j];
-				if(cell.getPiece() == null){
-					string.append("_,");
-				}
-				else if (cell.getPiece().getColor().equals(Piece.LIGHT)){
-					string.append("L,");
-				}
-				else if(cell.getPiece().getColor().equals(Piece.DARK)){
-					string.append("D,");
-				}
-			}
-			string.append(";");
-			newString = string.toString().replace(",;", ";");
-		}
+            StringBuilder string = new StringBuilder();
+            String newString = null;
+            for (int i = 0; i < Board.BOARD_SIZE; i++) {
+                for (int j = 0; j < Board.BOARD_SIZE; j++) {
+                    Cell cell = this.board[i][j];
+                    if (cell.getPiece() == null) {
+                        string.append("_,");
+                    } else if (cell.getPiece().getColor().equals(Piece.LIGHT)) {
+                        if (cell.getPiece().isKing()) {
+                            string.append("LK,");
+                        } else {
+                            string.append("L,");
+                        }
+                    } else if (cell.getPiece().getColor().equals(Piece.DARK)) {
+                        if (cell.getPiece().isKing()) {
+                            string.append("DK,");
+                        } else {
+                            string.append("D,");
+                        }
+                    }
+                }
+                string.append(";");
+                newString = string.toString().replace(",;", ";");
+            }
 
-		try {
-			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("savedFile.dat", Context.MODE_PRIVATE));
-			outputStreamWriter.write(newString);
-			outputStreamWriter.close();
-			System.out.println("Saved! Location: " + context.getFilesDir() + "/savedFile.dat");
-		}
-		catch (IOException e) {
-			System.out.println("Error writing to file! " + e.getMessage());
-		}
+            try {
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
+                outputStreamWriter.write(newString);
+                outputStreamWriter.close();
+                System.out.println("Saved! Location: " + context.getFilesDir() + "/savedFile.dat");
+            } catch (IOException e) {
+                System.out.println("Error writing to file! " + e.getMessage());
+            }
 	}
 
 	public static void main(String[] args){

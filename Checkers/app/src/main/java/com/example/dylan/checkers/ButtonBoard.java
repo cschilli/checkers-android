@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
+
+import java.io.File;
 import java.util.ArrayList;
 import android.widget.TextView;
 import android.content.DialogInterface;
@@ -537,10 +539,51 @@ public class ButtonBoard extends AppCompatActivity {
         builder.show();
     }
 
+    public void saveGameFound() {
+        final CharSequence choices[] = new CharSequence[] {"Overwrite", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+        builder.setCancelable(true);
+        builder.setTitle("A previously saved game was found. Overwrite?");
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int clickValue) {
+
+                if(clickValue == 0) {
+                    File file = getApplicationContext().getFileStreamPath("savedGame.dat");
+                    if (file != null || file.exists()) {
+                        file.delete();
+                    }
+                    board.SaveGameState(getApplicationContext());
+                    Toast.makeText(getApplicationContext(), "Match Saved!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    public void restartMatchDialog(){
+        final CharSequence choices[] = new CharSequence[] {"Restart", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+        builder.setCancelable(true);
+        builder.setTitle("Are you sure you want to restart?");
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int clickValue) {
+                if(clickValue == 0){
+                    restartMatch();
+                }
+            }
+        });
+        builder.show();
+    }
+
     /*
      * Restarts the match
      */
     public void restartMatch(){
+        Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_SHORT).show();
         Intent restartMatch = new Intent(ButtonBoard.this, ButtonBoard.class);
         startActivity(restartMatch);
     }
@@ -576,12 +619,15 @@ public class ButtonBoard extends AppCompatActivity {
     public boolean onOptionsItemSelected (MenuItem item){
         switch (item.getItemId()) {
             case R.id.saveGame:
-                board.SaveGameState(getApplicationContext());
-                Toast.makeText(getApplicationContext(), "Match Saved!", Toast.LENGTH_SHORT).show();
+                File file = getApplicationContext().getFileStreamPath("savedGame.dat");
+                if(file == null || !file.exists()) {
+                    board.SaveGameState(getApplicationContext());
+                } else {
+                    saveGameFound();
+                }
                 return true;
             case R.id.restartMatch:
-                restartMatch();
-                Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_SHORT).show();
+                restartMatchDialog();
                 return true;
             case R.id.quitMatch:
                 //Toast.makeText(getApplicationContext(), "Quitting Match!", Toast.LENGTH_SHORT).show();
