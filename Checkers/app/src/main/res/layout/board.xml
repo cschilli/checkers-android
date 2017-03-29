@@ -4,26 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="500dp"
+    android:layout_height="match_parent"
     android:paddingTop="0dp"
-    android:background="@drawable/blank_square">
-
+    android:background="@drawable/board_background">
 
 
     <ImageView
-        android:layout_width="351dp"
-        android:layout_height="351dp"
+        android:layout_width="361dp"
+        android:layout_height="363dp"
         android:layout_gravity="center"
-        app:srcCompat="@android:color/black"
-        android:id="@+id/imageView7" />
-
-    <ImageView
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:layout_gravity="center"
-        app:srcCompat="@drawable/checkers_board_6"
-        android:id="@+id/imageView9" />
-    <!-- android:background="#FF3F3F3F" -->
+        app:srcCompat="@drawable/checkers_board_background"
+        android:id="@+id/imageView10" />
 
 
 

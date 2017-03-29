@@ -1,19 +1,16 @@
 package com.example.dylan.checkers;
 
 public class Cell{
-	
-	
-	
+
+
 	private int x;
-	
 	private int y;
-	
 	private Piece placedPiece;
-	
-	
+
 	/**
-	 * @param x
-	 * @param y
+	 * Creates an instance of Cell with given x-coordinate and y-coordinate with no piece placed in the cell i.e. piece placed in the cell is null.
+	 * @param x The x-coordinate of the cell.
+	 * @param y The y-coordinate of the cell.
 	 */
 	public Cell(int x, int y){
 		if((x<0 || x>7) || (y<0 || y>7)){
@@ -24,61 +21,59 @@ public class Cell{
 		this.y = y;
 		this.placedPiece = null;
 	}
-	
-	//overloaded constructor
+
 	/**
-	 * @param x
-	 * @param y
-	 * @param givenPiece
+	 * Creates an instance of Cell with given x-coordinate and y-coordinate and given piece placed in the cell.
+	 * @param x The x-coordinate of the cell.
+	 * @param y The y-coordinate of the cell.
+	 * @param givenPiece The piece to be placed in the Cell.
+	 * @throws IllegalArgumentException Throws IllegalArgumentException if the given x-coordinate or y-coordinate are not in the range [0,7] inclusive.
 	 */
-	public Cell(int x, int y, Piece givenPiece){
+	public Cell(int x, int y, Piece givenPiece) throws IllegalArgumentException{
 		if((x<0 || x>7) || (y<0 || y>7)){
-			System.out.println("The provided coordinates for the cell are out of range.");
-			return;
+			throw new IllegalArgumentException("The provided coordinates for the cell are out of range.");
 		}
 		this.x = x;
 		this.y = y;
 		this.placedPiece = givenPiece;
 	}
-	
-	
-	
+
+
 	/**
-	 * @return Piece after placement
+	 * @return Returns the piece placed (null if no piece is placed) in this cell.
 	 */
 	public Piece getPiece(){
 		return this.placedPiece;
 	}
-	
+
 	/**
-	 * @return X coordinate
+	 * @return Returns the x-coordinate of this cell.
 	 */
 	public int getX(){
 		return this.x;
 	}
-	
+
 	/**
-	 * @return Y coordinate
+	 * @return Returns the y-coordinate of this cell.
 	 */
 	public int getY(){
 		return this.y;
 	}
-	
-	
+
+
 	/**
-	 * @return array of X,Y coords
+	 * @return Returns the coordinate of this cell as an integer array of length two,
+	 * 			in which the first element is the x-coordinate of the cell and the second value is the y-coordinate of the cell.
 	 */
 	public int[] getCoords(){
 		int[] coords = {x, y};
 		return coords;
 	}
-	
-	
-	
-	//places the given piece to this cell
-	//if the pieces are to their opposite end then makes the piece as king
+
+
+
 	/**
-	 * @param givenPiece
+	 * @param givenPiece The piece to place in this cell. If the piece are to their opposite end then the piece is made King.
 	 */
 	public void placePiece(Piece givenPiece){
 		this.placedPiece = givenPiece;
@@ -92,36 +87,35 @@ public class Cell{
 			}
 		}
 	}
-	
-	
-	//checks if this cell has any piece
+
 	/**
-	 * @return boolean 
+	 * @return Returns if the cell contains any piece i.e returns true if this cell contains piece and false if the placed piece of this cell is null.
 	 */
 	public boolean containsPiece(){
 		if(this.placedPiece == null){
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	
-	//moves the piece from this cell to given cell
+
+
 	/**
-	 * @param anotherCell
+	 * @param anotherCell Cell where the piece in this cell is to be moved.
+	 * @throws IllegalArgumentException Throws IllegalArgumentException if the Cell provided is null.
 	 */
-	public void movePiece(Cell anotherCell){
+	public void movePiece(Cell anotherCell) throws IllegalArgumentException{
+		if(anotherCell == null){
+			throw new IllegalArgumentException("Provided cell is null. Cannot move to a null Cell.");
+		}
 		anotherCell.placePiece(this.placedPiece);
 		this.placedPiece.setCell(anotherCell);
 		this.placedPiece = null;
 	}
-	
-	
-	
-	//Created for debugging purpose
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+
+
+	/**
+	 * @return String representation of the Cell.
 	 */
 	public String toString(){
 		String str = "";
