@@ -9,11 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
+import java.io.File;
 import java.util.ArrayList;
-import android.widget.TextView;
 import android.content.DialogInterface;
 import android.app.AlertDialog;
-import android.view.Gravity;
 
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game board
@@ -53,18 +52,17 @@ public class ButtonBoard extends AppCompatActivity {
 
     // Add the buttons into an array by their specific id in integer form
     private final int[] buttons_id = {R.id.button0,  R.id.button2,  R.id.button4,  R.id.button6,
-                                      R.id.button9,  R.id.button11, R.id.button13, R.id.button15,
-                                      R.id.button16, R.id.button18, R.id.button20, R.id.button22,
-                                      R.id.button25, R.id.button27, R.id.button29, R.id.button31,
-                                      R.id.button32, R.id.button34, R.id.button36, R.id.button38,
-                                      R.id.button41, R.id.button43, R.id.button45, R.id.button47,
-                                      R.id.button48, R.id.button50, R.id.button52, R.id.button54,
-                                      R.id.button57, R.id.button59, R.id.button61, R.id.button63};
+            R.id.button9,  R.id.button11, R.id.button13, R.id.button15,
+            R.id.button16, R.id.button18, R.id.button20, R.id.button22,
+            R.id.button25, R.id.button27, R.id.button29, R.id.button31,
+            R.id.button32, R.id.button34, R.id.button36, R.id.button38,
+            R.id.button41, R.id.button43, R.id.button45, R.id.button47,
+            R.id.button48, R.id.button50, R.id.button52, R.id.button54,
+            R.id.button57, R.id.button59, R.id.button61, R.id.button63};
 
     private final Button[][] buttonIndexes = new Button[8][8];        // stores the Button objects with their indexes
     private Board board = new Board();
     private int counter = 0;
-    private boolean updateText = true;
     int roundCounter = 0;
 
 
@@ -513,7 +511,6 @@ public class ButtonBoard extends AppCompatActivity {
      * The dialog menu that pops up after a game has ended
      */
     public void gameOverDialog(){
-        updateText = false;
         updateTurnTracker();
         final CharSequence choices[] = new CharSequence[] {"Play Again", "Return to Main Menu"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
@@ -537,10 +534,70 @@ public class ButtonBoard extends AppCompatActivity {
         builder.show();
     }
 
+    public void saveGameFound() {
+        final CharSequence choices[] = new CharSequence[] {"Overwrite", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+        builder.setCancelable(true);
+        builder.setTitle("A previously saved game was found. Overwrite?");
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int clickValue) {
+
+                if(clickValue == 0) {
+                    File file = getApplicationContext().getFileStreamPath("savedGame.dat");
+                    if (file != null || file.exists()) {
+                        file.delete();
+                    }
+                    board.SaveGameState(getApplicationContext());
+                    Toast.makeText(getApplicationContext(), "Match Saved!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    public void restartMatchDialog(){
+        final CharSequence choices[] = new CharSequence[] {"Restart", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+        builder.setCancelable(true);
+        builder.setTitle("Are you sure you want to restart?");
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int clickValue) {
+                if(clickValue == 0){
+                    restartMatch();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    public void quitMatchDialog(){
+        final CharSequence choices[] = new CharSequence[] {"Quit", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+        builder.setCancelable(true);
+        builder.setTitle("Are you sure you want to quit?");
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int clickValue) {
+                if(clickValue == 0){
+                    quitMatch();
+                }
+            }
+        });
+        builder.show();
+    }
+
+
+
     /*
      * Restarts the match
      */
     public void restartMatch(){
+        Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_SHORT).show();
         Intent restartMatch = new Intent(ButtonBoard.this, ButtonBoard.class);
         startActivity(restartMatch);
     }
@@ -576,23 +633,24 @@ public class ButtonBoard extends AppCompatActivity {
     public boolean onOptionsItemSelected (MenuItem item){
         switch (item.getItemId()) {
             case R.id.saveGame:
-                board.SaveGameState(getApplicationContext());
-                Toast.makeText(getApplicationContext(), "Match Saved!", Toast.LENGTH_SHORT).show();
+                File file = getApplicationContext().getFileStreamPath("savedGame.dat");
+                if(file == null || !file.exists()) {
+                    board.SaveGameState(getApplicationContext());
+                } else {
+                    saveGameFound();
+                }
                 return true;
             case R.id.restartMatch:
-                restartMatch();
-                Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_SHORT).show();
+                restartMatchDialog();
                 return true;
             case R.id.quitMatch:
-                //Toast.makeText(getApplicationContext(), "Quitting Match!", Toast.LENGTH_SHORT).show();
-                quitMatch();
+                quitMatchDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 }
-
 
 
 

@@ -1,6 +1,8 @@
 package com.example.dylan.checkers;
 
 import android.content.Context;
+import android.widget.Button;
+
 import java.util.ArrayList;
 import java.io.OutputStreamWriter;
 import java.io.InputStream;
@@ -8,32 +10,32 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.File;
 
 /**
  * A class representing a Board in Checker.
  */
 
 public class Board{
-	private Cell[][] board;
-	private ArrayList<Piece> lightPieces;
-	private ArrayList<Piece> darkPieces;
+    private Cell[][] board;
+    private ArrayList<Piece> lightPieces;
+    private ArrayList<Piece> darkPieces;
 
+    private static int BOARD_SIZE = 8;
 
-	private static int BOARD_SIZE = 8;
+    /**
+     * Creates an instance of Board. Sets up the pieces as in freshly started game.
+     */
+    public Board(){
+        this.lightPieces = new ArrayList<Piece>();
+        this.darkPieces = new ArrayList<Piece>();
+        board = new Cell[Board.BOARD_SIZE][Board.BOARD_SIZE];
+        initialBoardSetup();
 
-	/**
-	 * Creates an instance of Board. Sets up the pieces as in freshly started game.
-	 */
-	public Board(){
-		this.lightPieces = new ArrayList<Piece>();
-		this.darkPieces = new ArrayList<Piece>();
-		board = new Cell[Board.BOARD_SIZE][Board.BOARD_SIZE];
-		initialBoardSetup();
-
-		//winScenarioTest();
+        //winScenarioTest();
         //darkWinScenarioTest();
         //lightWinScenarioTest();
-	}
+    }
 
 
 
@@ -52,33 +54,33 @@ public class Board{
     //	 5  _  D  _  D  _  D  _  D
     //	 6  D  _  D  _  D  _  D  _
     //	 7  _  D  _  D  _  D  _  D
-	public void initialBoardSetup(){
-		for(int i=0; i < Board.BOARD_SIZE; i++) {
-			for (int j = 0; j < Board.BOARD_SIZE; j++) {
-				this.board[i][j] = new Cell(i, j);
-			}
-		}
+    public void initialBoardSetup(){
+        for(int i=0; i < Board.BOARD_SIZE; i++) {
+            for (int j = 0; j < Board.BOARD_SIZE; j++) {
+                this.board[i][j] = new Cell(i, j);
+            }
+        }
 
-		for(int column = 0; column < Board.BOARD_SIZE; column+= 2){
-			this.board[0][column].placePiece(new Piece(Piece.LIGHT));
-			this.board[2][column].placePiece(new Piece(Piece.LIGHT));
-			this.board[6][column].placePiece(new Piece(Piece.DARK));
+        for(int column = 0; column < Board.BOARD_SIZE; column+= 2){
+            this.board[0][column].placePiece(new Piece(Piece.LIGHT));
+            this.board[2][column].placePiece(new Piece(Piece.LIGHT));
+            this.board[6][column].placePiece(new Piece(Piece.DARK));
 
-			lightPieces.add(this.board[0][column].getPiece());
-			lightPieces.add(this.board[2][column].getPiece());
-			darkPieces.add(this.board[6][column].getPiece());
-		}
+            lightPieces.add(this.board[0][column].getPiece());
+            lightPieces.add(this.board[2][column].getPiece());
+            darkPieces.add(this.board[6][column].getPiece());
+        }
 
-		for(int column = 1; column< Board.BOARD_SIZE; column+=2){
-			this.board[1][column].placePiece(new Piece(Piece.LIGHT));
-			this.board[5][column].placePiece(new Piece(Piece.DARK));
-			this.board[7][column].placePiece(new Piece(Piece.DARK));
+        for(int column = 1; column< Board.BOARD_SIZE; column+=2){
+            this.board[1][column].placePiece(new Piece(Piece.LIGHT));
+            this.board[5][column].placePiece(new Piece(Piece.DARK));
+            this.board[7][column].placePiece(new Piece(Piece.DARK));
 
-			lightPieces.add(this.board[1][column].getPiece());
-			darkPieces.add(this.board[5][column].getPiece());
-			darkPieces.add(this.board[7][column].getPiece());
-		}
-	}// end of initialBoardSetup
+            lightPieces.add(this.board[1][column].getPiece());
+            darkPieces.add(this.board[5][column].getPiece());
+            darkPieces.add(this.board[7][column].getPiece());
+        }
+    }// end of initialBoardSetup
 
 
 
@@ -87,26 +89,26 @@ public class Board{
     /*----------------------*/
 
     private void winScenarioTest(){
-		for(int i=0; i < Board.BOARD_SIZE; i++) {
-			for (int j = 0; j < Board.BOARD_SIZE; j++) {
-				this.board[i][j] = new Cell(i, j);
-			}
-		}
+        for(int i=0; i < Board.BOARD_SIZE; i++) {
+            for (int j = 0; j < Board.BOARD_SIZE; j++) {
+                this.board[i][j] = new Cell(i, j);
+            }
+        }
 
-		this.board[1][1].placePiece(new Piece(Piece.LIGHT));
-		this.board[1][3].placePiece(new Piece(Piece.LIGHT));
-		this.board[1][1].getPiece().makeKing();
-		this.board[1][3].getPiece().makeKing();
-		lightPieces.add(this.board[1][1].getPiece());
-		lightPieces.add(this.board[1][3].getPiece());
+        this.board[1][1].placePiece(new Piece(Piece.LIGHT));
+        this.board[1][3].placePiece(new Piece(Piece.LIGHT));
+        this.board[1][1].getPiece().makeKing();
+        this.board[1][3].getPiece().makeKing();
+        lightPieces.add(this.board[1][1].getPiece());
+        lightPieces.add(this.board[1][3].getPiece());
 
-		this.board[2][2].placePiece(new Piece(Piece.DARK));
-		this.board[2][4].placePiece(new Piece(Piece.DARK));
-		this.board[2][2].getPiece().makeKing();
-		this.board[2][4].getPiece().makeKing();
-		darkPieces.add(this.board[2][2].getPiece());
-		darkPieces.add(this.board[2][4].getPiece());
-	}
+        this.board[2][2].placePiece(new Piece(Piece.DARK));
+        this.board[2][4].placePiece(new Piece(Piece.DARK));
+        this.board[2][2].getPiece().makeKing();
+        this.board[2][4].getPiece().makeKing();
+        darkPieces.add(this.board[2][2].getPiece());
+        darkPieces.add(this.board[2][4].getPiece());
+    }
 
     private void darkWinScenarioTest(){
         for(int i=0; i < Board.BOARD_SIZE; i++) {
@@ -162,13 +164,13 @@ public class Board{
      * @return the instance of Cell in the position specified by given x-coordinate and y-coordinate
      * @throws IllegalArgumentException if the given x-coordinate and y-coordinate is out of bound i.e not in range 0 <= x, y <= 7
      */
-	public Cell getCell(int x, int y) throws IllegalArgumentException{
-		if((x<0 || x > 7) || (y<0 || y >7)){
-			throw new IllegalArgumentException("The coordinates provided are outside of the board");
-		}
+    public Cell getCell(int x, int y) throws IllegalArgumentException{
+        if((x<0 || x > 7) || (y<0 || y >7)){
+            throw new IllegalArgumentException("The coordinates provided are outside of the board");
+        }
 
-		return this.board[x][y];
-	}
+        return this.board[x][y];
+    }
 
 
 
@@ -179,15 +181,15 @@ public class Board{
      * @throws IllegalArgumentException if the specified color is not a valid color
      *                                      i.e if the specified color is not one of Piece.LIGHT or Piece.DARK
      */
-	public ArrayList<Piece> getPieces(String givenColor) throws IllegalArgumentException{
-		if(givenColor.equals(Piece.LIGHT)){
-			return this.lightPieces;
-		}
-		else if(givenColor.equals(Piece.DARK)){
-			return this.darkPieces;
-		}
-		throw new IllegalArgumentException("Given color is not the color of the pieces in board. Given color: " + givenColor);
-	}
+    public ArrayList<Piece> getPieces(String givenColor) throws IllegalArgumentException{
+        if(givenColor.equals(Piece.LIGHT)){
+            return this.lightPieces;
+        }
+        else if(givenColor.equals(Piece.DARK)){
+            return this.darkPieces;
+        }
+        throw new IllegalArgumentException("Given color is not the color of the pieces in board. Given color: " + givenColor);
+    }
 
 
 
@@ -245,12 +247,12 @@ public class Board{
      *          the captured Piece was located.
      * @throws IllegalArgumentException if the length of the parameters is not equal to two i.e. if src.length != 2 || dst.length != 2;
      */
-	public ArrayList<Cell> movePiece(int[] src, int[] dst) throws IllegalArgumentException{
-		if(src.length != 2 || dst.length != 2){
-			throw new IllegalArgumentException("The given dimension of the points does not match.");
-		}
-		return movePiece(src[0], src[1], dst[0], dst[1]);
-	}
+    public ArrayList<Cell> movePiece(int[] src, int[] dst) throws IllegalArgumentException{
+        if(src.length != 2 || dst.length != 2){
+            throw new IllegalArgumentException("The given dimension of the points does not match.");
+        }
+        return movePiece(src[0], src[1], dst[0], dst[1]);
+    }
 
     /**
      * Moves the piece from one cell to another cell in the board. This method does not checks if the given move is valid or not.
@@ -266,12 +268,12 @@ public class Board{
      *          the captured Piece was located.
      * @throws IllegalArgumentException if the length of the parameters is not equal to two i.e. if src.length != 2 || dst.length != 2;
      */
-	public ArrayList<Cell> movePiece(int[] move) throws IllegalArgumentException{
-		if(move.length != 4){
-			throw new IllegalArgumentException("The given dimension of the points does not match.");
-		}
-		return movePiece(move[0], move[1], move[2], move[3]);
-	}
+    public ArrayList<Cell> movePiece(int[] move) throws IllegalArgumentException{
+        if(move.length != 4){
+            throw new IllegalArgumentException("The given dimension of the points does not match.");
+        }
+        return movePiece(move[0], move[1], move[2], move[3]);
+    }
 
 
     /**
@@ -656,146 +658,161 @@ public class Board{
 
 
 
-	// Methods for debugging purposes
+    // Methods for debugging purposes
 
-	public String toString(){
-		StringBuilder string = new StringBuilder();
-		string.append("  1 2 3 4 5 6 7 8\n");
-		for(int i=0; i< Board.BOARD_SIZE; i++){
-			string.append((i+1)+ " ");
-			for(int j=0; j <Board.BOARD_SIZE; j++){
-				Cell cell = this.board[i][j];
-				if(cell.getPiece() == null){
-					string.append("_ ");
-				}
-				else if (cell.getPiece().getColor().equals(Piece.LIGHT)){
-					string.append("L ");
-				}
-				else if(cell.getPiece().getColor().equals(Piece.DARK)){
-					string.append("D ");
-				}
-			}
-			string.append("\n");
-		}
-		return string.toString();
+    public String toString(){
+        StringBuilder string = new StringBuilder();
+        string.append("  1 2 3 4 5 6 7 8\n");
+        for(int i=0; i< Board.BOARD_SIZE; i++){
+            string.append((i+1)+ " ");
+            for(int j=0; j <Board.BOARD_SIZE; j++){
+                Cell cell = this.board[i][j];
+                if(cell.getPiece() == null){
+                    string.append("_ ");
+                }
+                else if (cell.getPiece().getColor().equals(Piece.LIGHT)){
+                    string.append("L ");
+                }
+                else if(cell.getPiece().getColor().equals(Piece.DARK)){
+                    string.append("D ");
+                }
+            }
+            string.append("\n");
+        }
+        return string.toString();
 
-	}
+    }
 
-	public String possibleMovesAsString(int x, int y){
-		StringBuilder builder = new StringBuilder();
-		Cell givenCell = this.board[x][y];
-		builder.append(givenCell.toString());
-		ArrayList<Cell> possibleCells = possibleMoves(x, y);
-		builder.append("Possible Next Moves are: \n");
-		for(Cell cell: possibleCells){
-			builder.append(cell.toString());
-		}
+    public String possibleMovesAsString(int x, int y){
+        StringBuilder builder = new StringBuilder();
+        Cell givenCell = this.board[x][y];
+        builder.append(givenCell.toString());
+        ArrayList<Cell> possibleCells = possibleMoves(x, y);
+        builder.append("Possible Next Moves are: \n");
+        for(Cell cell: possibleCells){
+            builder.append(cell.toString());
+        }
 
-		possibleCells = getCaptureMoves(givenCell);
-		builder.append("Capture Moves are: \n");
-		for(Cell cell: possibleCells){
-			builder.append(cell.toString());
-		}
+        possibleCells = getCaptureMoves(givenCell);
+        builder.append("Capture Moves are: \n");
+        for(Cell cell: possibleCells){
+            builder.append(cell.toString());
+        }
 
-		return builder.toString();
-	}
+        return builder.toString();
+    }
 
-	public void LoadGameState(Context context) {
+    public void LoadGameState(Context context) {
 
-		String saveData = "";
+        String saveData = "";
 
-		try {
-			InputStream inputStream = context.openFileInput("savedFile.dat");
+        try {
+            InputStream inputStream = context.openFileInput("savedGame.dat");
 
-			if ( inputStream != null ) {
-				InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-				String receiveString = "";
-				StringBuilder stringBuilder = new StringBuilder();
+            if ( inputStream != null ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
 
-				while ( (receiveString = bufferedReader.readLine()) != null ) {
-					stringBuilder.append(receiveString);
-				}
+                while ( (receiveString = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(receiveString);
+                }
 
-				inputStream.close();
-				saveData = stringBuilder.toString();
-			}
-		}
-		catch (FileNotFoundException e) {
-			System.out.println("File not found: " + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("Can not read file: " + e.getMessage());
-		}
+                inputStream.close();
+                saveData = stringBuilder.toString();
+            }
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Can not read file: " + e.getMessage());
+        }
 
-		// If there is a save file
-		if(saveData != "") {
-			String[] boardRows = saveData.split(";");
+        // If there is a save file
+        if(saveData != "") {
+            String[] boardRows = saveData.split(";");
 
-			for (int i = 0; i < Board.BOARD_SIZE; i++) {
-				for (int j = 0; j < Board.BOARD_SIZE; j++) {
-					this.board[i][j] = new Cell(i, j);
-				}
-			}
+            for (int i = 0; i < Board.BOARD_SIZE; i++) {
+                for (int j = 0; j < Board.BOARD_SIZE; j++) {
+                    this.board[i][j] = new Cell(i, j);
+                }
+            }
 
-			System.out.println("**** BEGIN LOADING ****");
-			for (int i = 0; i < Board.BOARD_SIZE; i++) {
-				String thisRow[] = boardRows[i].split(",");
-				for (int j = 0; j < thisRow.length; j++) {
-					if (thisRow[j].equalsIgnoreCase("L")) {
-						this.board[i][j].placePiece(new Piece(Piece.LIGHT));
-						lightPieces.add(this.board[i][j].getPiece());
-						//place a red piece at i, j
-					} else if (thisRow[j].equalsIgnoreCase("D")) {
-						this.board[i][j].placePiece(new Piece(Piece.DARK));
-						darkPieces.add(this.board[i][j].getPiece());
-						//place a black piece at i, j
-					} else if (thisRow[j].equalsIgnoreCase("_")) {
-						//do nothing
-					}
-				}
-			}
-			System.out.println("**** END LOADING ****");
-		}
-		// If there is no save file
-		else if(saveData == ""){
-			System.out.println("No file to load!");
-		}
-	}
+            System.out.println("**** BEGIN LOADING ****");
+            for (int i = 0; i < Board.BOARD_SIZE; i++) {
+                String thisRow[] = boardRows[i].split(",");
+                for (int j = 0; j < thisRow.length; j++) {
+                    if (thisRow[j].equalsIgnoreCase("L")) {
+                        this.board[i][j].placePiece(new Piece(Piece.LIGHT));
+                        lightPieces.add(this.board[i][j].getPiece());
+                        //place a red piece at i, j
+                    } else if (thisRow[j].equalsIgnoreCase("D")) {
+                        this.board[i][j].placePiece(new Piece(Piece.DARK));
+                        darkPieces.add(this.board[i][j].getPiece());
+                        //place a black piece at i, j
+                    } else if (thisRow[j].equalsIgnoreCase("LK")) {
+                        this.board[i][j].placePiece(new Piece(Piece.LIGHT));
+                        lightPieces.add(this.board[i][j].getPiece());
+                        this.board[i][j].getPiece().makeKing();
+                        //place a red piece at i, j
+                    } else if (thisRow[j].equalsIgnoreCase("DK")) {
+                        this.board[i][j].placePiece(new Piece(Piece.DARK));
+                        darkPieces.add(this.board[i][j].getPiece());
+                        this.board[i][j].getPiece().makeKing();
+                        //place a black piece at i, j
+                    } else if (thisRow[j].equalsIgnoreCase("_")) {
+                        //do nothing
+                    }
+                }
+            }
+            System.out.println("**** END LOADING ****");
+        }
+        // If there is no save file
+        else if(saveData == ""){
+            System.out.println("No file to load!");
+        }
+    }
 
-	public void SaveGameState(Context context) {
-		StringBuilder string = new StringBuilder();
-		String newString = null;
-		for(int i=0; i< Board.BOARD_SIZE; i++){
-			for(int j=0; j <Board.BOARD_SIZE; j++){
-				Cell cell = this.board[i][j];
-				if(cell.getPiece() == null){
-					string.append("_,");
-				}
-				else if (cell.getPiece().getColor().equals(Piece.LIGHT)){
-					string.append("L,");
-				}
-				else if(cell.getPiece().getColor().equals(Piece.DARK)){
-					string.append("D,");
-				}
-			}
-			string.append(";");
-			newString = string.toString().replace(",;", ";");
-		}
+    public void SaveGameState(Context context) {
+        StringBuilder string = new StringBuilder();
+        String newString = null;
+        for (int i = 0; i < Board.BOARD_SIZE; i++) {
+            for (int j = 0; j < Board.BOARD_SIZE; j++) {
+                Cell cell = this.board[i][j];
+                if (cell.getPiece() == null) {
+                    string.append("_,");
+                } else if (cell.getPiece().getColor().equals(Piece.LIGHT)) {
+                    if (cell.getPiece().isKing()) {
+                        string.append("LK,");
+                    } else {
+                        string.append("L,");
+                    }
+                } else if (cell.getPiece().getColor().equals(Piece.DARK)) {
+                    if (cell.getPiece().isKing()) {
+                        string.append("DK,");
+                    } else {
+                        string.append("D,");
+                    }
+                }
+            }
+            string.append(";");
+            newString = string.toString().replace(",;", ";");
+        }
 
-		try {
-			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("savedFile.dat", Context.MODE_PRIVATE));
-			outputStreamWriter.write(newString);
-			outputStreamWriter.close();
-			System.out.println("Saved! Location: " + context.getFilesDir() + "/savedFile.dat");
-		}
-		catch (IOException e) {
-			System.out.println("Error writing to file! " + e.getMessage());
-		}
-	}
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
+            outputStreamWriter.write(newString);
+            outputStreamWriter.close();
+            System.out.println("Saved! Location: " + context.getFilesDir() + "/savedFile.dat");
+        } catch (IOException e) {
+            System.out.println("Error writing to file! " + e.getMessage());
+        }
+    }
 
-	public static void main(String[] args){
-		Board board = new Board();
-		System.out.println(board.toString());
-		System.out.println(board.possibleMovesAsString(5, 3));
-	}// End of main
+    public static void main(String[] args){
+        Board board = new Board();
+        System.out.println(board.toString());
+        System.out.println(board.possibleMovesAsString(5, 3));
+    }// End of main
 }// End of class
