@@ -1,4 +1,0 @@
-1. Repository --> project_repo_4210 DONE
-2. Continuous Integration e.g. Jenkins
-3. Features of Software Systems	
-4. Process

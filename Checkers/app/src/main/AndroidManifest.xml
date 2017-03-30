@@ -23,7 +23,7 @@
         <!-- MainActivity.java -->
         <activity
             android:name=".MainActivity"
-            android:label="Main Menu"
+            android:label="Checkers"
             android:theme="@style/MainMenuTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

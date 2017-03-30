@@ -92,7 +92,8 @@ public class ButtonBoard extends AppCompatActivity {
                     else {
                         showPossibleMoves(moves);
                         srcCell = cellBoard.getCell(xCord, yCord);
-                        updatePiecePressed(srcCell);                       }
+                        updatePiecePressed(srcCell);
+                    }
                 }
 
                 //If the user taps same cell twice then deselect the cell
@@ -133,7 +134,6 @@ public class ButtonBoard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // If orientation i
         setContentView(board);
 
         // If the load message was loaded, we load the game, otherwise a new game is created
@@ -163,7 +163,6 @@ public class ButtonBoard extends AppCompatActivity {
                     index++;
                     buttonBoard[i][j].setTag(i * 10 + j);
                     buttonBoard[i][j].setOnClickListener(listener);
-
                 }
             }
         }
@@ -361,11 +360,30 @@ public class ButtonBoard extends AppCompatActivity {
         ArrayList<Piece> currentPlayerPieces = cellBoard.getPieces(this.currentPlayer.getColor());
         //TODO add the resource for king piece
         int resourceId;
+        // If piece is dark
         if(this.currentPlayer.getColor().equals(Piece.DARK)){
-            resourceId = R.drawable.dark_piece_highlighted;
+            // If piece is king
+//            if( PIECE IS KING){
+//                resourceId = R.drawable.dark_king_highlighted;
+//            }
+            // Else, piece is NOT king
+//            else {
+                resourceId = R.drawable.dark_piece_highlighted;
+//            }
         }
+        // If piece is light
         else{
-            resourceId = R.drawable.light_piece_highlighted;
+
+//            // If piece is light and king
+//            if( PIECE IS KING){
+//                resourceId = R.drawable.light_king_highlighted;
+//            }
+            // Else, piece is NOT king
+//            else {
+                resourceId = R.drawable.light_piece_highlighted;
+//            }
+
+
         }
 
         ArrayList<Cell> moves;
@@ -388,13 +406,6 @@ public class ButtonBoard extends AppCompatActivity {
             buttonBoard[cell.getX()][cell.getY()].setBackgroundResource(R.drawable.possible_moves_image);   // color possible moves square
         }
     }
-
-    /*
-    * Store the possible capture moves of a piece and colors on the cellBoard
-    * @param int xCord - Gets the capture moves of a piece using this x-coordinate
-    * @param int yCord - Gets the capture moves of a piece using this y-coordinate
-    */
-
 
 
     /*
@@ -494,10 +505,8 @@ public class ButtonBoard extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int clickValue) {
                 if (clickValue == 0) {
-                if(clickValue == 0){
                     restartMatch();
                 }
-            }
         }
     });
         builder.show();
@@ -569,7 +578,8 @@ public class ButtonBoard extends AppCompatActivity {
                 File file = getApplicationContext().getFileStreamPath("savedGame.dat");
                 if (file == null || !file.exists()) {
                     cellBoard.SaveGameState(getApplicationContext());
-                } else {
+                }
+                else {
                     saveGameFound();
                 }
                 return true;
