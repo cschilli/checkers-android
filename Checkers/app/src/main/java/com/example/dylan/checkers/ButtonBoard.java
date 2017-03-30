@@ -81,6 +81,7 @@ public class ButtonBoard extends AppCompatActivity {
 
                 // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
                 if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
+                    unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
                     srcCell = cellBoard.getCell(xCord, yCord);
                     moves = cellBoard.possibleMoves(srcCell);
                     // If player has no possible moves AND is not on their second turn, cannot move piece so player must choose new piece
