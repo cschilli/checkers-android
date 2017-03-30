@@ -35,14 +35,13 @@ public class ButtonBoard extends AppCompatActivity {
             R.id.button48, R.id.button50, R.id.button52, R.id.button54,
             R.id.button57, R.id.button59, R.id.button61, R.id.button63};
     private final Button[][] buttonBoard = new Button[8][8];        // stores the Button objects with their indexes
-    Cell possMoves;                                 // stores all of the possible moves for a piece
-    Cell highlightedCell;
     int roundCounter = 0;
     private ArrayList<Cell> moves;
     private ArrayList<Cell> highlightedCells = new ArrayList<>();
     private Player player1;
     private Player player2;
     private Player currentPlayer;
+    private boolean srcCellFixed = false;
 
     // Game cellBoard layout of the black squares by square ID
     // 0-63  --> black button squares, used for indexing      _ -->  red button squares, are not used in indexing
@@ -84,7 +83,8 @@ public class ButtonBoard extends AppCompatActivity {
                     unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
                     srcCell = cellBoard.getCell(xCord, yCord);
                     moves = cellBoard.possibleMoves(srcCell);
-                    // If player has no possible moves AND is not on their second turn, cannot move piece so player must choose new piece
+
+                    //If the user taps the cell with no moves then show the message stating that
                     if (moves.isEmpty()) {
                         Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
                         srcCell = null;
@@ -98,13 +98,12 @@ public class ButtonBoard extends AppCompatActivity {
                 }
 
                 //If the user taps same cell twice then deselect the cell
-                else if(srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord))){
+                else if(srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed){
                     srcCell = null;
                     updatePieces(xCord, yCord); // updates the graphical pieces
                     updateTurnTracker();
                 }
 
-                // If after a player captures a move, they can ONLY move the piece that performed the capture
                 else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
                     dstCell = cellBoard.getCell(xCord, yCord);
                     onSecondClick(srcCell, dstCell);
@@ -215,6 +214,7 @@ public class ButtonBoard extends AppCompatActivity {
     public void updatePieces(int xCord, int yCord) {
 
         // For all of the possible moves colored in on the cellBoard, after a piece moves we want to remove them
+        Cell possMoves;
         for (int i = 0; i < moves.size(); i++) {
             possMoves = moves.get(i);
             buttonBoard[possMoves.getX()][possMoves.getY()].setBackgroundResource(R.drawable.blank_square);   // color possible moves blank
@@ -255,6 +255,7 @@ public class ButtonBoard extends AppCompatActivity {
     public void updatePieces(ArrayList<Cell> changedCells) {
 
         // For all of the possible moves colored in on the cellBoard, after a piece jumps we want to remove them
+        Cell possMoves;
         for (int i = 0; i < moves.size(); i++) {
             possMoves = moves.get(i);
             buttonBoard[possMoves.getX()][possMoves.getY()].setBackgroundResource(R.drawable.blank_square);   // color possible moves blank
@@ -333,6 +334,7 @@ public class ButtonBoard extends AppCompatActivity {
     }
 
     public void unHighlightPieces() {
+        Cell highlightedCell;
         while(!highlightedCells.isEmpty()){
             highlightedCell = highlightedCells.remove(0);
             if (highlightedCell.getPiece().getColor().equals(Piece.LIGHT)) {
@@ -359,39 +361,23 @@ public class ButtonBoard extends AppCompatActivity {
     public void updateTurnTracker() {
         // Get all the pieces of the current player that can move & highlight them
         ArrayList<Piece> currentPlayerPieces = cellBoard.getPieces(this.currentPlayer.getColor());
-        //TODO add the resource for king piece
-        int resourceId;
-        // If piece is dark
-        if(this.currentPlayer.getColor().equals(Piece.DARK)){
-            // If piece is king
-//            if( PIECE IS KING){
-//                resourceId = R.drawable.dark_king_highlighted;
-//            }
-            // Else, piece is NOT king
-//            else {
-                resourceId = R.drawable.dark_piece_highlighted;
-//            }
-        }
-        // If piece is light
-        else{
-
-//            // If piece is light and king
-//            if( PIECE IS KING){
-//                resourceId = R.drawable.light_king_highlighted;
-//            }
-            // Else, piece is NOT king
-//            else {
-                resourceId = R.drawable.light_piece_highlighted;
-//            }
-
-
-        }
-
         ArrayList<Cell> moves;
+
         for(Piece piece: currentPlayerPieces){
             moves = cellBoard.possibleMoves(piece);
             if(!moves.isEmpty()){
-                buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(resourceId);
+                if(piece.getColor().equals(Piece.DARK) && piece.isKing()){
+                    buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.dark_king_highlighted);
+                }
+                else if(piece.getColor().equals(Piece.DARK)){
+                    buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.dark_piece_highlighted);
+                }
+                else if(piece.getColor().equals(Piece.LIGHT) && piece.isKing()){
+                    buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.light_king_highlighted);
+                }
+                else if(piece.getColor().equals(Piece.LIGHT)){
+                    buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.light_piece_highlighted);
+                }
                 highlightedCells.add(piece.getCell());
             }
         }
@@ -428,11 +414,13 @@ public class ButtonBoard extends AppCompatActivity {
             if (moves.isEmpty()) {
                 this.srcCell = null;
                 this.dstCell = null;
+                srcCellFixed = false;
                 changeTurn();
             }
             // Else, we can go forward and let them capture another piece
             else {
                 this.srcCell = this.dstCell;
+                srcCellFixed = true;
                 updatePiecePressed(this.srcCell);
                 showPossibleMoves(moves);
             }
@@ -441,6 +429,7 @@ public class ButtonBoard extends AppCompatActivity {
         else {
             srcCell= null;
             dstCell = null;
+            srcCellFixed = false;
             changeTurn();
         }
     }
