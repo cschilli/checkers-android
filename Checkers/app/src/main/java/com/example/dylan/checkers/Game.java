@@ -29,7 +29,9 @@ public class Game{
 	public Player getCurrentPlayer(){
 		return this.currentPlayer;
 	}
-	//TODO: complete this method
+
+
+
 	public void run(){
 		while(this.gameStatus == GameStatus.RUNNING){
 			displayBoard();
@@ -51,7 +53,6 @@ public class Game{
 
 				int[] srcCell = {givenMove[0], givenMove[1]};;
 				int[] dstCell  = {givenMove[2], givenMove[2]};;
-				//TODO make sure that the next move will have the same srccells
 				while(hopAgain){
 					displayBoard();
 					System.out.println("You just captured opponent piece and have 1 or more capturing moves. Please select one of the capturing move.");
