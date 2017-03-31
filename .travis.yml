@@ -19,7 +19,6 @@ env:
  - ANDROID_BUILD_TOOLS=25.0.2
  - ADB_INSTALL_TIMEOUT=5 # minutes
 
-
 android:
   components:
     # Uncomment the lines below if you want to
