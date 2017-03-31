@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import static com.example.dylan.checkers.R.layout.board;
+import static com.example.dylan.checkers.R.layout.board_black;
 
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game cellBoard
@@ -136,18 +137,45 @@ public class ButtonBoard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(board);
 
+        player1 = new PlayerTUI(Piece.LIGHT);       // init player 1
+        player2 = new PlayerTUI(Piece.DARK);        // init player 2
+
         // If the load message was loaded, we load the game, otherwise a new game is created
+        //TODO: Allow current player in saved game to go
         if (getIntent().getBooleanExtra("LOAD", false)) {
             cellBoard.LoadGameState(getApplicationContext());
+            this.currentPlayer = player1;               // init current player
+            updateTurnTracker();
+        }
+        // If we do not load the game
+        else {
+            final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
+            AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+            builder.setCancelable(false);
+            builder.setTitle("Which player starts first?");
+            builder.setItems(choices, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int clickValue) {
+                    // Light player starts first
+                    if(clickValue == 0) {
+                        currentPlayer = player1;
+                        updateTurnTracker();
+                    }
+                    // Dark player starts first
+                    else if (clickValue == 1) {
+                        currentPlayer = player2;
+                        updateTurnTracker();
+                    }
+                }
+            });
+            builder.show();
         }
 
         this.moves = new ArrayList<>();                  // init moves arraylist
-        player1 = new PlayerTUI(Piece.LIGHT);       // init player 1
-        player2 = new PlayerTUI(Piece.DARK);        // init player 2
-        this.currentPlayer = player1;               // init current player
         fillButtonIndexArray(listener);
         updateBoard(buttonBoard, cellBoard);
-        updateTurnTracker();
+
     }
 
     /*

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:title="Brown (Default)"
+            android:id="@+id/brown_board_button"></item>
+        <item
+            android:title="Black"
+            android:id="@+id/black_board_button"></item>
+
+    </group>
+
+
+
+</menu>

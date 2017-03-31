@@ -805,7 +805,7 @@ public class Board{
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
                 outputStreamWriter.write(newString);
                 outputStreamWriter.close();
-                System.out.println("Saved! Location: " + context.getFilesDir() + "/savedFile.dat");
+                System.out.println("Saved! Location: " + context.getFilesDir() + "/savedGame.dat");
             } catch (IOException e) {
                 System.out.println("Error writing to file! " + e.getMessage());
             }

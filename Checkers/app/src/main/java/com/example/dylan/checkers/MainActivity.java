@@ -35,15 +35,15 @@ public class MainActivity extends AppCompatActivity {
         }); // End Load Saved Game button
 
 
-        //  Game Options button
-        final Button options = (Button) findViewById(R.id.optionsButton);
-        options.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                optionsMenu();
-            }
-        });
-        //End Options button
+//        //  Game Options button
+//        final Button options = (Button) findViewById(R.id.optionsButton);
+//        options.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                optionsMenu();
+//            }
+//        });
+//        //End Options button
 
         //  Settings button
         final Button settings = (Button) findViewById(R.id.settingsButton);
