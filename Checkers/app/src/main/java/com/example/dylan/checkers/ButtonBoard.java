@@ -136,7 +136,6 @@ public class ButtonBoard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(board);
-
         player1 = new PlayerTUI(Piece.LIGHT);       // init player 1
         player2 = new PlayerTUI(Piece.DARK);        // init player 2
 
@@ -145,10 +144,16 @@ public class ButtonBoard extends AppCompatActivity {
         if (getIntent().getBooleanExtra("LOAD", false)) {
             cellBoard.LoadGameState(getApplicationContext());
             this.currentPlayer = player1;               // init current player
+            this.moves = new ArrayList<>();                  // init moves arraylist
+            fillButtonIndexArray(listener);
+            updateBoard(buttonBoard, cellBoard);
             updateTurnTracker();
         }
         // If we do not load the game
         else {
+            moves = new ArrayList<>();                  // init moves arraylist
+            fillButtonIndexArray(listener);
+            updateBoard(buttonBoard, cellBoard);
             final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
             AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
             builder.setCancelable(false);
@@ -159,23 +164,17 @@ public class ButtonBoard extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int clickValue) {
                     // Light player starts first
                     if(clickValue == 0) {
-                        currentPlayer = player1;
-                        updateTurnTracker();
+                        currentPlayer = player1;;
                     }
                     // Dark player starts first
                     else if (clickValue == 1) {
                         currentPlayer = player2;
-                        updateTurnTracker();
                     }
+                    updateTurnTracker();
                 }
             });
             builder.show();
         }
-
-        this.moves = new ArrayList<>();                  // init moves arraylist
-        fillButtonIndexArray(listener);
-        updateBoard(buttonBoard, cellBoard);
-
     }
 
     /*
