@@ -21,8 +21,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import static com.example.dylan.checkers.R.layout.board;
-
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game cellBoard
  *                  - Stores button ids for game cellBoard layout and maps them to the correct cell (x, y)
@@ -139,19 +137,47 @@ public class ButtonBoard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(board);
+        setContentView(R.layout.board);
+
         this.moves = new ArrayList<>();                  // init moves arraylist
         player1 = new Player(Piece.LIGHT);       // init player 1
         player2 = new Player(Piece.DARK);        // init player 2
         this.currentPlayer = player1;
 
+
         // If the load message was loaded, we load the game, otherwise a new game is created
+        //TODO: Allow current player in saved game to go
         if (getIntent().getBooleanExtra("LOAD", false)) {
             loadGame();
         }
+        else{
+            startGame();
+            final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
+            AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+            builder.setCancelable(false);
+            builder.setTitle("Which player starts first?");
+            builder.setItems(choices, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int clickValue) {
+                    // Light player starts first
+                    if(clickValue == 0) {
+                        currentPlayer = player1;
+                    }
+                    // Dark player starts first
+                    else if (clickValue == 1) {
+                        currentPlayer = player2;
+                    }
+                    updateTurnTracker();
+                }
+            });
+            builder.show();
+        }
+    }
+
+    public void startGame(){
         fillButtonIndexArray(listener);
         updateBoard(buttonBoard, cellBoard);
-        updateTurnTracker();
     }
 
     public void loadGame() {

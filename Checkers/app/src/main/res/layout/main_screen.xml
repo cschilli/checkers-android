@@ -33,6 +33,7 @@
             android:textAllCaps="false"
             android:textSize="24sp" />
 
+
         <Button
             android:text="Load Game"
             android:layout_width="270dp"
@@ -44,6 +45,8 @@
             android:layout_below="@+id/playButton"
             android:layout_centerHorizontal="true" />
 
+
+<!--
         <Button
             android:text="Game Options"
             android:layout_width="270dp"
@@ -54,6 +57,7 @@
             android:layout_marginTop="11dp"
             android:layout_below="@+id/loadButton"
             android:layout_centerHorizontal="true" />
+-->
 
         <Button
             android:text="Settings"
@@ -63,9 +67,13 @@
             android:textSize="24sp"
             android:textAllCaps="false"
             android:layout_marginTop="13dp"
-            android:layout_below="@+id/optionsButton"
-            android:layout_alignLeft="@+id/optionsButton"
-            android:layout_alignStart="@+id/optionsButton" />
+            android:layout_below="@+id/loadButton"
+            android:layout_alignLeft="@+id/loadButton"
+            android:layout_alignStart="@+id/loadButton" />
+        <!-- android:layout_below="@+id/optionsButton"
+             android:layout_alignLeft="@+id/optionsButton"
+             android:layout_alignStart="@+id/optionsButton"-->
+
 
     </RelativeLayout>
 
