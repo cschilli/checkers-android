@@ -1,6 +1,7 @@
 package com.example.dylan.checkers;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +14,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import static com.example.dylan.checkers.R.layout.board;
@@ -88,6 +94,7 @@ public class ButtonBoard extends AppCompatActivity {
                     if (moves.isEmpty()) {
                         Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
                         srcCell = null;
+                        updateTurnTracker();
                     }
                     // Else, if player has possible moves THEN we can move piece
                     else {
@@ -98,13 +105,11 @@ public class ButtonBoard extends AppCompatActivity {
                 }
 
                 //If the user taps same cell twice then deselect the cell
-                else if(srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed){
+                else if (srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed) {
                     srcCell = null;
                     updatePieces(xCord, yCord); // updates the graphical pieces
                     updateTurnTracker();
-                }
-
-                else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
+                } else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
                     dstCell = cellBoard.getCell(xCord, yCord);
                     onSecondClick(srcCell, dstCell);
                 }
@@ -135,20 +140,47 @@ public class ButtonBoard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(board);
+        this.moves = new ArrayList<>();                  // init moves arraylist
+        player1 = new Player(Piece.LIGHT);       // init player 1
+        player2 = new Player(Piece.DARK);        // init player 2
+        this.currentPlayer = player1;
 
         // If the load message was loaded, we load the game, otherwise a new game is created
         if (getIntent().getBooleanExtra("LOAD", false)) {
-            cellBoard.LoadGameState(getApplicationContext());
+            loadGame();
         }
-
-        this.moves = new ArrayList<>();                  // init moves arraylist
-        player1 = new PlayerTUI(Piece.LIGHT);       // init player 1
-        player2 = new PlayerTUI(Piece.DARK);        // init player 2
-        this.currentPlayer = player1;               // init current player
         fillButtonIndexArray(listener);
         updateBoard(buttonBoard, cellBoard);
         updateTurnTracker();
     }
+
+    public void loadGame() {
+        try {
+            InputStream inputStream = getApplicationContext().openFileInput("savedGame.dat");
+            if (inputStream != null) {
+                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+                State savedState = (State) objectInputStream.readObject();
+                this.cellBoard = savedState.getBoard();
+                this.currentPlayer = savedState.getPlayer();
+            }
+        } catch (FileNotFoundException e) {
+            Toast.makeText(getApplicationContext(), "No Game Saved!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Error loading the game", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void saveGame() {
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(getApplicationContext().openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
+            objectOutputStream.writeObject(new State(this.cellBoard, this.currentPlayer));
+            objectOutputStream.close();
+            Toast.makeText(getApplicationContext(), "Game Saved", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "Error in saving the game!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     /*
      * Fills the Button indexes array with each button object and asigns index using button tag
@@ -261,23 +293,19 @@ public class ButtonBoard extends AppCompatActivity {
             buttonBoard[possMoves.getX()][possMoves.getY()].setBackgroundResource(R.drawable.blank_square);   // color possible moves blank
         }
 
-        for(Cell cell: changedCells){
-            if(!cell.containsPiece()){
+        for (Cell cell : changedCells) {
+            if (!cell.containsPiece()) {
                 buttonBoard[cell.getX()][cell.getY()].setBackgroundResource(R.drawable.blank_square);
-            }
-            else if(cell.getPiece().getColor().equals(Piece.LIGHT)){
-                if(cell.getPiece().isKing()){
+            } else if (cell.getPiece().getColor().equals(Piece.LIGHT)) {
+                if (cell.getPiece().isKing()) {
                     buttonBoard[cell.getX()][cell.getY()].setBackgroundResource(R.drawable.light_king_piece);
-                }
-                else{
+                } else {
                     buttonBoard[cell.getX()][cell.getY()].setBackgroundResource(R.drawable.light_piece);
                 }
-            }
-            else if(cell.getPiece().getColor().equals(Piece.DARK)){
-                if(cell.getPiece().isKing()){
+            } else if (cell.getPiece().getColor().equals(Piece.DARK)) {
+                if (cell.getPiece().isKing()) {
                     buttonBoard[cell.getX()][cell.getY()].setBackgroundResource(R.drawable.dark_king_piece);
-                }
-                else{
+                } else {
                     buttonBoard[cell.getX()][cell.getY()].setBackgroundResource(R.drawable.dark_piece);
                 }
             }
@@ -317,9 +345,9 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
-     /*
-     * Switches currentPlayer to the other player
-     */
+    /*
+    * Switches currentPlayer to the other player
+    */
     public void changeTurn() {
         // If both players have pieces, we can switch turns
         if (!cellBoard.getPieces(Piece.LIGHT).isEmpty() && !cellBoard.getPieces(Piece.DARK).isEmpty()) {
@@ -335,20 +363,18 @@ public class ButtonBoard extends AppCompatActivity {
 
     public void unHighlightPieces() {
         Cell highlightedCell;
-        while(!highlightedCells.isEmpty()){
+        while (!highlightedCells.isEmpty()) {
             highlightedCell = highlightedCells.remove(0);
             if (highlightedCell.getPiece().getColor().equals(Piece.LIGHT)) {
-                if(highlightedCell.getPiece().isKing()){
+                if (highlightedCell.getPiece().isKing()) {
                     buttonBoard[highlightedCell.getX()][highlightedCell.getY()].setBackgroundResource(R.drawable.light_king_piece);
-                }
-                else {
+                } else {
                     buttonBoard[highlightedCell.getX()][highlightedCell.getY()].setBackgroundResource(R.drawable.light_piece);
                 }
-            } else{
-                if(highlightedCell.getPiece().isKing()){
+            } else {
+                if (highlightedCell.getPiece().isKing()) {
                     buttonBoard[highlightedCell.getX()][highlightedCell.getY()].setBackgroundResource(R.drawable.dark_king_piece);
-                }
-                else{
+                } else {
                     buttonBoard[highlightedCell.getX()][highlightedCell.getY()].setBackgroundResource(R.drawable.dark_piece);
                 }
             }
@@ -363,19 +389,16 @@ public class ButtonBoard extends AppCompatActivity {
         ArrayList<Piece> currentPlayerPieces = cellBoard.getPieces(this.currentPlayer.getColor());
         ArrayList<Cell> moves;
 
-        for(Piece piece: currentPlayerPieces){
+        for (Piece piece : currentPlayerPieces) {
             moves = cellBoard.possibleMoves(piece);
-            if(!moves.isEmpty()){
-                if(piece.getColor().equals(Piece.DARK) && piece.isKing()){
+            if (!moves.isEmpty()) {
+                if (piece.getColor().equals(Piece.DARK) && piece.isKing()) {
                     buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.dark_king_highlighted);
-                }
-                else if(piece.getColor().equals(Piece.DARK)){
+                } else if (piece.getColor().equals(Piece.DARK)) {
                     buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.dark_piece_highlighted);
-                }
-                else if(piece.getColor().equals(Piece.LIGHT) && piece.isKing()){
+                } else if (piece.getColor().equals(Piece.LIGHT) && piece.isKing()) {
                     buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.light_king_highlighted);
-                }
-                else if(piece.getColor().equals(Piece.LIGHT)){
+                } else if (piece.getColor().equals(Piece.LIGHT)) {
                     buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.light_piece_highlighted);
                 }
                 highlightedCells.add(piece.getCell());
@@ -389,7 +412,7 @@ public class ButtonBoard extends AppCompatActivity {
      * @param int yCord - Gets the possible moves of a piece using this y-coordinate
      */
     public void showPossibleMoves(ArrayList<Cell> moves) {
-        for (Cell cell: moves) {
+        for (Cell cell : moves) {
             buttonBoard[cell.getX()][cell.getY()].setBackgroundResource(R.drawable.possible_moves_image);   // color possible moves square
         }
     }
@@ -427,7 +450,7 @@ public class ButtonBoard extends AppCompatActivity {
         }
         // If player does not have another turn, change turns
         else {
-            srcCell= null;
+            srcCell = null;
             dstCell = null;
             srcCellFixed = false;
             changeTurn();
@@ -437,7 +460,7 @@ public class ButtonBoard extends AppCompatActivity {
     /*
      * The dialog menu that pops up after a game has ended
      */
-    public void gameOverDialog(){
+    public void gameOverDialog() {
         updateTurnTracker();
         final CharSequence choices[] = new CharSequence[]{"Play Again", "Return to Main Menu"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
@@ -471,12 +494,12 @@ public class ButtonBoard extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int clickValue) {
 
-                if(clickValue == 0) {
+                if (clickValue == 0) {
                     File file = getApplicationContext().getFileStreamPath("savedGame.dat");
                     if (file != null || file.exists()) {
                         file.delete();
                     }
-                    cellBoard.SaveGameState(getApplicationContext());
+                    saveGame();
                     Toast.makeText(getApplicationContext(), "Match Saved!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -485,8 +508,8 @@ public class ButtonBoard extends AppCompatActivity {
     }
 
 
-    public void restartMatchDialog(){
-        final CharSequence choices[] = new CharSequence[] {"Restart", "Cancel"};
+    public void restartMatchDialog() {
+        final CharSequence choices[] = new CharSequence[]{"Restart", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
         builder.setCancelable(true);
         builder.setTitle("Are you sure you want to restart?");
@@ -497,16 +520,16 @@ public class ButtonBoard extends AppCompatActivity {
                 if (clickValue == 0) {
                     restartMatch();
                 }
-        }
-    });
+            }
+        });
         builder.show();
     }
 
     /*
      * Restarts the match
      */
-    public void quitMatchDialog(){
-        final CharSequence choices[] = new CharSequence[] {"Quit", "Cancel"};
+    public void quitMatchDialog() {
+        final CharSequence choices[] = new CharSequence[]{"Quit", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
         builder.setCancelable(true);
         builder.setTitle("Are you sure you want to quit?");
@@ -514,7 +537,7 @@ public class ButtonBoard extends AppCompatActivity {
 
             @Override
             public void onClick(DialogInterface dialog, int clickValue) {
-                if(clickValue == 0){
+                if (clickValue == 0) {
                     quitMatch();
                 }
             }
@@ -523,11 +546,10 @@ public class ButtonBoard extends AppCompatActivity {
     }
 
 
-
     /*
      * Restarts the match
      */
-    public void restartMatch(){
+    public void restartMatch() {
         Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_SHORT).show();
         Intent restartMatch = new Intent(ButtonBoard.this, ButtonBoard.class);
         startActivity(restartMatch);
@@ -567,9 +589,8 @@ public class ButtonBoard extends AppCompatActivity {
             case R.id.saveGame:
                 File file = getApplicationContext().getFileStreamPath("savedGame.dat");
                 if (file == null || !file.exists()) {
-                    cellBoard.SaveGameState(getApplicationContext());
-                }
-                else {
+                    saveGame();
+                } else {
                     saveGameFound();
                 }
                 return true;

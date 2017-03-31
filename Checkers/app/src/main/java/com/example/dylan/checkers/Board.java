@@ -1,20 +1,13 @@
 package com.example.dylan.checkers;
 
-import android.content.Context;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * A class representing a Board in Checker.
  */
 
-public class Board{
+public class Board implements Serializable{
 
     private Cell[][] board;
     private ArrayList<Piece> lightPieces;
@@ -701,115 +694,6 @@ public class Board{
 		return builder.toString();
 	}
 
-
-
-    public void LoadGameState(Context context) {
-
-        String saveData = "";
-
-        try {
-            InputStream inputStream = context.openFileInput("savedGame.dat");
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                saveData = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("Can not read file: " + e.getMessage());
-        }
-
-        // If there is a save file
-        if(saveData != "") {
-            String[] boardRows = saveData.split(";");
-
-            for (int i = 0; i < Board.BOARD_SIZE; i++) {
-                for (int j = 0; j < Board.BOARD_SIZE; j++) {
-                    this.board[i][j] = new Cell(i, j);
-                }
-            }
-
-            System.out.println("**** BEGIN LOADING ****");
-            for (int i = 0; i < Board.BOARD_SIZE; i++) {
-                String thisRow[] = boardRows[i].split(",");
-                for (int j = 0; j < thisRow.length; j++) {
-                    if (thisRow[j].equalsIgnoreCase("L")) {
-                        this.board[i][j].placePiece(new Piece(Piece.LIGHT));
-                        lightPieces.add(this.board[i][j].getPiece());
-                        //place a red piece at i, j
-                    } else if (thisRow[j].equalsIgnoreCase("D")) {
-                        this.board[i][j].placePiece(new Piece(Piece.DARK));
-                        darkPieces.add(this.board[i][j].getPiece());
-                        //place a black piece at i, j
-                    } else if (thisRow[j].equalsIgnoreCase("LK")) {
-                        this.board[i][j].placePiece(new Piece(Piece.LIGHT));
-                        lightPieces.add(this.board[i][j].getPiece());
-                        this.board[i][j].getPiece().makeKing();
-                        //place a red piece at i, j
-                    } else if (thisRow[j].equalsIgnoreCase("DK")) {
-                        this.board[i][j].placePiece(new Piece(Piece.DARK));
-                        darkPieces.add(this.board[i][j].getPiece());
-                        this.board[i][j].getPiece().makeKing();
-                        //place a black piece at i, j
-                    } else if (thisRow[j].equalsIgnoreCase("_")) {
-						//do nothing
-					}
-				}
-			}
-			System.out.println("**** END LOADING ****");
-		}
-		// If there is no save file
-		else if(saveData == ""){
-			System.out.println("No file to load!");
-		}
-	}
-
-	public void SaveGameState(Context context) {
-            StringBuilder string = new StringBuilder();
-            String newString = null;
-            for (int i = 0; i < Board.BOARD_SIZE; i++) {
-                for (int j = 0; j < Board.BOARD_SIZE; j++) {
-                    Cell cell = this.board[i][j];
-                    if (cell.getPiece() == null) {
-                        string.append("_,");
-                    } else if (cell.getPiece().getColor().equals(Piece.LIGHT)) {
-                        if (cell.getPiece().isKing()) {
-                            string.append("LK,");
-                        } else {
-                            string.append("L,");
-                        }
-                    } else if (cell.getPiece().getColor().equals(Piece.DARK)) {
-                        if (cell.getPiece().isKing()) {
-                            string.append("DK,");
-                        } else {
-                            string.append("D,");
-                        }
-                    }
-                }
-                string.append(";");
-                newString = string.toString().replace(",;", ";");
-            }
-
-            try {
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
-                outputStreamWriter.write(newString);
-                outputStreamWriter.close();
-                System.out.println("Saved! Location: " + context.getFilesDir() + "/savedFile.dat");
-            } catch (IOException e) {
-                System.out.println("Error writing to file! " + e.getMessage());
-            }
-	}
 
 	public static void main(String[] args){
 		Board board = new Board();

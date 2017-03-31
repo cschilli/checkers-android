@@ -1,7 +1,9 @@
 
 package com.example.dylan.checkers;
 
-public abstract class Player{
+import java.io.Serializable;
+
+public  class Player implements Serializable{
 	private String color;
 
 
@@ -24,17 +26,17 @@ public abstract class Player{
 	}
 
 
-	//TODO: make this more suitable as number of pieces might not be used in the model.
-	public int getNumOfPieces(Board givenBoard){
-		return givenBoard.getPieces(this.color).size();
-	}
-
-
-	public abstract int[] getMove(Board givenState);
-
-	public abstract int[] getMoveSrcCell(Board givenState);
-
-	public abstract int[] getMoveDstCell(Board givenState);
+//	//TODO: make this more suitable as number of pieces might not be used in the model.
+//	public int getNumOfPieces(Board givenBoard){
+//		return givenBoard.getPieces(this.color).size();
+//	}
+//
+//
+//	public abstract int[] getMove(Board givenState);
+//
+//	public abstract int[] getMoveSrcCell(Board givenState);
+//
+//	public abstract int[] getMoveDstCell(Board givenState);
 
 
 

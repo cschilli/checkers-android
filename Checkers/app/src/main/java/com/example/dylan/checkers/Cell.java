@@ -1,6 +1,8 @@
 package com.example.dylan.checkers;
 
-public class Cell{
+import java.io.Serializable;
+
+public class Cell implements Serializable{
 
 
 	private int x;

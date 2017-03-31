@@ -1,12 +1,14 @@
 
 package com.example.dylan.checkers;
 
+import java.io.Serializable;
+
 /**
  * Class representing a piece in Checker. A piece can have one of the two colors: Light (given by Piece.LIGHT) and Dark (given by Piece.DARK).
  * A piece can become king if it reaches the opposite end.
  */
 
-public class Piece{
+public class Piece implements Serializable{
 
 	private String color;
 	private boolean isKing;

@@ -1,8 +1,9 @@
 package com.example.dylan.checkers;
 
+import java.io.Serializable;
 import java.util.Scanner;
 
-public class PlayerTUI extends Player{
+public class PlayerTUI extends Player implements Serializable{
 	private Scanner input;
 
 	public PlayerTUI(String color){
@@ -11,7 +12,7 @@ public class PlayerTUI extends Player{
 	}
 
 
-	@Override
+
 	public int[] getMove(Board givenState){
 		System.out.println(super.getColor() + "'s turn. ");
 		int[] srcCell = getMoveSrcCell(givenState);
@@ -22,7 +23,7 @@ public class PlayerTUI extends Player{
 		return move;
 	}
 
-	@Override
+
 	public int[] getMoveSrcCell(Board givenState){
 		String srcCellString = "";
 		while(srcCellString.length() != 2){
