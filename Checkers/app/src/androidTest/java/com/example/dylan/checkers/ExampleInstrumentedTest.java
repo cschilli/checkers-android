@@ -1,16 +1,33 @@
 package com.example.dylan.checkers;
 
-
+import android.widget.TextView;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.filters.LargeTest;
-import
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
+
+import android.content.Intent;
+import android.support.test.rule.ActivityTestRule;
+import android.test.ActivityInstrumentationTestCase2;
+
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+
+
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -36,6 +53,6 @@ public class ExampleInstrumentedTest {
     @Test
     public void sayHello() {
         onView(withText("Say hello!")).perform(click());
-        onView(withId(R.id.textView)).check(matches(withText("Hello, World!")));
+        onView(withId(R.id.textView2)).check(matches(withText("Hello, World!")));
     }
 }
