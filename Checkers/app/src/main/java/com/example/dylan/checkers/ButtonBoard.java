@@ -143,17 +143,13 @@ public class ButtonBoard extends AppCompatActivity {
         //TODO: Allow current player in saved game to go
         if (getIntent().getBooleanExtra("LOAD", false)) {
             cellBoard.LoadGameState(getApplicationContext());
-            this.currentPlayer = player1;               // init current player
-            this.moves = new ArrayList<>();                  // init moves arraylist
-            fillButtonIndexArray(listener);
-            updateBoard(buttonBoard, cellBoard);
+            this.currentPlayer = player1;
+            startGame();
             updateTurnTracker();
         }
         // If we do not load the game
         else {
-            moves = new ArrayList<>();                  // init moves arraylist
-            fillButtonIndexArray(listener);
-            updateBoard(buttonBoard, cellBoard);
+            startGame();
             final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
             AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
             builder.setCancelable(false);
@@ -164,7 +160,7 @@ public class ButtonBoard extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int clickValue) {
                     // Light player starts first
                     if(clickValue == 0) {
-                        currentPlayer = player1;;
+                        currentPlayer = player1;
                     }
                     // Dark player starts first
                     else if (clickValue == 1) {
@@ -177,6 +173,11 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
+    public void startGame(){
+        this.moves = new ArrayList<>();                  // init moves arraylist
+        fillButtonIndexArray(listener);
+        updateBoard(buttonBoard, cellBoard);
+    }
     /*
      * Fills the Button indexes array with each button object and asigns index using button tag
      * @param View.OnClickListener listener
