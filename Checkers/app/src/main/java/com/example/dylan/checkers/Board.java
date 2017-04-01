@@ -8,13 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * A class representing a Board in Checker.
  */
 
-public class Board{
+public class Board implements Serializable{
 
     private Cell[][] board;
     private ArrayList<Piece> lightPieces;

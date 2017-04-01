@@ -9,14 +9,14 @@ public class Game{
 
 	private GameStatus gameStatus;
 	private Board board;
-	private Player player1;
-	private Player player2;
-	private Player currentPlayer;
+	private PlayerTUI player1;
+	private PlayerTUI player2;
+	private PlayerTUI currentPlayer;
 
 
 
 
-	public Game(Player player1, Player player2){
+	public Game(PlayerTUI player1, PlayerTUI player2){
 		this.board = new Board();
 		this.player1 = player1;
 		this.player2 = player2;
