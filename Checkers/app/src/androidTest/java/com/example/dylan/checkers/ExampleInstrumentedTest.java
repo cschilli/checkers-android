@@ -53,10 +53,5 @@ public class ExampleInstrumentedTest {
         assertEquals("com.example.dylan.checkers", appContext.getPackageName());
     }
 
-    /*@Test
-    public void sayHello() {
-        onView(withText("Say hello!")).perform(click());
-        onView(withId(R.id.textView2)).check(matches(withText("Hello, World!")));
-    }*/
 }
 
