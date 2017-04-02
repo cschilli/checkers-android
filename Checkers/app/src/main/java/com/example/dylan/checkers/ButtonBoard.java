@@ -31,15 +31,8 @@ import java.util.ArrayList;
 public class ButtonBoard extends AppCompatActivity {
 
     // Add the buttons into an array by their specific id in integer form
-    private final int[] buttons_id = {R.id.button0, R.id.button2, R.id.button4, R.id.button6,
-            R.id.button9, R.id.button11, R.id.button13, R.id.button15,
-            R.id.button16, R.id.button18, R.id.button20, R.id.button22,
-            R.id.button25, R.id.button27, R.id.button29, R.id.button31,
-            R.id.button32, R.id.button34, R.id.button36, R.id.button38,
-            R.id.button41, R.id.button43, R.id.button45, R.id.button47,
-            R.id.button48, R.id.button50, R.id.button52, R.id.button54,
-            R.id.button57, R.id.button59, R.id.button61, R.id.button63};
-    private final Button[][] buttonBoard = new Button[8][8];        // stores the Button objects with their indexes
+    private int[] buttons_id;
+    private Button[][] buttonBoard;        // stores the Button objects with their indexes
     int roundCounter = 0;
     private ArrayList<Cell> moves;
     private ArrayList<Cell> highlightedCells = new ArrayList<>();
@@ -139,6 +132,8 @@ public class ButtonBoard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.board);
+        buttons_id = getButtonArray();
+        buttonBoard = new Button[8][8];
         this.moves = new ArrayList<>();                  // init moves arraylist
         player1 = new Player(Piece.LIGHT);       // init player 1
         player2 = new Player(Piece.DARK);        // init player 2
@@ -147,6 +142,7 @@ public class ButtonBoard extends AppCompatActivity {
         // If the load message was loaded, we load the game, otherwise a new game is created
         if (getIntent().getBooleanExtra("LOAD", false)) {
             loadGame();
+            updateTurnTracker();
         }
         else{
             final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
@@ -158,19 +154,31 @@ public class ButtonBoard extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int clickValue) {
                     // Light player starts first
                     if(clickValue == 0) {
-                        currentPlayer = player1;
+                        ButtonBoard.this.currentPlayer = player1;
                     }
                     // Dark player starts first
                     else if (clickValue == 1) {
-                        currentPlayer = player2;
+                        ButtonBoard.this.currentPlayer = player2;
                     }
+                    updateTurnTracker();
                 }
             });
             builder.show();
         }
         fillButtonIndexArray(listener);
         updateBoard(buttonBoard, cellBoard);
-        updateTurnTracker();
+    }
+
+    public int[] getButtonArray(){
+        int[] buttons_id = {R.id.button0, R.id.button2, R.id.button4, R.id.button6,
+                R.id.button9, R.id.button11, R.id.button13, R.id.button15,
+                R.id.button16, R.id.button18, R.id.button20, R.id.button22,
+                R.id.button25, R.id.button27, R.id.button29, R.id.button31,
+                R.id.button32, R.id.button34, R.id.button36, R.id.button38,
+                R.id.button41, R.id.button43, R.id.button45, R.id.button47,
+                R.id.button48, R.id.button50, R.id.button52, R.id.button54,
+                R.id.button57, R.id.button59, R.id.button61, R.id.button63};
+        return buttons_id;
     }
 
     public void loadGame() {
