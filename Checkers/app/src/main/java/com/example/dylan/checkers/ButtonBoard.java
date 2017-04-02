@@ -134,14 +134,14 @@ public class ButtonBoard extends AppCompatActivity {
         setContentView(R.layout.board);
         buttons_id = getButtonArray();
         buttonBoard = new Button[8][8];
+        fillButtonBoard(listener);
+        updateBoard(buttonBoard, cellBoard);
         this.moves = new ArrayList<>();                  // init moves arraylist
-//        player1 = new Player(Piece.LIGHT);       // init player 1
-//        player2 = new Player(Piece.DARK);        // init player 2
-//        this.currentPlayer = player1;
 
         // If the load message was loaded, we load the game, otherwise a new game is created
         if (getIntent().getBooleanExtra("LOAD", false)) {
             loadGame();
+            updateBoard(buttonBoard, cellBoard);
             updateTurnTracker();
         }
         else{
@@ -169,8 +169,7 @@ public class ButtonBoard extends AppCompatActivity {
             });
             builder.show();
         }
-        fillButtonIndexArray(listener);
-        updateBoard(buttonBoard, cellBoard);
+
     }
 
     public int[] getButtonArray(){
@@ -192,7 +191,9 @@ public class ButtonBoard extends AppCompatActivity {
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
                 State savedState = (State) objectInputStream.readObject();
                 this.cellBoard = savedState.getBoard();
-                this.currentPlayer = savedState.getPlayer();
+                this.player1 = savedState.getPlayer1();
+                this.player2 = savedState.getPlayer2();
+                this.currentPlayer = savedState.getCurrentPlayer();
             }
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), "No Game Saved!", Toast.LENGTH_SHORT).show();
@@ -204,7 +205,7 @@ public class ButtonBoard extends AppCompatActivity {
     public void saveGame() {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(getApplicationContext().openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
-            objectOutputStream.writeObject(new State(this.cellBoard, this.currentPlayer));
+            objectOutputStream.writeObject(new State(this.cellBoard, this.player1, this.player2, this.currentPlayer));
             objectOutputStream.close();
             Toast.makeText(getApplicationContext(), "Game Saved", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
@@ -217,7 +218,7 @@ public class ButtonBoard extends AppCompatActivity {
      * Fills the Button indexes array with each button object and asigns index using button tag
      * @param View.OnClickListener listener
      */
-    public void fillButtonIndexArray(View.OnClickListener listener) {
+    public void fillButtonBoard(View.OnClickListener listener) {
         int index = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -416,23 +417,25 @@ public class ButtonBoard extends AppCompatActivity {
      * Updates the player turn tracker
      */
     public void updateTurnTracker() {
-        // Get all the pieces of the current player that can move & highlight them
-        ArrayList<Piece> currentPlayerPieces = cellBoard.getPieces(this.currentPlayer.getColor());
-        ArrayList<Cell> moves;
+        if(this.currentPlayer != null) {
+            // Get all the pieces of the current player that can move & highlight them
+            ArrayList<Piece> currentPlayerPieces = cellBoard.getPieces(this.currentPlayer.getColor());
+            ArrayList<Cell> moves;
 
-        for (Piece piece : currentPlayerPieces) {
-            moves = cellBoard.possibleMoves(piece);
-            if (!moves.isEmpty()) {
-                if (piece.getColor().equals(Piece.DARK) && piece.isKing()) {
-                    buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.dark_king_highlighted);
-                } else if (piece.getColor().equals(Piece.DARK)) {
-                    buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.dark_piece_highlighted);
-                } else if (piece.getColor().equals(Piece.LIGHT) && piece.isKing()) {
-                    buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.light_king_highlighted);
-                } else if (piece.getColor().equals(Piece.LIGHT)) {
-                    buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.light_piece_highlighted);
+            for (Piece piece : currentPlayerPieces) {
+                moves = cellBoard.possibleMoves(piece);
+                if (!moves.isEmpty()) {
+                    if (piece.getColor().equals(Piece.DARK) && piece.isKing()) {
+                        buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.dark_king_highlighted);
+                    } else if (piece.getColor().equals(Piece.DARK)) {
+                        buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.dark_piece_highlighted);
+                    } else if (piece.getColor().equals(Piece.LIGHT) && piece.isKing()) {
+                        buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.light_king_highlighted);
+                    } else if (piece.getColor().equals(Piece.LIGHT)) {
+                        buttonBoard[piece.getCell().getX()][piece.getCell().getY()].setBackgroundResource(R.drawable.light_piece_highlighted);
+                    }
+                    highlightedCells.add(piece.getCell());
                 }
-                highlightedCells.add(piece.getCell());
             }
         }
     }
