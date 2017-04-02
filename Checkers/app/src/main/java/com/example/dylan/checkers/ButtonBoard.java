@@ -135,9 +135,9 @@ public class ButtonBoard extends AppCompatActivity {
         buttons_id = getButtonArray();
         buttonBoard = new Button[8][8];
         this.moves = new ArrayList<>();                  // init moves arraylist
-        player1 = new Player(Piece.LIGHT);       // init player 1
-        player2 = new Player(Piece.DARK);        // init player 2
-        this.currentPlayer = player1;
+//        player1 = new Player(Piece.LIGHT);       // init player 1
+//        player2 = new Player(Piece.DARK);        // init player 2
+//        this.currentPlayer = player1;
 
         // If the load message was loaded, we load the game, otherwise a new game is created
         if (getIntent().getBooleanExtra("LOAD", false)) {
@@ -148,17 +148,21 @@ public class ButtonBoard extends AppCompatActivity {
             final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
             AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
             builder.setCancelable(false);
-            builder.setTitle("Which player starts first?");
+            builder.setTitle("Please select the color for Player1");
             builder.setItems(choices, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int clickValue) {
                     // Light player starts first
                     if(clickValue == 0) {
-                        ButtonBoard.this.currentPlayer = player1;
+                        ButtonBoard.this.player1 = new Player(Piece.LIGHT);
+                        ButtonBoard.this.player2 = new Player(Piece.DARK);
+                        ButtonBoard.this.currentPlayer = ButtonBoard.this.player2;
                     }
                     // Dark player starts first
                     else if (clickValue == 1) {
-                        ButtonBoard.this.currentPlayer = player2;
+                        ButtonBoard.this.player1 = new Player(Piece.DARK);
+                        ButtonBoard.this.player2 = new Player(Piece.LIGHT);
+                        ButtonBoard.this.currentPlayer = ButtonBoard.this.player1;
                     }
                     updateTurnTracker();
                 }
