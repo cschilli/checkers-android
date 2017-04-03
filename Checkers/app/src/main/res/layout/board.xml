@@ -10,8 +10,8 @@
 
 
     <ImageView
-        android:layout_width="361dp"
-        android:layout_height="363dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         app:srcCompat="@drawable/checkers_board_background"
         android:id="@+id/imageView10" />
@@ -20,8 +20,8 @@
 
     <LinearLayout
         android:id="@+id/parent_layout"
-        android:layout_width="348dp"
-        android:layout_height="350dp"
+        android:layout_width="369dp"
+        android:layout_height="369dp"
         android:orientation="vertical"
         android:layout_gravity="center">
 

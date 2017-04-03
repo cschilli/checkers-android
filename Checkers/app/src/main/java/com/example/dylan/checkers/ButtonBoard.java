@@ -145,26 +145,6 @@ public class ButtonBoard extends AppCompatActivity {
             updateTurnTracker();
         }
         else{
-
-            final CharSequence choices2[] = new CharSequence[]{"Player 1", "Player 2"};
-            final AlertDialog.Builder builder2 = new AlertDialog.Builder(ButtonBoard.this);
-            builder2.setCancelable(false);
-            builder2.setTitle("Which player starts first?");
-            builder2.setItems(choices2, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int clickValue) {
-                    // Light player starts first
-                    if(clickValue == 0) {
-                        ButtonBoard.this.currentPlayer = ButtonBoard.this.player1;
-                    }
-                    // Dark player starts first
-                    else if (clickValue == 1) {
-                        ButtonBoard.this.currentPlayer = ButtonBoard.this.player2;
-                    }
-                    updateTurnTracker();
-                }
-            });
-
             final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
             AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
             builder.setCancelable(false);
@@ -176,14 +156,15 @@ public class ButtonBoard extends AppCompatActivity {
                     if(clickValue == 0) {
                         ButtonBoard.this.player1 = new Player(Piece.LIGHT);
                         ButtonBoard.this.player2 = new Player(Piece.DARK);
-                        builder2.show();
+                        ButtonBoard.this.currentPlayer = ButtonBoard.this.player2;
                     }
                     // Dark player starts first
                     else if (clickValue == 1) {
                         ButtonBoard.this.player1 = new Player(Piece.DARK);
                         ButtonBoard.this.player2 = new Player(Piece.LIGHT);
-                        builder2.show();
+                        ButtonBoard.this.currentPlayer = ButtonBoard.this.player1;
                     }
+                    updateTurnTracker();
                 }
             });
             builder.show();
