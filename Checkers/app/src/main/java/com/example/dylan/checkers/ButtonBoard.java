@@ -172,6 +172,8 @@ public class ButtonBoard extends AppCompatActivity {
 
     }
 
+
+
     public int[] getButtonArray(){
         int[] buttons_id = {R.id.button0, R.id.button2, R.id.button4, R.id.button6,
                 R.id.button9, R.id.button11, R.id.button13, R.id.button15,

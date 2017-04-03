@@ -15,8 +15,9 @@
     <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/linearLayout"
+        android:layout_centerInParent="true"
         android:layout_marginTop="61dp"
         android:layout_below="@+id/imageView"
         android:layout_alignParentLeft="true"
@@ -29,6 +30,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:layout_weight="2"
+            android:adjustViewBounds="true"
+            android:gravity="center"
+            android:scaleType="fitXY"
             android:text="Play Game"
             android:textAllCaps="false"
             android:textSize="24sp" />
@@ -43,7 +48,9 @@
             android:textAllCaps="false"
             android:layout_marginTop="11dp"
             android:layout_below="@+id/playButton"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"/>
 
 
 <!--
@@ -69,7 +76,9 @@
             android:layout_marginTop="13dp"
             android:layout_below="@+id/loadButton"
             android:layout_alignLeft="@+id/loadButton"
-            android:layout_alignStart="@+id/loadButton" />
+            android:layout_alignStart="@+id/loadButton"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"/>
         <!-- android:layout_below="@+id/optionsButton"
              android:layout_alignLeft="@+id/optionsButton"
              android:layout_alignStart="@+id/optionsButton"-->
@@ -79,11 +88,13 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/checkers_logo_menu"
         android:layout_marginTop="13dp"
         android:layout_alignParentTop="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
