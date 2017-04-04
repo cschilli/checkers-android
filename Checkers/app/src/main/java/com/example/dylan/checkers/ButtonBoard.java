@@ -4,14 +4,23 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.view.Display;
+import android.view.WindowManager;
+import android.util.DisplayMetrics;
+import android.view.ViewGroup.LayoutParams;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +29,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+
+import static java.security.AccessController.getContext;
 
 
 /*
@@ -125,13 +136,110 @@ public class ButtonBoard extends AppCompatActivity {
     };
 
     /*
-    * Creates the activity for the game cellBoard, then sets up game piece images on game cellBoard
-    * @param Bundle savedInstanceState
-    */
+     * Resizes the gameboard and pieces according to the screen size (Portrait)
+     * Scales the width & height according to the required dimensions
+     * Testing & working with:
+     *      - Galaxy S3 1280x720 (phone)
+     *      - Nexus 5  1080x1920 (phone)
+     *      - Nexus 9  2048x1536 (tablet)
+     *      - Pixel XL 1440x2560 (phone)
+     */
+    public void resizeBoardToScreenSizePortrait(){
+        // Gets the width of the current screen
+        WindowManager wm = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        double width = metrics.widthPixels;
+
+        // Sets the width & height for the game board image
+        ImageView imageView = (ImageView) findViewById(R.id.boardImageView);
+        LayoutParams imageParams = imageView.getLayoutParams();
+        imageParams.width =  (int) (width * 1.0028);
+        imageParams.height = (int) (width * 1.0085);
+        imageView.setLayoutParams(imageParams);
+
+        // Sets the width & height for the grid of game buttons in the layout
+        LinearLayout buttonLayout = (LinearLayout) findViewById(R.id.parent_layout);
+        LayoutParams buttonLayoutParams = buttonLayout.getLayoutParams();     // Gets the layout params that will allow you to resize the layout
+        buttonLayoutParams.width =  (int) (width * 0.967);
+        buttonLayoutParams.height = (int) (width * 0.9723);
+        buttonLayout.setLayoutParams(buttonLayoutParams);
+    }
+
+    /*
+     * Resizes the gameboard and pieces according to the screen size (Landscape)
+     * Scales the width & height according to the required dimensions
+     * Testing & working with:
+     *      - Galaxy S3 1280x720 (phone)
+     *      - Nexus 5  1080x1920 (phone)
+     *      - Nexus 9  2048x1536 (tablet)
+     *      - Pixel XL 1440x2560 (phone)
+     */
+    public void resizeBoardToScreenSizeLandscape(){
+        // Gets the height of the action bar, so we can prevent action bar from partially hiding the board
+        final TypedArray styledAttributes = getApplicationContext().getTheme().obtainStyledAttributes(
+                new int[] { android.R.attr.actionBarSize });
+        int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+
+        // Gets the height of the current screen
+        WindowManager wm = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        double height = metrics.heightPixels - (actionBarHeight * 1.75);    // subtract size of top action bar so it doesn't partially hide board
+
+        // Sets the width & height for the game board image
+        ImageView imageView = (ImageView) findViewById(R.id.boardImageView);
+        LayoutParams imageParams = imageView.getLayoutParams();
+        imageParams.width =  (int) (height * 1.0028);
+        imageParams.height = (int) (height * 1.0085);
+        imageView.setLayoutParams(imageParams);
+
+        // Sets the width & height for the grid of game buttons in the layout
+        LinearLayout buttonLayout = (LinearLayout) findViewById(R.id.parent_layout);
+        LayoutParams buttonLayoutParams = buttonLayout.getLayoutParams();     // Gets the layout params that will allow you to resize the layout
+        buttonLayoutParams.width =  (int) (height * 0.967);
+        buttonLayoutParams.height = (int) (height * 0.9723);
+        buttonLayout.setLayoutParams(buttonLayoutParams);
+    }
+
+    /*
+     * If device orientation changes after activity is started, we want to change the board according
+     * @param Configuration newConfig
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // If device is in portrait mode
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            this.resizeBoardToScreenSizePortrait();
+        }
+        // If device is in landscape mode
+        else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            this.resizeBoardToScreenSizeLandscape();
+        }
+    }
+
+    /*
+     * Creates the activity for the game cellBoard, then sets up game piece images on game cellBoard
+     * @param Bundle savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.board);
+
+        // If device is in portrait mode
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            this.resizeBoardToScreenSizePortrait();
+        }
+        // If device is in landscape mode
+        else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            this.resizeBoardToScreenSizeLandscape();
+        }
+
         buttons_id = getButtonArray();
         buttonBoard = new Button[8][8];
         fillButtonBoard(listener);
@@ -148,7 +256,7 @@ public class ButtonBoard extends AppCompatActivity {
             final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
             AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
             builder.setCancelable(false);
-            builder.setTitle("Please select the color for Player 1");
+            builder.setTitle("Please select color for Player 1");
             builder.setItems(choices, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int clickValue) {
@@ -171,7 +279,6 @@ public class ButtonBoard extends AppCompatActivity {
         }
 
     }
-
 
 
     public int[] getButtonArray(){

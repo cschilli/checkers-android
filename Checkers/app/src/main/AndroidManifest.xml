@@ -36,7 +36,8 @@
         <activity
             android:name=".ButtonBoard"
             android:label=""
-            android:theme="@style/ButtonBoardTheme">
+            android:theme="@style/ButtonBoardTheme"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
 
 
