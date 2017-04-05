@@ -803,7 +803,7 @@ public class ButtonBoardAI extends AppCompatActivity {
      */
     public void restartMatch() {
         Toast.makeText(getApplicationContext(), "Match Restarted!", Toast.LENGTH_SHORT).show();
-        Intent restartMatch = new Intent(ButtonBoardAI.this, ButtonBoard.class);
+        Intent restartMatch = new Intent(ButtonBoardAI.this, ButtonBoardAI.class);
         startActivity(restartMatch);
     }
 
