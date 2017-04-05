@@ -54,7 +54,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        // Player vs. Computer mode
+        final Button playerVsComputer = (Button) findViewById(R.id.playerVsComputer);
+        playerVsComputer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playerVsComputer();
+            }
+        });
     }
 
 
@@ -80,4 +87,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void playerVsComputer() {
+        Intent intent = new Intent(this, ButtonBoardAI.class);
+        startActivity(intent);
+    }
 }

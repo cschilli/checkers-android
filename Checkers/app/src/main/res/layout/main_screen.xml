@@ -83,6 +83,20 @@
              android:layout_alignLeft="@+id/optionsButton"
              android:layout_alignStart="@+id/optionsButton"-->
 
+        <Button
+            android:text="Player vs. Computer"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/playerVsComputer"
+            android:textSize="24sp"
+            android:textAllCaps="false"
+            android:layout_marginTop="13dp"
+            android:layout_below="@+id/settingsButton"
+            android:layout_alignLeft="@+id/settingsButton"
+            android:layout_alignStart="@+id/settingsButton"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"/>
+
 
     </RelativeLayout>
 
