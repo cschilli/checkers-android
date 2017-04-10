@@ -50,7 +50,7 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.dylan.checkers", appContext.getPackageName());
+        assertEquals("com.uno.dbbc.checkers", appContext.getPackageName());
     }
 
 }
