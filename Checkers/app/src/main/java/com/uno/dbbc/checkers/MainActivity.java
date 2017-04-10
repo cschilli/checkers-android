@@ -1,4 +1,4 @@
-package com.example.dylan.checkers;
+package com.uno.dbbc.checkers;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,31 +35,12 @@ public class MainActivity extends AppCompatActivity {
         }); // End Load Saved Game button
 
 
-//        //  Game Options button
-//        final Button options = (Button) findViewById(R.id.optionsButton);
-//        options.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                optionsMenu();
-//            }
-//        });
-//        //End Options button
-
         //  Settings button
         final Button settings = (Button) findViewById(R.id.settingsButton);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 settingsMenu();
-            }
-        });
-
-        // Player vs. Computer mode
-        final Button playerVsComputer = (Button) findViewById(R.id.playerVsComputer);
-        playerVsComputer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playerVsComputer();
             }
         });
     }

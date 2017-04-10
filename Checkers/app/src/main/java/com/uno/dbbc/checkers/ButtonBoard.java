@@ -1,4 +1,4 @@
-package com.example.dylan.checkers;
+package com.uno.dbbc.checkers;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,7 +66,6 @@ public class ButtonBoard extends AppCompatActivity {
     //	 6    48  _  50  _  52  _  54
     //	 7    _  57  _  59  _  61  _  63
     private Board cellBoard = new Board();
-
     private Cell srcCell = null;
     private Cell dstCell = null;
     /*
@@ -253,6 +251,26 @@ public class ButtonBoard extends AppCompatActivity {
             updateTurnTracker();
         }
         else{
+            final Intent vsComputerIntent = new Intent(this, ButtonBoardAI.class);
+            final CharSequence gameMode[] = new CharSequence[]{"1 Player ", "2 Player"};
+            AlertDialog.Builder gameModeBuilder = new AlertDialog.Builder(ButtonBoard.this);
+            gameModeBuilder.setCancelable(false);
+            gameModeBuilder.setTitle("Select Game Mode:");
+            gameModeBuilder.setItems(gameMode, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int clickValue) {
+                    // Computer mode
+                    if(clickValue == 0) {
+                        startActivity(vsComputerIntent);
+                    }
+                    // Player vs. Player mode
+                    else if (clickValue == 1) {
+
+                    }
+                    updateTurnTracker();
+                }
+            });
+
             final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
             AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
             builder.setCancelable(false);
@@ -275,7 +293,9 @@ public class ButtonBoard extends AppCompatActivity {
                     updateTurnTracker();
                 }
             });
+
             builder.show();
+            gameModeBuilder.show();
         }
 
     }

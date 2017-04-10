@@ -1,5 +1,5 @@
 
-package com.example.dylan.checkers;
+package com.uno.dbbc.checkers;
 
 public abstract class AbstractPlayer{
 	private String color;

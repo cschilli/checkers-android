@@ -1,4 +1,4 @@
-package com.example.dylan.checkers;
+package com.uno.dbbc.checkers;
 
 import java.util.ArrayList;
 import java.util.Scanner;

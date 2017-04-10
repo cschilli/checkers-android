@@ -1,4 +1,4 @@
-package com.example.dylan.checkers;
+package com.uno.dbbc.checkers;
 
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;

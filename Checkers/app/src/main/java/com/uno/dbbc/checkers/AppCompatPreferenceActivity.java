@@ -1,4 +1,4 @@
-package com.example.dylan.checkers;
+package com.uno.dbbc.checkers;
 /*
  * This is used by the Settings.java Activity
  */

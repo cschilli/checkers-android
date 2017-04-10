@@ -1,4 +1,4 @@
-package com.example.dylan.checkers;
+package com.uno.dbbc.checkers;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -189,7 +189,7 @@ public class ButtonBoardAI extends AppCompatActivity {
             computerMoves = cellBoard.possibleMoves(srcCell);   // get the possible moves for that src cell
             moves = cellBoard.getCaptureMoves(srcCell);
 
-            //showPossibleMoves(computerMoves);
+
             updatePiecePressed(srcCell);
 
             // If computer has another capture, use the moves arraylist
@@ -200,6 +200,7 @@ public class ButtonBoardAI extends AppCompatActivity {
                 dstCell = selectRandomCell(computerMoves);
             }
 
+            buttonBoard[dstCell.getX()][dstCell.getY()].setBackgroundResource(R.drawable.possible_moves_image);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -220,7 +221,14 @@ public class ButtonBoardAI extends AppCompatActivity {
         else if(captureMoves.size() == 1){
             dstCell = captureMoves.get(0);
         }
-        onSecondClick(srcCell, dstCell);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                onSecondClick(srcCell, dstCell);
+            }
+        }, 1000);
     }
 
 
