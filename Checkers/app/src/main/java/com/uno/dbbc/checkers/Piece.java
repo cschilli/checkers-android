@@ -25,7 +25,7 @@ public class Piece implements Serializable{
 	 */
 	public Piece(String color) throws IllegalArgumentException{
 		if(!(color.equals(Piece.DARK) || color.equals(Piece.LIGHT))){
-			throw new IllegalArgumentException("The provided color for piece is not valid: " + color);
+			throw new IllegalArgumentException("The provided color for piece is not valid. Provided color: " + color);
 		}
 		this.color = color;
 		this.isKing = false;
@@ -72,10 +72,6 @@ public class Piece implements Serializable{
 	}
 
 
-
-
-
-	//TODO this method is not suitable here so move it elsewhere.
 
 	/**
 	 * Returns the color of the opponent player i.e. returns the color opposite of this Piece

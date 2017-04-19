@@ -2,6 +2,7 @@
 package com.uno.dbbc.checkers;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public  class Player implements Serializable{
 	private String color;
@@ -9,7 +10,7 @@ public  class Player implements Serializable{
 
 
 	/**
-	 * @param Color of the piece that the player is associated to
+	 * @param givenColor of the piece that the player is associated to
 	 * @throws IllegalArgumentException if the given color does not matches with one of the two colors of the pieces in the board
 	 */
 	public Player(String givenColor) throws IllegalArgumentException{
@@ -24,6 +25,19 @@ public  class Player implements Serializable{
 	public String getColor(){
 		return this.color;
 	}
+
+
+	public boolean hasMoves(Board board){
+        ArrayList<Piece> pieces = board.getPieces(this.color);
+        if(pieces.size() > 0){
+            for(Piece piece: pieces){
+                if(board.possibleMoves(piece).size() > 0){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 
 //	//TODO: make this more suitable as number of pieces might not be used in the model.

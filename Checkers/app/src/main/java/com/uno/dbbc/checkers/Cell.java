@@ -94,11 +94,7 @@ public class Cell implements Serializable{
 	 * @return Returns if the cell contains any piece i.e returns true if this cell contains piece and false if the placed piece of this cell is null.
 	 */
 	public boolean containsPiece(){
-		if(this.placedPiece == null){
-			return false;
-		}
-
-		return true;
+		return (this.placedPiece != null);
 	}
 
 

@@ -7,22 +7,21 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.Toast;
-import android.widget.LinearLayout;
-import android.widget.ImageView;
-import android.view.Display;
-import android.view.WindowManager;
-import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,8 +31,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
-
-import static java.security.AccessController.getContext;
 
 
 /*
@@ -88,7 +85,7 @@ public class ButtonBoardAI extends AppCompatActivity {
             int yCord = tag % 10;
 
             // If both players have pieces, game IS RUNNING
-            if (!cellBoard.getPieces(Piece.LIGHT).isEmpty() && !cellBoard.getPieces(Piece.DARK).isEmpty()) {
+            if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
 
                 // If current player is not computer
                 if (currentPlayer == player1) {
@@ -150,15 +147,21 @@ public class ButtonBoardAI extends AppCompatActivity {
                 }
 
             }
+
+            Log.d("***", "onClick: player1.hasMoves: " + player1.hasMoves(cellBoard));
+            Log.d("***", "onClick: player2.hasMoves: " + player2.hasMoves(cellBoard));
+            Log.d("***", "onClick: ===========================================");
+
             // If player who is light runs out of pieces, they lose
-            if (cellBoard.getPieces(Piece.LIGHT).isEmpty() && !cellBoard.getPieces(Piece.DARK).isEmpty()) {
+            if ( (!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
+                      (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))  ){
+                Log.d("****", "onClick: game over ");
                 gameOverDialog();
             }
-            // If player who is dark runs out of pieces, they lose
-            else if (!cellBoard.getPieces(Piece.LIGHT).isEmpty() && cellBoard.getPieces(Piece.DARK).isEmpty()) {
-                gameOverDialog();
+            else if(!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)){
+                Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
             }
-            // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
+             // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
             //TODO: When draw occurs, what should we do next?
             else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
                 Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();

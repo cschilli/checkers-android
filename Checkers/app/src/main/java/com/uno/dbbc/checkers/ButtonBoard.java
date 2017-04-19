@@ -8,18 +8,18 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.Toast;
-import android.widget.LinearLayout;
-import android.widget.ImageView;
-import android.view.Display;
-import android.view.WindowManager;
-import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,8 +28,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
-import static java.security.AccessController.getContext;
 
 
 /*
@@ -83,7 +81,7 @@ public class ButtonBoard extends AppCompatActivity {
             int yCord = tag % 10;
 
             // If both players have pieces, game IS RUNNING
-            if (!cellBoard.getPieces(Piece.LIGHT).isEmpty() && !cellBoard.getPieces(Piece.DARK).isEmpty()) {
+            if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
 
                 // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
                 if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
@@ -118,12 +116,12 @@ public class ButtonBoard extends AppCompatActivity {
             }
 
             // If player who is light runs out of pieces, they lose
-            if (cellBoard.getPieces(Piece.LIGHT).isEmpty() && !cellBoard.getPieces(Piece.DARK).isEmpty()) {
+            if ( (!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
+                    (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))  ){
                 gameOverDialog();
             }
-            // If player who is dark runs out of pieces, they lose
-            else if (!cellBoard.getPieces(Piece.LIGHT).isEmpty() && cellBoard.getPieces(Piece.DARK).isEmpty()) {
-                gameOverDialog();
+            else if(!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)){
+                Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
             }
             // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
             //TODO: When draw occurs, what should we do next?

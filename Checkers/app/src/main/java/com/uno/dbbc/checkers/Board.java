@@ -280,7 +280,6 @@ public class Board implements Serializable{
      * Removes the given Piece from the board.
      * @param capturedPiece The Piece to be removed
      * @throws IllegalStateException if the piece was not successfully removed
-     * @throws IllegalArgumentException if the color of the given Piece is not valid i.e. the color of the given Piece is not one of Piece.LIGHT or Piece.DARK
      */
     public void removePiece(Piece capturedPiece) throws IllegalStateException, IllegalArgumentException{
         if(capturedPiece.getColor().equals(Piece.LIGHT)){
@@ -294,9 +293,6 @@ public class Board implements Serializable{
                 throw new IllegalStateException("Error removing the piece");
             }
             capturedPiece.getCell().placePiece(null);
-        }
-        else{
-            throw new IllegalArgumentException("The captured piece's color does not match the color of the pieces on board");
         }
     }
 
@@ -576,7 +572,7 @@ public class Board implements Serializable{
      */
     public ArrayList<Cell> getCaptureMoves(Piece givenPiece ) throws NullPointerException{
         if(givenPiece == null){
-            throw new NullPointerException("The provided Piece is null");
+            throw new NullPointerException("The provided Piece is null. Cannot find the capture moves of null piece");
         }
         return getCaptureMoves(givenPiece.getCell());
     }
