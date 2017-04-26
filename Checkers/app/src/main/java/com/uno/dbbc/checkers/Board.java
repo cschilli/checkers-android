@@ -1,13 +1,5 @@
 package com.uno.dbbc.checkers;
 
-import android.content.Context;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -522,18 +514,12 @@ public class Board implements Serializable{
         if(givenCell == null){
             throw new NullPointerException("The Cell provided is null.");
         }
-        int srcX = givenCell.getX();
-        int srcY = givenCell.getY();
-
         ArrayList<Cell> possibleMovesOfCell = possibleMoves(givenCell);
 
         ArrayList<Cell> capturingMoves = new ArrayList<Cell>();
 
         for(Cell dstCell: possibleMovesOfCell){
-            int dstX = dstCell.getX();
-            int dstY = dstCell.getY();
-
-            if(Math.abs(dstX - srcX) == 2 && Math.abs(dstY - srcY)==2){
+            if(isCaptureMove(givenCell, dstCell)){
                 capturingMoves.add(dstCell);
             }
         }
@@ -561,25 +547,6 @@ public class Board implements Serializable{
 
 
 
-
-    /**
-     * Returns the capture moves of the Piece located in the Cell with given x and y coordinates.
-     * This method calls getCaptureMoves(Cell givenCell) with the Cell object returned by givenPiece.getCell() as argument.
-     * @param givenPiece The Piece whose capture moves is to be determined.
-     * @return An ArrayList of Cell where the given Piece can move and also captures the opponent's piece when performing those moves.
-     *          If the given Piece does not have any capturing moves, then the returned ArrayList is empty.
-     * @throws NullPointerException if the provided Piece is null.
-     */
-    public ArrayList<Cell> getCaptureMoves(Piece givenPiece ) throws NullPointerException{
-        if(givenPiece == null){
-            throw new NullPointerException("The provided Piece is null. Cannot find the capture moves of null piece");
-        }
-        return getCaptureMoves(givenPiece.getCell());
-    }
-
-
-
-
     /**
      * Returns whether the given pair of Cell can form a capture move. This method does not check if the destination Cell is a valid move for Piece in source Cell.
      * Therefore, make sure that the destination Cell is from the list given by possibleMoves(...) method applied to source Cell.
@@ -590,43 +557,22 @@ public class Board implements Serializable{
      * @throws IllegalArgumentException if source Cell does not contain any piece.
      *
      */
-    public boolean isCaptureMove(Cell srcCell, Cell dstCell) throws NullPointerException, IllegalArgumentException{
-        if(srcCell == null){
+    public boolean isCaptureMove(Cell srcCell, Cell dstCell) throws NullPointerException, IllegalArgumentException {
+        if (srcCell == null) {
             throw new NullPointerException("The source cell is null. Cannot tell if the move is capture move or not if source cell is null.");
         }
-        if(dstCell == null){
+        if (dstCell == null) {
             throw new NullPointerException("The destination cell is null. Cannot tell if the move is capture move or not if destination cell is null.");
         }
-        if(srcCell.getPiece() == null){
-            throw new IllegalArgumentException("The source cell does not contain a piece. Cannot be capture move if source cell does not have a piece. SrcCell: (" + srcCell.getX() + ", "+ srcCell.getY() + ")" );
+        if (srcCell.getPiece() == null) {
+            throw new IllegalArgumentException("The source cell does not contain a piece. Cannot be capture move if source cell does not have a piece. SrcCell: (" + srcCell.getX() + ", " + srcCell.getY() + ")");
         }
 
-        if((Math.abs(srcCell.getX()-dstCell.getX()) == 2) && (Math.abs(srcCell.getY()- dstCell.getY()) == 2)){
+        if ((Math.abs(srcCell.getX() - dstCell.getX()) == 2) && (Math.abs(srcCell.getY() - dstCell.getY()) == 2)) {
             return true;
         }
         return false;
     }
-
-
-
-
-    /**
-     * Returns if the given Cell is a capture move of the given Piece. This method does not check if the given Cell is valid move for given Piece.
-     * Therefore, make sure that the given Cell is from the list given by possibleMoves(...) method applied to given Piece.
-     * This method calls isCaptureMove(Cell srcCell, Cell dstCell) as isCaptureMove(givenPiece.getCell(), dstCell);
-     * @param givenPiece: The piece whose move is to be checked.
-     * @param dstCell: The destination cell of the move.
-     * @retun Returns if the given Cell is the capturing move of the given Piece.
-     * @throws NullPointerException if the givenPiece and/or given Cell is null
-     *
-     */
-    public boolean isCaptureMove(Piece givenPiece, Cell dstCell) throws NullPointerException{
-        if(givenPiece == null || dstCell == null){
-            throw new NullPointerException("Given Piece and/or given Cell is null");
-        }
-        return isCaptureMove(givenPiece.getCell(), dstCell);
-    }
-
 
 
 
@@ -696,116 +642,6 @@ public class Board implements Serializable{
 		}
 
 		return builder.toString();
-	}
-
-
-
-    public void LoadGameState(Context context) {
-
-        String saveData = "";
-
-        try {
-            InputStream inputStream = context.openFileInput("savedGame.dat");
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                saveData = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("Can not read file: " + e.getMessage());
-        }
-
-        // If there is a save file
-        if(saveData != "") {
-            String[] boardRows = saveData.split(";");
-
-            for (int i = 0; i < Board.BOARD_SIZE; i++) {
-                for (int j = 0; j < Board.BOARD_SIZE; j++) {
-                    this.board[i][j] = new Cell(i, j);
-                }
-            }
-
-            System.out.println("**** BEGIN LOADING ****");
-            for (int i = 0; i < Board.BOARD_SIZE; i++) {
-                String thisRow[] = boardRows[i].split(",");
-                for (int j = 0; j < thisRow.length; j++) {
-                    if (thisRow[j].equalsIgnoreCase("L")) {
-                        this.board[i][j].placePiece(new Piece(Piece.LIGHT));
-                        lightPieces.add(this.board[i][j].getPiece());
-                        //place a red piece at i, j
-                    } else if (thisRow[j].equalsIgnoreCase("D")) {
-                        this.board[i][j].placePiece(new Piece(Piece.DARK));
-                        darkPieces.add(this.board[i][j].getPiece());
-                        //place a black piece at i, j
-                    } else if (thisRow[j].equalsIgnoreCase("LK")) {
-                        this.board[i][j].placePiece(new Piece(Piece.LIGHT));
-                        lightPieces.add(this.board[i][j].getPiece());
-                        this.board[i][j].getPiece().makeKing();
-                        //place a red piece at i, j
-                    } else if (thisRow[j].equalsIgnoreCase("DK")) {
-                        this.board[i][j].placePiece(new Piece(Piece.DARK));
-                        darkPieces.add(this.board[i][j].getPiece());
-                        this.board[i][j].getPiece().makeKing();
-                        //place a black piece at i, j
-                    } else if (thisRow[j].equalsIgnoreCase("_")) {
-						//do nothing
-					}
-				}
-			}
-			System.out.println("**** END LOADING ****");
-		}
-		// If there is no save file
-		else if(saveData == ""){
-			System.out.println("No file to load!");
-		}
-	}
-
-	public void SaveGameState(Context context) {
-            StringBuilder string = new StringBuilder();
-            String newString = null;
-            for (int i = 0; i < Board.BOARD_SIZE; i++) {
-                for (int j = 0; j < Board.BOARD_SIZE; j++) {
-                    Cell cell = this.board[i][j];
-                    if (cell.getPiece() == null) {
-                        string.append("_,");
-                    } else if (cell.getPiece().getColor().equals(Piece.LIGHT)) {
-                        if (cell.getPiece().isKing()) {
-                            string.append("LK,");
-                        } else {
-                            string.append("L,");
-                        }
-                    } else if (cell.getPiece().getColor().equals(Piece.DARK)) {
-                        if (cell.getPiece().isKing()) {
-                            string.append("DK,");
-                        } else {
-                            string.append("D,");
-                        }
-                    }
-                }
-                string.append(";");
-                newString = string.toString().replace(",;", ";");
-            }
-
-            try {
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
-                outputStreamWriter.write(newString);
-                outputStreamWriter.close();
-                System.out.println("Saved! Location: " + context.getFilesDir() + "/savedGame.dat");
-            } catch (IOException e) {
-                System.out.println("Error writing to file! " + e.getMessage());
-            }
 	}
 
 	public static void main(String[] args){

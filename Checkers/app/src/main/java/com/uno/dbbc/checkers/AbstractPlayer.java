@@ -7,15 +7,15 @@ public abstract class AbstractPlayer{
 	
 	
 	/**
-	 * @param Color of the piece that the player is associated to
+	 * @param color of the piece that the player is associated to
 	 * @throws IllegalArgumentException if the given color does not matches with one of the two colors of the pieces in the board
 	 */
-	public AbstractPlayer(String givenColor) throws IllegalArgumentException{
-		if((givenColor == Piece.LIGHT) || (givenColor == Piece.DARK)){
-			this.color = givenColor;
+	public AbstractPlayer(String color) throws IllegalArgumentException{
+		if((color == Piece.LIGHT) || (color == Piece.DARK)){
+			this.color = color;
 		}
 		else{
-			throw new IllegalArgumentException("Given color for the player is not valid. Given color: " + givenColor);
+			throw new IllegalArgumentException("Given color for the player is not valid. Given color: " + color);
 		}
 	}
 	

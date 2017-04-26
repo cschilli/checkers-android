@@ -24,22 +24,6 @@ public class Cell implements Serializable{
 		this.placedPiece = null;
 	}
 
-	/**
-	 * Creates an instance of Cell with given x-coordinate and y-coordinate and given piece placed in the cell.
-	 * @param x The x-coordinate of the cell.
-	 * @param y The y-coordinate of the cell.
-	 * @param givenPiece The piece to be placed in the Cell.
-	 * @throws IllegalArgumentException Throws IllegalArgumentException if the given x-coordinate or y-coordinate are not in the range [0,7] inclusive.
-	 */
-	public Cell(int x, int y, Piece givenPiece) throws IllegalArgumentException{
-		if((x<0 || x>7) || (y<0 || y>7)){
-			throw new IllegalArgumentException("The provided coordinates for the cell are out of range.");
-		}
-		this.x = x;
-		this.y = y;
-		this.placedPiece = givenPiece;
-	}
-
 
 	/**
 	 * @return Returns the piece placed (null if no piece is placed) in this cell.

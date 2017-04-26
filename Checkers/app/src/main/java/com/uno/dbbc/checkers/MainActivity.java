@@ -34,15 +34,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }); // End Load Saved Game button
 
-
-        //  Settings button
-        final Button settings = (Button) findViewById(R.id.settingsButton);
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                settingsMenu();
-            }
-        });
     }
 
 
@@ -58,15 +49,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void optionsMenu() {
-        Intent intent = new Intent(this, GameOptions.class);
-        startActivity(intent);
-    }
-
-    private void settingsMenu() {
-        Intent intent = new Intent(this, Settings.class);
-        startActivity(intent);
-    }
 
     private void playerVsComputer() {
         Intent intent = new Intent(this, ButtonBoardAI.class);

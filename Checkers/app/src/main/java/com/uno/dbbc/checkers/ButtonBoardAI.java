@@ -147,11 +147,6 @@ public class ButtonBoardAI extends AppCompatActivity {
                 }
 
             }
-
-            Log.d("***", "onClick: player1.hasMoves: " + player1.hasMoves(cellBoard));
-            Log.d("***", "onClick: player2.hasMoves: " + player2.hasMoves(cellBoard));
-            Log.d("***", "onClick: ===========================================");
-
             // If player who is light runs out of pieces, they lose
             if ( (!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
                       (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))  ){

@@ -52,23 +52,6 @@
             android:adjustViewBounds="true"
             android:scaleType="fitXY"/>
 
-        <Button
-            android:text="Settings"
-            android:layout_width="270dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/settingsButton"
-            android:textSize="24sp"
-            android:textAllCaps="false"
-            android:layout_marginTop="13dp"
-            android:layout_below="@+id/loadButton"
-            android:layout_alignLeft="@+id/loadButton"
-            android:layout_alignStart="@+id/loadButton"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"/>
-
-
-
-
 
     </RelativeLayout>
 
