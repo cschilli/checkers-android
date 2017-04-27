@@ -52,6 +52,6 @@ public class ExampleInstrumentedTest {
 
         assertEquals("com.uno.dbbc.checkers", appContext.getPackageName());
     }
-
+    
 }
 
