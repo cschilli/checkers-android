@@ -11,7 +11,7 @@ public class CellTests {
         //test correct piece moved to correct location
         Cell cellSource = new Cell(3,3);
         Cell cellTarget = new Cell(3,2);
-        Piece piece = new Piece("DARK");
+        Piece piece = new Piece("Dark");
         cellSource.placePiece(piece);
 
         cellSource.movePiece(cellTarget);
@@ -32,7 +32,7 @@ public class CellTests {
     @Test
     public void testGetAndPlacePiece() throws Exception{
         Cell cell = new Cell(3,3);
-        Piece piece = new Piece("DARK");
+        Piece piece = new Piece("Dark");
         cell.placePiece(piece);
         assertEquals(piece, cell.getPiece());
     }
@@ -41,7 +41,7 @@ public class CellTests {
     public void testContainsPiece() throws Exception{
         Cell cell5 = new Cell(3,3);
         Cell cell6 = new Cell(4,2);
-        Piece piece = new Piece("DARK");
+        Piece piece = new Piece("Dark");
 
         cell5.placePiece(piece);
         assertEquals(true, cell5.containsPiece());

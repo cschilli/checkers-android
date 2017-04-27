@@ -8,22 +8,22 @@ public class PieceTests {
 
     @Test
     public void testPiece() throws Exception{
-        Piece pieceX = new Piece("DARK");
-        Piece pieceY = new Piece("LIGHT");
+        Piece pieceX = new Piece("Dark");
+        Piece pieceY = new Piece("Light");
         assertNotEquals(pieceX, pieceY);
     }
 
     @Test
     public void testGetColor() throws Exception{
-        Piece piece = new Piece("DARK");
-        assertEquals("DARK", piece.getColor());
-        assertNotEquals("LIGHT", piece.getColor());
+        Piece piece = new Piece("Dark");
+        assertEquals("Dark", piece.getColor());
+        assertNotEquals("Light", piece.getColor());
     }
 
     @Test
     public void testGetCell() throws Exception{
         Cell cell = new Cell(3,3);
-        Piece piece = new Piece("DARK");
+        Piece piece = new Piece("Dark");
         cell.placePiece(piece);
         assertEquals(cell, piece.getCell());
     }
