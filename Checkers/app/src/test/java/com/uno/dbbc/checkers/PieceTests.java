@@ -28,5 +28,31 @@ public class PieceTests {
         assertEquals(cell, piece.getCell());
     }
 
+    @Test
+    public void testSetCell() throws Exception{
+        Cell cell = new Cell(3,3);
+        Piece piece = new Piece("Dark");
 
+        piece.setCell(cell);
+        assertEquals(piece, cell.getPiece());
+        assertEquals(cell, piece.getCell());
+    }
+
+    @Test
+    public void testIsAndMakeKing() throws Exception{
+        Piece pieceKing = new Piece("Dark");
+        Piece pieceNotKing = new Piece("Light");
+
+        pieceKing.makeKing();
+        assertTrue(pieceKing.isKing());
+        assertFalse(pieceNotKing.isKing());
+    }
+
+    @Test
+    public void testGetOpponentColor() throws Exception{
+        Piece piece = new Piece("Dark");
+
+        assertEquals("Light", piece.getOpponentColor("Dark");
+        assertNotEquals("Dark", piece.getOpponentColor("Dark"));
+    }
 }
