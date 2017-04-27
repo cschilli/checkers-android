@@ -34,7 +34,7 @@ public class PieceTests {
         Piece piece = new Piece("Dark");
 
         piece.setCell(cell);
-        assertEquals(piece, cell.getPiece());
+        assertEquals("Dark", cell.getPiece().getColor());
         assertEquals(cell, piece.getCell());
     }
 
