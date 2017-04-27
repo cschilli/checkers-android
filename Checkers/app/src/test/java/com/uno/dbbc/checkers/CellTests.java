@@ -19,7 +19,7 @@ public class CellTests {
     }
 
     @Test
-    public void testGetCell() throws Exception{
+    public void testGetCoords() throws Exception{
         //test correct cell is returned
         Cell cell = new Cell(10,5);
         assertEquals(cell.getX(), 10);
@@ -34,8 +34,7 @@ public class CellTests {
         Cell cell = new Cell(10,5);
         Piece piece = new Piece("DARK");
         cell.placePiece(piece);
-        assertEquals(cell.getPiece(), piece);
-        assertEquals(piece.getColor(), "DARK");
+        assertEquals(piece, cell.getPiece());
     }
 
     @Test
@@ -45,7 +44,7 @@ public class CellTests {
         Piece piece = new Piece("DARK");
 
         cell5.placePiece(piece);
-        assertEquals(cell5.containsPiece(), true);
-        assertEquals(cell6.containsPiece(), false);
+        assertEquals(true, cell5.containsPiece());
+        assertEquals(false, cell6.containsPiece());
     }
 }
