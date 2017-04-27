@@ -22,7 +22,7 @@ public class PieceTests {
 
     @Test
     public void testGetCell() throws Exception{
-        Cell cell = new Cell(5,5);
+        Cell cell = new Cell(3,3);
         Piece piece = new Piece("DARK");
         cell.placePiece(piece);
         assertEquals(cell, piece.getCell());

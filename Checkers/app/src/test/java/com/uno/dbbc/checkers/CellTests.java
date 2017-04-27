@@ -9,8 +9,8 @@ public class CellTests {
     @Test
     public void testMovePiece() throws Exception{
         //test correct piece moved to correct location
-        Cell cellSource = new Cell(5,5);
-        Cell cellTarget = new Cell(5,6);
+        Cell cellSource = new Cell(3,3);
+        Cell cellTarget = new Cell(3,2);
         Piece piece = new Piece("DARK");
         cellSource.placePiece(piece);
 
@@ -21,17 +21,17 @@ public class CellTests {
     @Test
     public void testGetCoords() throws Exception{
         //test correct cell is returned
-        Cell cell = new Cell(10,5);
-        assertEquals(cell.getX(), 10);
-        assertEquals(cell.getY(), 5);
+        Cell cell = new Cell(3,3);
+        assertEquals(cell.getX(), 3);
+        assertEquals(cell.getY(), 3);
 
-        int[] testArray = {10,5};
+        int[] testArray = {3,3};
         assertArrayEquals(testArray, cell.getCoords());
     }
 
     @Test
     public void testGetAndPlacePiece() throws Exception{
-        Cell cell = new Cell(10,5);
+        Cell cell = new Cell(3,3);
         Piece piece = new Piece("DARK");
         cell.placePiece(piece);
         assertEquals(piece, cell.getPiece());
@@ -39,7 +39,7 @@ public class CellTests {
 
     @Test
     public void testContainsPiece() throws Exception{
-        Cell cell5 = new Cell(10,5);
+        Cell cell5 = new Cell(3,3);
         Cell cell6 = new Cell(4,2);
         Piece piece = new Piece("DARK");
 
