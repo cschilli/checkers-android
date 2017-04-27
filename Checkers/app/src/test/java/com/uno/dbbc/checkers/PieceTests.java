@@ -52,7 +52,7 @@ public class PieceTests {
     public void testGetOpponentColor() throws Exception{
         Piece piece = new Piece("Dark");
 
-        assertEquals("Light", piece.getOpponentColor("Dark");
+        assertEquals("Light", piece.getOpponentColor("Dark"));
         assertNotEquals("Dark", piece.getOpponentColor("Dark"));
     }
 }
