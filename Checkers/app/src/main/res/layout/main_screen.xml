@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,8 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/board_background"
-    tools:context="com.uno.dbbc.checkers">
+    android:background="@drawable/board_background">
 
     <RelativeLayout
         android:orientation="vertical"
@@ -26,28 +24,42 @@
 
         <Button
             android:id="@+id/playButton"
+            android:text="@string/play_game"
+            android:background="@drawable/orange_button"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_weight="2"
             android:adjustViewBounds="true"
             android:gravity="center"
             android:scaleType="fitXY"
-            android:text="Play Game"
             android:textAllCaps="false"
             android:textSize="24sp" />
 
-
         <Button
-            android:text="Load Game"
+            android:id="@+id/loadButton"
+            android:text="@string/load_game"
+            android:background="@drawable/orange_button"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
-            android:id="@+id/loadButton"
             android:textSize="24sp"
             android:textAllCaps="false"
             android:layout_marginTop="11dp"
             android:layout_below="@+id/playButton"
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"/>
+
+        <Button
+            android:id="@+id/exitButton"
+            android:text="@string/exit"
+            android:background="@drawable/orange_button"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textAllCaps="false"
+            android:layout_marginTop="11dp"
+            android:layout_below="@+id/loadButton"
             android:layout_centerHorizontal="true"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"/>
@@ -57,13 +69,12 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/checkers_logo_menu"
-        android:layout_marginTop="13dp"
+        android:layout_width="450dp"
+        android:layout_height="95dp"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:layout_centerHorizontal="true" />
+        app:srcCompat="@drawable/checkers_logo_photoshop" />
 
 </RelativeLayout>

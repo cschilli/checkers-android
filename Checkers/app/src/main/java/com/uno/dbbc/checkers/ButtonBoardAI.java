@@ -236,6 +236,12 @@ public class ButtonBoardAI extends AppCompatActivity {
         Cell randomCell = piecesWithMoves.get(new Random().nextInt(piecesWithMoves.size()));
         return randomCell;
     }
+    
+    /*
+     * When back button is pressed, do not restart activity
+     */
+    @Override
+    public void onBackPressed() {}
 
     /*
      * Resizes the gameboard and pieces according to the screen size (Portrait)

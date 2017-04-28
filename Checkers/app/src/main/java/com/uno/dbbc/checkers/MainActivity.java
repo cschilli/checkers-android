@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playGame();
+                Intent intent = new Intent(MainActivity.this, ButtonBoard.class);
+                startActivity(intent);
             }
         }); // End Play Game button
 
@@ -35,28 +36,26 @@ public class MainActivity extends AppCompatActivity {
         load.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadGame();
+                Intent intent = new Intent(MainActivity.this, ButtonBoard.class);
+                intent.putExtra("LOAD", true);
+                startActivity(intent);
             }
         }); // End Load Saved Game button
 
+        // Exit application button and listener
+        Button exit = (Button) findViewById(R.id.exitButton);
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }); // End Exit application button
+
     }
 
 
-    private void playGame() {
-        Intent intent = new Intent(this, ButtonBoard.class);
-        startActivity(intent);
-    }
 
-    // TODO: If there is no saved game (look for saved.dat file), make this un-clickable
-    private void loadGame() {
-        Intent intent = new Intent(this, ButtonBoard.class);
-        intent.putExtra("LOAD", true);
-        startActivity(intent);
-    }
-
-
-    private void playerVsComputer() {
-        Intent intent = new Intent(this, ButtonBoardAI.class);
-        startActivity(intent);
-    }
 }

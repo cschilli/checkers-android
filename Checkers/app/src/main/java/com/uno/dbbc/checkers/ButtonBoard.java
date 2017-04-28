@@ -128,6 +128,12 @@ public class ButtonBoard extends AppCompatActivity {
     };
 
     /*
+     * When back button is pressed, do not restart activity
+     */
+    @Override
+    public void onBackPressed() {}
+
+    /*
      * Resizes the gameboard and pieces according to the screen size (Portrait)
      * Scales the width & height according to the required dimensions
      * Testing & working with:
