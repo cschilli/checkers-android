@@ -374,7 +374,7 @@ public class BoardTests {
         assertFalse(board.isCaptureMove(cell, dstCell3));
 
     }
-    
+
     @Test
     public void testIsCaptureMove2() throws Exception {
         Board board = new Board();

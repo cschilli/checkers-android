@@ -5,18 +5,23 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-
+/*
+ * MainActivity.java - Controls the main menu that is displayed when the application is launched
+ *                   - Allows a user to Play the game or Load the game
+ */
 public class MainActivity extends AppCompatActivity {
 
-    private Board board;
+    /*
+     * Method that deals with the creation of MainActivity activity
+     * Handles when player clicks a button to perform an action
+     * @param Bundle savedInstanceState - Saves the instance of the main menu activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_screen);
 
-        board = new Board();
-
-        // Play Game
+        // Play Game button and listener
         Button play = (Button) findViewById(R.id.playButton);
         play.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -25,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }); // End Play Game button
 
-        // Load Saved Game
+        // Load Saved Game button and listener
         Button load = (Button) findViewById(R.id.loadButton);
         load.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/board_background"
-    tools:context="com.example.dylan.checkers.MainActivity">
+    tools:context="com.uno.dbbc.checkers">
 
     <RelativeLayout
         android:orientation="vertical"

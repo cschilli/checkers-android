@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,25 +28,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game cellBoard
  *                  - Stores button ids for game cellBoard layout and maps them to the correct cell (x, y)
  *                  - Creates array of buttons that map each square on the game cellBoard
  *                  - Initializes the game piece images on the cellBoard (12 dark pieces and 12 light pieces)
+ *                  - This class deals with the Player Vs. Player Mode of Checkers
  */
 public class ButtonBoard extends AppCompatActivity {
 
-    // Add the buttons into an array by their specific id in integer form
     private int[] buttons_id;
     private Button[][] buttonBoard;        // stores the Button objects with their indexes
-    int roundCounter = 0;
     private ArrayList<Cell> moves;
     private ArrayList<Cell> highlightedCells = new ArrayList<>();
     private Player player1;
     private Player player2;
     private Player currentPlayer;
     private boolean srcCellFixed = false;
+    int roundCounter = 0;
 
     // Game cellBoard layout of the black squares by square ID
     // 0-63  --> black button squares, used for indexing      _ -->  red button squares, are not used in indexing
@@ -63,9 +61,11 @@ public class ButtonBoard extends AppCompatActivity {
     //	 5    _  41  _  43  _  45  _  47
     //	 6    48  _  50  _  52  _  54
     //	 7    _  57  _  59  _  61  _  63
+
     private Board cellBoard = new Board();
     private Cell srcCell = null;
     private Cell dstCell = null;
+
     /*
      * Creates listener to perform action when player clicks a game piece
      * Handles when player wants to move a piece
@@ -73,61 +73,57 @@ public class ButtonBoard extends AppCompatActivity {
     private View.OnClickListener listener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-//            Log.d("***", "onClick: srcCell == null: " + (srcCell== null));
-//            Log.d("***", "onClick: dstCell == null: " + (dstCell== null));
+        int tag = (Integer) v.getTag();
+        int xCord = tag / 10;
+        int yCord = tag % 10;
 
-            int tag = (Integer) v.getTag();
-            int xCord = tag / 10;
-            int yCord = tag % 10;
+        // If both players have pieces, game IS RUNNING
+        if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
 
-            // If both players have pieces, game IS RUNNING
-            if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
+            // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
+            if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
+                unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
+                srcCell = cellBoard.getCell(xCord, yCord);
+                moves = cellBoard.possibleMoves(srcCell);
 
-                // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
-                if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
-                    unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
-                    srcCell = cellBoard.getCell(xCord, yCord);
-                    moves = cellBoard.possibleMoves(srcCell);
-
-                    //If the user taps the cell with no moves then show the message stating that
-                    if (moves.isEmpty()) {
-                        Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
-                        srcCell = null;
-                        updateTurnTracker();
-                    }
-                    // Else, if player has possible moves THEN we can move piece
-                    else {
-                        showPossibleMoves(moves);
-                        srcCell = cellBoard.getCell(xCord, yCord);
-                        updatePiecePressed(srcCell);
-                    }
-                }
-
-                //If the user taps same cell twice then deselect the cell
-                else if (srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed) {
+                //If the user taps the cell with no moves then show the message stating that
+                if (moves.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
                     srcCell = null;
-                    updatePieces(xCord, yCord); // updates the graphical pieces
                     updateTurnTracker();
-                } else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
-                    dstCell = cellBoard.getCell(xCord, yCord);
-                    onSecondClick(srcCell, dstCell);
                 }
-
+                // Else, if player has possible moves THEN we can move piece
+                else {
+                    showPossibleMoves(moves);
+                    srcCell = cellBoard.getCell(xCord, yCord);
+                    updatePiecePressed(srcCell);
+                }
             }
 
-            // If player who is light runs out of pieces, they lose
-            if ( (!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
-                    (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))  ){
-                gameOverDialog();
+            //If the user taps same cell twice then deselect the cell
+            else if (srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed) {
+                srcCell = null;
+                updatePieces(xCord, yCord); // updates the graphical pieces
+                updateTurnTracker();
+            } else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
+                dstCell = cellBoard.getCell(xCord, yCord);
+                onSecondClick(srcCell, dstCell);
             }
-            else if(!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)){
-                Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
-            }
-            // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
-            //TODO: When draw occurs, what should we do next?
-            else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
-                Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
-            }
+
+        }
+
+        // If player who is light runs out of pieces, they lose
+        if ( (!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
+                (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))  ){
+            gameOverDialog();
+        }
+        else if(!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)){
+            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
+        }
+        // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
+        else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
+            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
+        }
         }
     };
 
@@ -298,7 +294,10 @@ public class ButtonBoard extends AppCompatActivity {
 
     }
 
-
+    /*
+     * Method that gets the button ID's for mapping buttons to an arraylist
+     * @ret int[] - Returns the array of button ID's
+     */
     public int[] getButtonArray(){
         int[] buttons_id = {R.id.button0, R.id.button2, R.id.button4, R.id.button6,
                 R.id.button9, R.id.button11, R.id.button13, R.id.button15,
@@ -311,6 +310,10 @@ public class ButtonBoard extends AppCompatActivity {
         return buttons_id;
     }
 
+    /*
+     * Loads a saved game if the user chooses to do so
+     * Loads the game from a save file
+     */
     public void loadGame() {
         try {
             InputStream inputStream = getApplicationContext().openFileInput("savedGame.dat");
@@ -329,6 +332,10 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
+    /*
+     * Saves the game when user chooses to do so
+     * Saves the game to a save game file
+     */
     public void saveGame() {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(getApplicationContext().openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
@@ -339,7 +346,6 @@ public class ButtonBoard extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Error in saving the game! ", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     /*
      * Fills the Button indexes array with each button object and asigns index using button tag
@@ -505,7 +511,7 @@ public class ButtonBoard extends AppCompatActivity {
     }
 
     /*
-    * Switches currentPlayer to the other player
+    * Switches currentPlayer to the other player, updates the turn tracker
     */
     public void changeTurn() {
         // If both players have pieces, we can switch turns
@@ -520,6 +526,9 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
+    /*
+     * Unhighlights the game pieces when a player performs a move
+     */
     public void unHighlightPieces() {
         Cell highlightedCell;
         while (!highlightedCells.isEmpty()) {
@@ -645,6 +654,9 @@ public class ButtonBoard extends AppCompatActivity {
         builder.show();
     }
 
+    /*
+     * Deals with saving a game when a previous save game file is found
+     */
     public void saveGameFound() {
         final CharSequence choices[] = new CharSequence[]{"Overwrite", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
@@ -668,7 +680,9 @@ public class ButtonBoard extends AppCompatActivity {
         builder.show();
     }
 
-
+    /*
+     * When user chooses to restart a match, this dialog appears with confirmation menu
+     */
     public void restartMatchDialog() {
         final CharSequence choices[] = new CharSequence[]{"Restart", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
@@ -687,7 +701,7 @@ public class ButtonBoard extends AppCompatActivity {
     }
 
     /*
-     * Restarts the match
+     * Dialog menu when user tries to quit the match
      */
     public void quitMatchDialog() {
         final CharSequence choices[] = new CharSequence[]{"Quit", "Cancel"};

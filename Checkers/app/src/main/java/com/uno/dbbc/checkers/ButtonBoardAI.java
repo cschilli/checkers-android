@@ -22,7 +22,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,25 +31,24 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
-
 /*
- * ButtonBoard.java - Handles the graphical user interface for the game cellBoard
- *                  - Stores button ids for game cellBoard layout and maps them to the correct cell (x, y)
- *                  - Creates array of buttons that map each square on the game cellBoard
- *                  - Initializes the game piece images on the cellBoard (12 dark pieces and 12 light pieces)
+ * ButtonBoardAI.java - Handles the graphical user interface for the game cellBoard
+ *                    - Stores button ids for game cellBoard layout and maps them to the correct cell (x, y)
+ *                    - Creates array of buttons that map each square on the game cellBoard
+ *                    - Initializes the game piece images on the cellBoard (12 dark pieces and 12 light pieces)
+ *                    - This class deals with the Player Vs. Computer Mode of Checkers
  */
 public class ButtonBoardAI extends AppCompatActivity {
 
-    // Add the buttons into an array by their specific id in integer form
     private int[] buttons_id;
     private Button[][] buttonBoard;        // stores the Button objects with their indexes
-    int roundCounter = 0;
     private ArrayList<Cell> moves;
     private ArrayList<Cell> highlightedCells = new ArrayList<>();
     private Player player1;
     private Player player2;
     private Player currentPlayer;
     private boolean srcCellFixed = false;
+    int roundCounter = 0;
 
     // Game cellBoard layout of the black squares by square ID
     // 0-63  --> black button squares, used for indexing      _ -->  red button squares, are not used in indexing
@@ -66,10 +64,11 @@ public class ButtonBoardAI extends AppCompatActivity {
     //	 5    _  41  _  43  _  45  _  47
     //	 6    48  _  50  _  52  _  54
     //	 7    _  57  _  59  _  61  _  63
-    private Board cellBoard = new Board();
 
+    private Board cellBoard = new Board();
     private Cell srcCell = null;
     private Cell dstCell = null;
+
     /*
      * Creates listener to perform action when player clicks a game piece
      * Handles when player wants to move a piece
@@ -77,138 +76,137 @@ public class ButtonBoardAI extends AppCompatActivity {
     private View.OnClickListener listener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-//            Log.d("***", "onClick: srcCell == null: " + (srcCell== null));
-//            Log.d("***", "onClick: dstCell == null: " + (dstCell== null));
+        int tag = (Integer) v.getTag();
+        int xCord = tag / 10;
+        int yCord = tag % 10;
 
-            int tag = (Integer) v.getTag();
-            int xCord = tag / 10;
-            int yCord = tag % 10;
+        // If both players have pieces, game IS RUNNING
+        if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
 
-            // If both players have pieces, game IS RUNNING
-            if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
+            // If current player is not computer
+            if (currentPlayer == player1) {
+                // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
+                if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
+                    unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
+                    srcCell = cellBoard.getCell(xCord, yCord);
+                    moves = cellBoard.possibleMoves(srcCell);
 
-                // If current player is not computer
-                if (currentPlayer == player1) {
-                    // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
-                    if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
-                        unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
-                        srcCell = cellBoard.getCell(xCord, yCord);
-                        moves = cellBoard.possibleMoves(srcCell);
-
-                        //If the user taps the cell with no moves then show the message stating that
-                        if (moves.isEmpty()) {
-                            Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
-                            srcCell = null;
-                            updateTurnTracker();
-                        }
-                        // Else, if player has possible moves THEN we can move piece
-                        else {
-                            showPossibleMoves(moves);
-                            srcCell = cellBoard.getCell(xCord, yCord);
-                            updatePiecePressed(srcCell);
-                        }
-                    }
-
-                    //If the user taps same cell twice then deselect the cell
-                    else if (srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed) {
+                    //If the user taps the cell with no moves then show the message stating that
+                    if (moves.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
                         srcCell = null;
-                        updatePieces(xCord, yCord); // updates the graphical pieces
                         updateTurnTracker();
-                    } else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
-                        dstCell = cellBoard.getCell(xCord, yCord);
-                        onSecondClick(srcCell, dstCell);
                     }
-                }
-
-
-
-                // Else for player 1 second click
-                else {
-
-                    // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
-                    if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
-                        unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
+                    // Else, if player has possible moves THEN we can move piece
+                    else {
+                        showPossibleMoves(moves);
                         srcCell = cellBoard.getCell(xCord, yCord);
-                        moves = cellBoard.possibleMoves(srcCell);
-
-                        //If the user taps the cell with no moves then show the message stating that
-                        if (moves.isEmpty()) {
-                            Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
-                            srcCell = null;
-                            updateTurnTracker();
-                        }
-                        // Else, if player has possible moves THEN we can move piece
-                        else {
-                            showPossibleMoves(moves);
-                            srcCell = cellBoard.getCell(xCord, yCord);
-                            updatePiecePressed(srcCell);
-                        }
+                        updatePiecePressed(srcCell);
                     }
                 }
 
+                //If the user taps same cell twice then deselect the cell
+                else if (srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed) {
+                    srcCell = null;
+                    updatePieces(xCord, yCord); // updates the graphical pieces
+                    updateTurnTracker();
+                } else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
+                    dstCell = cellBoard.getCell(xCord, yCord);
+                    onSecondClick(srcCell, dstCell);
+                }
             }
-            // If player who is light runs out of pieces, they lose
-            if ( (!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
-                      (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))  ){
-                Log.d("****", "onClick: game over ");
-                gameOverDialog();
+
+            // Else for player 1 second click
+            else {
+
+                // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
+                if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
+                    unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
+                    srcCell = cellBoard.getCell(xCord, yCord);
+                    moves = cellBoard.possibleMoves(srcCell);
+
+                    //If the user taps the cell with no moves then show the message stating that
+                    if (moves.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
+                        srcCell = null;
+                        updateTurnTracker();
+                    }
+                    // Else, if player has possible moves THEN we can move piece
+                    else {
+                        showPossibleMoves(moves);
+                        srcCell = cellBoard.getCell(xCord, yCord);
+                        updatePiecePressed(srcCell);
+                    }
+                }
             }
-            else if(!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)){
-                Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
-            }
-             // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
-            //TODO: When draw occurs, what should we do next?
-            else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
-                Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
-            }
+        }
+        // If player who is light runs out of pieces, they lose
+        if ( (!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
+                  (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))  ){
+            Log.d("****", "onClick: game over ");
+            gameOverDialog();
+        }
+        else if(!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)){
+            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
+        }
+         // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
+        else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
+            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
+        }
         }
     };
 
-
+    /*
+     * Deals with handling the computers turn
+     * Simulates a real-life player making moves
+     */
     public void computersTurn(){
         ArrayList<Piece> computerPieces = cellBoard.getPieces(player2.getColor());   // store all pieces for computer
-            ArrayList<Cell> cellsWithMoves = new ArrayList<>();     // stores the pieces that have moves
-            ArrayList<Cell> computerMoves;
+        ArrayList<Cell> cellsWithMoves = new ArrayList<>();     // stores the pieces that have moves
+        ArrayList<Cell> computerMoves;
 
-            for (int i = 0; i < computerPieces.size(); i++) {
-                srcCell = cellBoard.getCell(computerPieces.get(i).getCell().getX(), computerPieces.get(i).getCell().getY());
+        for (int i = 0; i < computerPieces.size(); i++) {
+            srcCell = cellBoard.getCell(computerPieces.get(i).getCell().getX(), computerPieces.get(i).getCell().getY());
 
-                // If source cell exists, we want to check if it has possible moves
-                if (srcCell != null) {
-                    computerMoves = cellBoard.possibleMoves(srcCell);
-                    // If we have possible moves, add to valid cell to cell array
-                    if (!computerMoves.isEmpty()) {
-                        cellsWithMoves.add(srcCell);
-                    }
+            // If source cell exists, we want to check if it has possible moves
+            if (srcCell != null) {
+                computerMoves = cellBoard.possibleMoves(srcCell);
+                // If we have possible moves, add to valid cell to cell array
+                if (!computerMoves.isEmpty()) {
+                    cellsWithMoves.add(srcCell);
                 }
             }
+        }
 
-            srcCell = selectRandomCell(cellsWithMoves); // select a random cell that has moves, set as src cell
-            computerMoves = cellBoard.possibleMoves(srcCell);   // get the possible moves for that src cell
-            moves = cellBoard.getCaptureMoves(srcCell);
+        srcCell = selectRandomCell(cellsWithMoves); // select a random cell that has moves, set as src cell
+        computerMoves = cellBoard.possibleMoves(srcCell);   // get the possible moves for that src cell
+        moves = cellBoard.getCaptureMoves(srcCell);
+        updatePiecePressed(srcCell);
 
+        // If computer has another capture, use the moves arraylist
+        if(!moves.isEmpty()){
+            dstCell = selectRandomCell(moves);
+        }
+        else {
+            dstCell = selectRandomCell(computerMoves);
+        }
 
-            updatePiecePressed(srcCell);
-
-            // If computer has another capture, use the moves arraylist
-            if(!moves.isEmpty()){
-                dstCell = selectRandomCell(moves);
+        buttonBoard[dstCell.getX()][dstCell.getY()].setBackgroundResource(R.drawable.possible_moves_image);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                onSecondClick(srcCell, dstCell);
             }
-            else {
-                dstCell = selectRandomCell(computerMoves);
-            }
-
-            buttonBoard[dstCell.getX()][dstCell.getY()].setBackgroundResource(R.drawable.possible_moves_image);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    onSecondClick(srcCell, dstCell);
-                }
-            }, 1000);
+        }, 1000);
 
     }
 
+    /*
+     * When a computer has a capture turn, this method allows him to make that move
+     * Uses timers to perform non-instant moves
+     * @param ArrayList<Cell> captureMoves - The moves that a computer can use for a capture
+     */
     public void computerCaptureTurn(ArrayList<Cell> captureMoves){
 
         // If more than 1 capture move
@@ -229,7 +227,11 @@ public class ButtonBoardAI extends AppCompatActivity {
         }, 1000);
     }
 
-
+    /*
+     * Chooses a random cell when trying to decide what move a computer will make
+     * @param ArrayList<Cell> piecesWithMoves - Game pieces on the board that have moves
+     * @ret Cell - Return cells with moves
+     */
     public Cell selectRandomCell(ArrayList<Cell> piecesWithMoves){
         Cell randomCell = piecesWithMoves.get(new Random().nextInt(piecesWithMoves.size()));
         return randomCell;
@@ -378,10 +380,12 @@ public class ButtonBoardAI extends AppCompatActivity {
             });
             builder.show();
         }
-
     }
 
-
+    /*
+     * Method that gets the button ID's for mapping buttons to an arraylist
+     * @ret int[] - Returns the array of button ID's
+     */
     public int[] getButtonArray(){
         int[] buttons_id = {R.id.button0, R.id.button2, R.id.button4, R.id.button6,
                 R.id.button9, R.id.button11, R.id.button13, R.id.button15,
@@ -394,6 +398,10 @@ public class ButtonBoardAI extends AppCompatActivity {
         return buttons_id;
     }
 
+    /*
+     * Loads a saved game if the user chooses to do so
+     * Loads the game from a save file
+     */
     public void loadGame() {
         try {
             InputStream inputStream = getApplicationContext().openFileInput("savedGame.dat");
@@ -412,6 +420,10 @@ public class ButtonBoardAI extends AppCompatActivity {
         }
     }
 
+    /*
+     * Saves the game when user chooses to do so
+     * Saves the game to a save game file
+     */
     public void saveGame() {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(getApplicationContext().openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
@@ -613,6 +625,9 @@ public class ButtonBoardAI extends AppCompatActivity {
         }
     }
 
+    /*
+     * Unhighlights the game pieces when a player performs a move
+     */
     public void unHighlightPieces() {
         Cell highlightedCell;
         while (!highlightedCells.isEmpty()) {
@@ -670,7 +685,6 @@ public class ButtonBoardAI extends AppCompatActivity {
             buttonBoard[cell.getX()][cell.getY()].setBackgroundResource(R.drawable.possible_moves_image);   // color possible moves square
         }
     }
-
 
     /*
      * When the player clicks an empty cell on the cellBoard to move source piece to, move the piece
@@ -742,6 +756,9 @@ public class ButtonBoardAI extends AppCompatActivity {
         builder.show();
     }
 
+    /*
+     * Deals with saving a game when a previous save game file is found
+     */
     public void saveGameFound() {
         final CharSequence choices[] = new CharSequence[]{"Overwrite", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoardAI.this);
@@ -765,7 +782,9 @@ public class ButtonBoardAI extends AppCompatActivity {
         builder.show();
     }
 
-
+    /*
+     * When user chooses to restart a match, this dialog appears with confirmation menu
+     */
     public void restartMatchDialog() {
         final CharSequence choices[] = new CharSequence[]{"Restart", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoardAI.this);
@@ -784,7 +803,7 @@ public class ButtonBoardAI extends AppCompatActivity {
     }
 
     /*
-     * Restarts the match
+     * Dialog menu when user tries to quit the match
      */
     public void quitMatchDialog() {
         final CharSequence choices[] = new CharSequence[]{"Quit", "Cancel"};
@@ -834,7 +853,6 @@ public class ButtonBoardAI extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.play_game_drop_down_menu, menu);//Menu Resource, Menu
         return true;
     }
-
 
     /*
      * Adds the following options: Save, Load, Restart, Quit to the Quick Menu with case on clicked

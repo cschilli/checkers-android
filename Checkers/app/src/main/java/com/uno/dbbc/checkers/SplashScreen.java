@@ -4,12 +4,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
-
+/*
+ * SplashScreen.java - Creates a popup splash screen when starting Checkers application
+ */
 public class SplashScreen extends AppCompatActivity {
 
+    /*
+     * Method that deals with the creation of SplashScreen activity
+     * Timer controls time the screen is displayed for
+     * @param Bundle savedInstanceState - Saves the instance of the splash screen activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
 
@@ -27,14 +33,6 @@ public class SplashScreen extends AppCompatActivity {
         };
         timerThread.start();
     }
-
-    @Override
-    protected void onPause() {
-        // TODO Auto-generated method stub
-        super.onPause();
-        finish();
-    }
-
 }
 
 

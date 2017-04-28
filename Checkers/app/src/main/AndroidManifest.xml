@@ -10,15 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-
-        <!-- SplashScreen.java
+        <!-- SplashScreen.java -->
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> -->
-
+        </activity>
 
         <!-- MainActivity.java -->
         <activity
@@ -26,11 +24,14 @@
             android:label="Checkers"
             android:theme="@style/MainMenuTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />  <!-- Change "LAUNCHER" to "DEFAULT" to enable SplashScreen.java -->
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"
+                    android:host="www.github.com"
+                    android:pathPrefix="/cschilli/checkers-android" />
             </intent-filter>
         </activity>
-
 
         <!-- ButtonBoard.java -->
         <activity
@@ -47,33 +48,6 @@
             android:theme="@style/ButtonBoardTheme"
             android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
-
-
-        <!-- GameOptions.java -->
-        <activity
-            android:name=".GameOptions"
-            android:label="Game Options"
-            android:theme="@style/GameOptionsTheme">
-            <!-- Adds back button in top left corner -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-
-        <!-- Settings.java -->
-        <activity
-            android:name=".Settings"
-            android:label="Settings"
-            android:theme="@style/MainMenuTheme">
-            <!-- Adds back button in top left corner -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-
-
-        <!-- Settings.java -->
-
 
     </application>
 

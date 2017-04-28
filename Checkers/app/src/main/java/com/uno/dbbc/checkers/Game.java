@@ -15,7 +15,6 @@ public class Game{
 
 
 
-
 	public Game(PlayerTUI player1, PlayerTUI player2){
 		this.board = new Board();
 		this.player1 = player1;
@@ -23,11 +22,6 @@ public class Game{
 		this.currentPlayer = this.player1;
 		this.gameStatus = GameStatus.RUNNING;
 
-	}
-
-
-	public Player getCurrentPlayer(){
-		return this.currentPlayer;
 	}
 
 
@@ -51,8 +45,8 @@ public class Game{
 			if(capturingMove){
 				boolean hopAgain = (this.board.getCaptureMoves(givenMove[2], givenMove[3]).size() > 0);
 
-				int[] srcCell = {givenMove[0], givenMove[1]};;
-				int[] dstCell  = {givenMove[2], givenMove[2]};;
+				int[] srcCell = {givenMove[0], givenMove[1]};
+				int[] dstCell  = {givenMove[2], givenMove[2]};
 				while(hopAgain){
 					displayBoard();
 					System.out.println("You just captured opponent piece and have 1 or more capturing moves. Please select one of the capturing move.");
