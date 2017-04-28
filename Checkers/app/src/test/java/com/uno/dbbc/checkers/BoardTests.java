@@ -229,13 +229,151 @@ public class BoardTests {
     public void testGetCaptureMoves() throws Exception {
         Board board = new Board();
 
+        // Make empty game board by removing pieces iteratively
+        for (int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++) {
+                if(board.getCell(i,j).containsPiece())
+                    board.removePiece(board.getCell(i, j).getPiece());
+            }
+        }
 
-        Cell cell = board.getCell(6,0);
-        ArrayList<Cell> possMoves = board.possibleMoves(cell);
-        assertTrue(possMoves.isEmpty());    // should be empty since there is no moves for piece at 6,0
+        board.getCell(0,0).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(3,3).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(4,2).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,4).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,6).placePiece(new Piece(Piece.DARK));
+
+        ArrayList<Cell> captMoves = board.getCaptureMoves(board.getCell(3,3));
+        int[] moves1 = {5,5};
+        int[] moves2 = {5,1};
+        assertFalse(captMoves.isEmpty());    // should not be empty
+        assertEquals(2, captMoves.size());   // should have 2 capture moves
+        assertArrayEquals(moves1, captMoves.get(0).getCoords());
+        assertArrayEquals(moves2, captMoves.get(1).getCoords());
+
     }
 
+    @Test
+    public void testGetCaptureMoves2() throws Exception {
+        Board board = new Board();
 
+        // Make empty game board by removing pieces iteratively
+        for (int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++) {
+                if(board.getCell(i,j).containsPiece())
+                    board.removePiece(board.getCell(i, j).getPiece());
+            }
+        }
+
+        board.getCell(0,0).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(3,3).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(4,2).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,4).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,6).placePiece(new Piece(Piece.DARK));
+
+        ArrayList<Cell> captMoves = board.getCaptureMoves(3,3);
+        int[] moves1 = {5,5};
+        int[] moves2 = {5,1};
+        assertFalse(captMoves.isEmpty());    // should not be empty
+        assertEquals(2, captMoves.size());   // should have 2 capture moves
+        assertArrayEquals(moves1, captMoves.get(0).getCoords());
+        assertArrayEquals(moves2, captMoves.get(1).getCoords());
+
+    }
+
+    @Test
+    public void testGetCaptureMovesNoCaptureMoves() throws Exception {
+        Board board = new Board();
+
+        // Make empty game board by removing pieces iteratively
+        for (int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++) {
+                if(board.getCell(i,j).containsPiece())
+                    board.removePiece(board.getCell(i, j).getPiece());
+            }
+        }
+
+        board.getCell(0,0).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(2,2).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(4,2).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,6).placePiece(new Piece(Piece.DARK));
+
+        ArrayList<Cell> captMoves = board.getCaptureMoves(board.getCell(2,2));
+        assertTrue(captMoves.isEmpty());    // should be empty
+        assertEquals(0, captMoves.size());   // should have 2 capture moves
+    }
+
+    @Test
+    public void testGetCaptureMovesForKing() throws Exception {
+        Board board = new Board();
+
+        // Make empty game board by removing pieces iteratively
+        for (int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++) {
+                if(board.getCell(i,j).containsPiece())
+                    board.removePiece(board.getCell(i, j).getPiece());
+            }
+        }
+
+        board.getCell(0,0).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(3,3).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(3,3).getPiece().makeKing();
+        board.getCell(2,2).placePiece(new Piece(Piece.DARK));
+        board.getCell(2,4).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,2).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,4).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,6).placePiece(new Piece(Piece.DARK));
+
+        ArrayList<Cell> captMoves = board.getCaptureMoves(board.getCell(3,3));
+        int[] moves1 = {5,5};
+        int[] moves2 = {5,1};
+        int[] moves3 = {1,5};
+        int[] moves4 = {1,1};
+
+        assertFalse(captMoves.isEmpty());    // should not be empty
+        assertEquals(4, captMoves.size());   // should have 4 capture moves
+        assertArrayEquals(moves1, captMoves.get(0).getCoords());
+        assertArrayEquals(moves2, captMoves.get(1).getCoords());
+        assertArrayEquals(moves3, captMoves.get(2).getCoords());
+        assertArrayEquals(moves4, captMoves.get(3).getCoords());
+    }
+
+    @Test
+    public void testIsCaptureMove() throws Exception {
+        Board board = new Board();
+
+        // Make empty game board by removing pieces iteratively
+        for (int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++) {
+                if(board.getCell(i,j).containsPiece())
+                    board.removePiece(board.getCell(i, j).getPiece());
+            }
+        }
+
+        board.getCell(0,0).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(3,3).placePiece(new Piece(Piece.LIGHT));
+        board.getCell(2,2).placePiece(new Piece(Piece.DARK));
+        board.getCell(2,4).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,2).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,4).placePiece(new Piece(Piece.DARK));
+        board.getCell(4,6).placePiece(new Piece(Piece.DARK));
+
+        Cell cell = board.getCell(3,3);
+        Cell dstCell1 = board.getCell(5,5);
+        Cell dstCell2 = board.getCell(5,1);
+        Cell dstCell3 = board.getCell(5,7);
+
+        ArrayList<Cell> captMoves = board.getCaptureMoves(cell);
+
+        assertFalse(captMoves.isEmpty());    // should not be empty
+        assertEquals(2, captMoves.size());   // should have 4 capture moves
+        assertArrayEquals(dstCell1.getCoords(), captMoves.get(0).getCoords());
+        assertArrayEquals(dstCell2.getCoords(), captMoves.get(1).getCoords());
+        assertTrue(board.isCaptureMove(cell, dstCell1));
+        assertTrue(board.isCaptureMove(cell, dstCell2));
+        assertFalse(board.isCaptureMove(cell, dstCell3));
+        
+    }
 
 }
 
