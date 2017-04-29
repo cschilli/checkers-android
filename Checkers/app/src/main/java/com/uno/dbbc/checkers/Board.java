@@ -22,7 +22,7 @@ public class Board implements Serializable{
         this.lightPieces = new ArrayList<Piece>();
         this.darkPieces = new ArrayList<Piece>();
         board = new Cell[Board.BOARD_SIZE][Board.BOARD_SIZE];
-        initialBoardSetup();
+//        initialBoardSetup();
 
         //winScenarioTest();
         //darkWinScenarioTest();
@@ -596,57 +596,7 @@ public class Board implements Serializable{
         }
 
         return isCaptureMove(this.board[givenMove[0]][givenMove[1]], this.board[givenMove[2]][givenMove[3]]);
-    }
-
-
-
-	// Methods for debugging purposes
-
-	public String toString(){
-		StringBuilder string = new StringBuilder();
-		string.append("  1 2 3 4 5 6 7 8\n");
-		for(int i=0; i< Board.BOARD_SIZE; i++){
-			string.append((i+1)+ " ");
-			for(int j=0; j <Board.BOARD_SIZE; j++){
-				Cell cell = this.board[i][j];
-				if(cell.getPiece() == null){
-					string.append("_ ");
-				}
-				else if (cell.getPiece().getColor().equals(Piece.LIGHT)){
-					string.append("L ");
-				}
-				else if(cell.getPiece().getColor().equals(Piece.DARK)){
-					string.append("D ");
-				}
-			}
-			string.append("\n");
-		}
-		return string.toString();
-
 	}
 
-	public String possibleMovesAsString(int x, int y){
-		StringBuilder builder = new StringBuilder();
-		Cell givenCell = this.board[x][y];
-		builder.append(givenCell.toString());
-		ArrayList<Cell> possibleCells = possibleMoves(x, y);
-		builder.append("Possible Next Moves are: \n");
-		for(Cell cell: possibleCells){
-			builder.append(cell.toString());
-		}
 
-		possibleCells = getCaptureMoves(givenCell);
-		builder.append("Capture Moves are: \n");
-		for(Cell cell: possibleCells){
-			builder.append(cell.toString());
-		}
-
-		return builder.toString();
-	}
-
-	public static void main(String[] args){
-		Board board = new Board();
-		System.out.println(board.toString());
-		System.out.println(board.possibleMovesAsString(5, 3));
-	}// End of main
 }// End of class

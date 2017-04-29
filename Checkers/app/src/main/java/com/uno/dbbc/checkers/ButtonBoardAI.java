@@ -337,6 +337,7 @@ public class ButtonBoardAI extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cellBoard.initialBoardSetup();
         setContentView(R.layout.board);
 
         // If device is in portrait mode
