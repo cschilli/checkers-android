@@ -521,8 +521,8 @@ public class ButtonBoard extends AppCompatActivity {
     * Switches currentPlayer to the other player, updates the turn tracker
     */
     public void changeTurn() {
-        // If both players have pieces, we can switch turns
-        if (!cellBoard.getPieces(Piece.LIGHT).isEmpty() && !cellBoard.getPieces(Piece.DARK).isEmpty()) {
+        // If both players have moves, we can switch turns
+        if (player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) {
             if (this.currentPlayer.equals(player1)) {
                 this.currentPlayer = player2;
                 updateTurnTracker();
@@ -530,6 +530,8 @@ public class ButtonBoard extends AppCompatActivity {
                 this.currentPlayer = player1;
                 updateTurnTracker();
             }
+        } else{
+            gameOverDialog();
         }
     }
 
@@ -639,10 +641,16 @@ public class ButtonBoard extends AppCompatActivity {
      */
     public void gameOverDialog() {
         updateTurnTracker();
+        String winner;
+        if(!player1.hasMoves(cellBoard)){
+            winner = "Player 1";
+        } else{
+            winner = "Player 2";
+        }
         final CharSequence choices[] = new CharSequence[]{"Play Again", "Return to Main Menu"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
         builder.setCancelable(false);
-        builder.setTitle(this.currentPlayer.getColor() + " Player Wins!");
+        builder.setTitle(winner + " Wins!");
         builder.setItems(choices, new DialogInterface.OnClickListener() {
 
             @Override
