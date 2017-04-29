@@ -13,6 +13,7 @@ public class StateTests {
     public void testState() throws Exception{
 
         Board board = new Board();
+        board.initialBoardSetup();
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 
@@ -29,6 +30,7 @@ public class StateTests {
     public void testGetBoard() throws Exception{
 
         Board board = new Board();
+        board.initialBoardSetup();
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 
@@ -41,6 +43,7 @@ public class StateTests {
     public void testGetPlayers() throws Exception{
 
         Board board = new Board();
+        board.initialBoardSetup();
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 

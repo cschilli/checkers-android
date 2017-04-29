@@ -13,12 +13,14 @@ public class BoardTests {
     public void boardInstanceTest() throws Exception{
         //test correct instantiation of board
         Board board = new Board();
+        board.initialBoardSetup();
         assertTrue(board != null);
     }
 
     @Test
     public void testInitialBoardSetup() throws Exception{
         Board board = new Board();
+        board.initialBoardSetup();
 
         Cell[][] cells = new Cell[8][8];
         for(int i = 0; i < 8; i++){
@@ -51,6 +53,7 @@ public class BoardTests {
     @Test
     public void testGetCell() throws Exception{
         Board board = new Board();
+        board.initialBoardSetup();
 
         Cell cell = new Cell(0,2);
         cell.placePiece(new Piece(Piece.LIGHT));
@@ -69,6 +72,7 @@ public class BoardTests {
     @Test
     public void testGetPieces() throws Exception{
         Board board = new Board();
+        board.initialBoardSetup();
 
         assertNotEquals(board.getPieces(Piece.LIGHT), board.getPieces(Piece.DARK));
         assertEquals(12, board.getPieces(Piece.LIGHT).size());    // should have 12 light pieces
@@ -78,6 +82,7 @@ public class BoardTests {
     @Test
     public void testMovePiece() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
         int[] coords = {3, 1};
 
         ArrayList<Cell> movedPiece = board.movePiece(2, 0, 3, 1);       // movePiece(int fromX, int fromY, int toX, int toY)
@@ -88,6 +93,7 @@ public class BoardTests {
     @Test
     public void testMovePiece2() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
         int[] src = {2,0};
         int[] dst = {3,1};
 
@@ -100,6 +106,7 @@ public class BoardTests {
     @Test
     public void testMovePiece3() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
         int[] dst = {3,1};
         int[] move = {2,0,3,1};
 
@@ -111,6 +118,7 @@ public class BoardTests {
     @Test
     public void testRemovePiece() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         assertEquals(12, board.getPieces(Piece.LIGHT).size());        // start with 12 light pieces
         Piece pieceToRemove = board.getCell(2,2).getPiece();
@@ -154,6 +162,7 @@ public class BoardTests {
     @Test
     public void testPossibleMovesWithEmptyMoves() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
         Cell cell = board.getCell(6,0);
         ArrayList<Cell> possMoves = board.possibleMoves(cell);
         assertTrue(possMoves.isEmpty());    // should be empty since there is no moves for piece at 6,0
@@ -162,6 +171,7 @@ public class BoardTests {
     @Test
     public void testPossibleMovesWithKings() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){
@@ -198,6 +208,7 @@ public class BoardTests {
     @Test
     public void testPossibleMovesWithKings2() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){
@@ -228,6 +239,7 @@ public class BoardTests {
     @Test
     public void testGetCaptureMoves() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){
@@ -256,6 +268,7 @@ public class BoardTests {
     @Test
     public void testGetCaptureMoves2() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){
@@ -284,6 +297,7 @@ public class BoardTests {
     @Test
     public void testGetCaptureMovesNoCaptureMoves() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){
@@ -306,6 +320,7 @@ public class BoardTests {
     @Test
     public void testGetCaptureMovesForKing() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){
@@ -341,6 +356,7 @@ public class BoardTests {
     @Test
     public void testIsCaptureMove() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){
@@ -378,6 +394,7 @@ public class BoardTests {
     @Test
     public void testIsCaptureMove2() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){
@@ -411,6 +428,7 @@ public class BoardTests {
     @Test
     public void testIsCaptureMove3() throws Exception {
         Board board = new Board();
+        board.initialBoardSetup();
 
         // Make empty game board by removing pieces iteratively
         for (int i = 0; i < 8; i++){

@@ -22,9 +22,9 @@ public class PlayerTests {
     public void testHasMoves() throws Exception{
         Player player = new Player("Dark");
         Board board = new Board();
+        assertFalse(player.hasMoves(board));
+        board.initialBoardSetup();
         assertTrue(player.hasMoves(board));
-
-
 
     }
 
