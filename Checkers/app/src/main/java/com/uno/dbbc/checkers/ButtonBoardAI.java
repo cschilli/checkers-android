@@ -161,35 +161,34 @@ public class ButtonBoardAI extends AppCompatActivity {
      * Simulates a real-life player making moves
      */
     public void computersTurn(){
-        ArrayList<Piece> computerPieces = cellBoard.getPieces(player2.getColor());   // store all pieces for computer
-        ArrayList<Cell> cellsWithMoves = new ArrayList<>();     // stores the pieces that have moves
-        ArrayList<Cell> computerMoves;
+        ArrayList<Cell> cellsWithMoves = new ArrayList<>();
+        ArrayList<Cell> cellsWithCaptureMoves = new ArrayList<>();
 
-        for (int i = 0; i < computerPieces.size(); i++) {
-            srcCell = cellBoard.getCell(computerPieces.get(i).getCell().getX(), computerPieces.get(i).getCell().getY());
+        ArrayList<Cell> captureMoves;
+        ArrayList<Cell> moves;
 
-            // If source cell exists, we want to check if it has possible moves
-            if (srcCell != null) {
-                computerMoves = cellBoard.possibleMoves(srcCell);
-                // If we have possible moves, add to valid cell to cell array
-                if (!computerMoves.isEmpty()) {
-                    cellsWithMoves.add(srcCell);
-                }
+        for (Cell cell: highlightedCells) {
+            captureMoves = cellBoard.getCaptureMoves(cell);
+            if(!captureMoves.isEmpty()){
+                cellsWithCaptureMoves.add(cell);
+            } else{
+                cellsWithMoves.add(cell);
             }
         }
 
-        srcCell = selectRandomCell(cellsWithMoves); // select a random cell that has moves, set as src cell
-        computerMoves = cellBoard.possibleMoves(srcCell);   // get the possible moves for that src cell
-        moves = cellBoard.getCaptureMoves(srcCell);
-        updatePiecePressed(srcCell);
+        Random random = new Random();
 
-        // If computer has another capture, use the moves arraylist
-        if(!moves.isEmpty()){
-            dstCell = selectRandomCell(moves);
+        if(!cellsWithCaptureMoves.isEmpty()){
+            srcCell = cellsWithCaptureMoves.get(random.nextInt(cellsWithCaptureMoves.size()));
+            ArrayList<Cell> possibleMoves = cellBoard.getCaptureMoves(srcCell);
+            dstCell = possibleMoves.get(random.nextInt(possibleMoves.size()));
+        } else{
+            srcCell = cellsWithMoves.get(random.nextInt(cellsWithMoves.size()));
+            ArrayList<Cell> possibleMoves = cellBoard.possibleMoves(srcCell);
+            dstCell = possibleMoves.get(random.nextInt(possibleMoves.size()));
         }
-        else {
-            dstCell = selectRandomCell(computerMoves);
-        }
+
+        updatePiecePressed(srcCell);
 
         buttonBoard[dstCell.getX()][dstCell.getY()].setBackgroundResource(R.drawable.possible_moves_image);
         final Handler handler = new Handler();
@@ -208,16 +207,7 @@ public class ButtonBoardAI extends AppCompatActivity {
      * @param ArrayList<Cell> captureMoves - The moves that a computer can use for a capture
      */
     public void computerCaptureTurn(ArrayList<Cell> captureMoves){
-
-        // If more than 1 capture move
-        if(captureMoves.size() > 1) {
-            dstCell = selectRandomCell(captureMoves);   // get random capture move
-        }
-        // If computer has a single capture move
-        else if(captureMoves.size() == 1){
-            dstCell = captureMoves.get(0);
-        }
-
+        dstCell = captureMoves.get(new Random().nextInt(captureMoves.size()));
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -374,6 +364,7 @@ public class ButtonBoardAI extends AppCompatActivity {
                         ButtonBoardAI.this.player1 = new Player(Piece.LIGHT);
                         ButtonBoardAI.this.player2 = new Player(Piece.DARK);
                         ButtonBoardAI.this.currentPlayer = ButtonBoardAI.this.player2;
+                        updateTurnTracker();
                         computersTurn();
                     }
                     // Dark player starts first
