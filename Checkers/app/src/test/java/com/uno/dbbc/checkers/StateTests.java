@@ -17,7 +17,7 @@ public class StateTests {
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 
-        State state = new State(board, player1, player2, player1, false);
+        State state = new State(board, player1, player2, player1, false, null, null, false);
 
         assertEquals("Dark", state.getPlayer1().getColor());
         assertEquals("Light", state.getPlayer2().getColor());
@@ -25,6 +25,9 @@ public class StateTests {
         assertNotEquals("Light", state.getPlayer1().getColor());
         assertEquals(false, state.isSinglePlayerMode());
         assertEquals(player1, state.getCurrentPlayer());
+        assertEquals(null, state.getSrcCell());
+        assertEquals(null, state.getDstCell());
+        assertEquals(false, state.isSrcCellFixed());
     }
 
     @Test
@@ -35,7 +38,7 @@ public class StateTests {
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 
-        State state = new State(board, player1, player2, player1, true);
+        State state = new State(board, player1, player2, player1, true, null, null, false);
 
         assertEquals(board, state.getBoard());
     }
@@ -48,7 +51,7 @@ public class StateTests {
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 
-        State state = new State(board, player1, player2, player1, true);
+        State state = new State(board, player1, player2, player1, true, null, null, false);
 
         assertEquals(player1, state.getPlayer1());
         assertNotEquals(player2, state.getPlayer1());
@@ -56,7 +59,6 @@ public class StateTests {
         assertNotEquals(player1, state.getPlayer2());
         assertEquals(player1, state.getCurrentPlayer());
         assertNotEquals(player2, state.getCurrentPlayer());
-        assertEquals(true, state.isSinglePlayerMode());
     }
 
 }
