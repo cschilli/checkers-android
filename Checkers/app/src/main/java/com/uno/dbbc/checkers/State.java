@@ -13,14 +13,20 @@ public class State implements Serializable{
     private Player player1;
     private Player player2;
     private boolean singlePlayerMode;
+    private Cell srcCell;
+    private Cell dstCell;
+    private boolean srcCellFixed;
 
 
-    public State(Board givenBoard, Player player1, Player player2, Player currentPlayer, boolean singlePlayerMode){
+    public State(Board givenBoard, Player player1, Player player2, Player currentPlayer, boolean singlePlayerMode, Cell srcCell, Cell dstCell, boolean srcCellFixed){
         this.board = givenBoard;
         this.player1 = player1;
         this.player2 = player2;
         this.currentPlayer = currentPlayer;
         this.singlePlayerMode = singlePlayerMode;
+        this.srcCell = srcCell;
+        this.dstCell = dstCell;
+        this.srcCellFixed = srcCellFixed;
     }
 
     public Board getBoard(){
@@ -36,5 +42,11 @@ public class State implements Serializable{
     public Player getCurrentPlayer() { return currentPlayer;}
 
     public boolean isSinglePlayerMode(){ return  this.singlePlayerMode; }
+
+    public Cell getSrcCell(){ return this.srcCell; }
+
+    public Cell getDstCell() { return this.dstCell; }
+
+    public boolean isSrcCellFixed() { return this.srcCellFixed; }
 
 }

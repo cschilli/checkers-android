@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -312,7 +311,6 @@ public class ButtonBoard extends AppCompatActivity {
         // If player who is light runs out of pieces, they lose
         if ((!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
                 (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))) {
-            Log.d("****", "onClick: game over ");
             gameOverDialog();
         } else if (!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)) {
             Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
@@ -759,6 +757,15 @@ public class ButtonBoard extends AppCompatActivity {
                 this.player2 = savedState.getPlayer2();
                 this.currentPlayer = savedState.getCurrentPlayer();
                 this.computerMode = savedState.isSinglePlayerMode();
+                this.srcCell = savedState.getSrcCell();
+                this.dstCell = savedState.getDstCell();
+                this.srcCellFixed = savedState.isSrcCellFixed();
+
+                if(this.srcCellFixed && (this.srcCell!= null) ){
+                    updatePiecePressed(this.srcCell);
+                    moves = cellBoard.getCaptureMoves(this.srcCell);
+                    showPossibleMoves(moves);
+                }
             }
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), "No Game Saved!", Toast.LENGTH_SHORT).show();
@@ -774,7 +781,7 @@ public class ButtonBoard extends AppCompatActivity {
     public void saveGame() {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(getApplicationContext().openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
-            objectOutputStream.writeObject(new State(cellBoard, player1, player2, currentPlayer, computerMode));
+            objectOutputStream.writeObject(new State(cellBoard, player1, player2, currentPlayer, computerMode, srcCell, dstCell, srcCellFixed));
             objectOutputStream.close();
             Toast.makeText(getApplicationContext(), "Game Saved", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
