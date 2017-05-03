@@ -37,20 +37,22 @@ import java.util.Random;
  *                  - Stores button ids for game cellBoard layout and maps them to the correct cell (x, y)
  *                  - Creates array of buttons that map each square on the game cellBoard
  *                  - Initializes the game piece images on the cellBoard (12 dark pieces and 12 light pieces)
- *                  - This class deals with the Player Vs. Player Mode of Checkers
  */
 public class ButtonBoard extends AppCompatActivity {
 
     private int[] buttons_id;
     private Button[][] buttonBoard;        // stores the Button objects with their indexes
     private ArrayList<Cell> moves;
-    private ArrayList<Cell> highlightedCells = new ArrayList<>();
+    private ArrayList<Cell> highlightedCells;
     private Player player1;
     private Player player2;
     private Player currentPlayer;
-    private boolean srcCellFixed = false;
-    int roundCounter = 0;
     private boolean computerMode;
+    private boolean srcCellFixed = false;
+    private Board cellBoard = new Board();
+    private Cell srcCell = null;
+    private Cell dstCell = null;
+    private Handler delayHandler;
 
     // Game cellBoard layout of the black squares by square ID
     // 0-63  --> black button squares, used for indexing      _ -->  red button squares, are not used in indexing
@@ -66,10 +68,6 @@ public class ButtonBoard extends AppCompatActivity {
     //	 5    _  41  _  43  _  45  _  47
     //	 6    48  _  50  _  52  _  54
     //	 7    _  57  _  59  _  61  _  63
-
-    private Board cellBoard = new Board();
-    private Cell srcCell = null;
-    private Cell dstCell = null;
 
     /*
      * Creates the activity for the game cellBoard, then sets up game piece images on game cellBoard
@@ -90,6 +88,8 @@ public class ButtonBoard extends AppCompatActivity {
             this.resizeBoardToScreenSizeLandscape();
         }
 
+        delayHandler = new Handler();
+        highlightedCells = new ArrayList<>();
         buttons_id = getButtonArray();
         buttonBoard = new Button[8][8];
         fillButtonBoard(listener);
@@ -150,8 +150,14 @@ public class ButtonBoard extends AppCompatActivity {
                     ButtonBoard.this.player2 = new Player(Piece.DARK);
                     ButtonBoard.this.currentPlayer = ButtonBoard.this.player2;
                     if(computerMode){
-                        updateTurnTracker();
-                        computersTurn();
+                            delayHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    updateTurnTracker();
+                                    computersTurn();
+                                }
+                            }, 1000);
+
                     }
                 }
                 // Dark player starts first
@@ -235,10 +241,6 @@ public class ButtonBoard extends AppCompatActivity {
         } else if (!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)) {
             Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
         }
-        // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
-        else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
-            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
-        }
     }
 
     /*
@@ -313,10 +315,6 @@ public class ButtonBoard extends AppCompatActivity {
             Log.d("****", "onClick: game over ");
             gameOverDialog();
         } else if (!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)) {
-            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
-        }
-        // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
-        else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
             Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
         }
     }
@@ -534,8 +532,7 @@ public class ButtonBoard extends AppCompatActivity {
                 updateTurnTracker();
 
                 if(computerMode) {
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
+                    delayHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             computersTurn();
@@ -691,8 +688,7 @@ public class ButtonBoard extends AppCompatActivity {
         updatePiecePressed(srcCell);
 
         buttonBoard[dstCell.getX()][dstCell.getY()].setBackgroundResource(R.drawable.possible_moves_image);
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        delayHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 onSecondClick(srcCell, dstCell);
@@ -707,8 +703,7 @@ public class ButtonBoard extends AppCompatActivity {
      */
     public void computerCaptureTurn(ArrayList<Cell> captureMoves) {
         dstCell = captureMoves.get(new Random().nextInt(captureMoves.size()));
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        delayHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 onSecondClick(srcCell, dstCell);
@@ -723,9 +718,9 @@ public class ButtonBoard extends AppCompatActivity {
         updateTurnTracker();
         String winner;
         if(!player1.hasMoves(cellBoard)){
-            winner = "Player 1";
-        } else{
             winner = "Player 2";
+        } else{
+            winner = "Player 1";
         }
         final CharSequence choices[] = new CharSequence[]{"Play Again", "Return to Main Menu"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
@@ -980,6 +975,4 @@ public class ButtonBoard extends AppCompatActivity {
         buttonLayoutParams.height = (int) (height * 0.9723);
         buttonLayout.setLayoutParams(buttonLayoutParams);
     }
-
-
 }

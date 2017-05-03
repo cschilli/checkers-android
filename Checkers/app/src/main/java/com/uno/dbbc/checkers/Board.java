@@ -22,11 +22,6 @@ public class Board implements Serializable{
         this.lightPieces = new ArrayList<Piece>();
         this.darkPieces = new ArrayList<Piece>();
         board = new Cell[Board.BOARD_SIZE][Board.BOARD_SIZE];
-//        initialBoardSetup();
-
-        //winScenarioTest();
-        //darkWinScenarioTest();
-        //lightWinScenarioTest();
     }
 
 
@@ -75,80 +70,6 @@ public class Board implements Serializable{
     }// end of initialBoardSetup
 
 
-
-    /*----------------------*/
-    /*  TESTING - BEGINNING */
-    /*----------------------*/
-
-    private void winScenarioTest(){
-        for(int i=0; i < Board.BOARD_SIZE; i++) {
-            for (int j = 0; j < Board.BOARD_SIZE; j++) {
-                this.board[i][j] = new Cell(i, j);
-            }
-        }
-
-        this.board[1][1].placePiece(new Piece(Piece.LIGHT));
-        this.board[1][3].placePiece(new Piece(Piece.LIGHT));
-        this.board[1][1].getPiece().makeKing();
-        this.board[1][3].getPiece().makeKing();
-        lightPieces.add(this.board[1][1].getPiece());
-        lightPieces.add(this.board[1][3].getPiece());
-
-        this.board[2][2].placePiece(new Piece(Piece.DARK));
-        this.board[2][4].placePiece(new Piece(Piece.DARK));
-        this.board[2][2].getPiece().makeKing();
-        this.board[2][4].getPiece().makeKing();
-        darkPieces.add(this.board[2][2].getPiece());
-        darkPieces.add(this.board[2][4].getPiece());
-    }
-
-    private void darkWinScenarioTest(){
-        for(int i=0; i < Board.BOARD_SIZE; i++) {
-            for (int j = 0; j < Board.BOARD_SIZE; j++) {
-                this.board[i][j] = new Cell(i, j);
-            }
-        }
-
-        this.board[0][4].placePiece(new Piece(Piece.LIGHT));
-        this.board[0][4].getPiece().makeKing();
-        lightPieces.add(this.board[0][4].getPiece());
-
-        this.board[2][2].placePiece(new Piece(Piece.DARK));
-        this.board[2][4].placePiece(new Piece(Piece.DARK));
-        this.board[2][2].getPiece().makeKing();
-        this.board[2][4].getPiece().makeKing();
-        darkPieces.add(this.board[2][2].getPiece());
-        darkPieces.add(this.board[2][4].getPiece());
-    }
-
-    private void lightWinScenarioTest(){
-        for(int i=0; i < Board.BOARD_SIZE; i++) {
-            for (int j = 0; j < Board.BOARD_SIZE; j++) {
-                this.board[i][j] = new Cell(i, j);
-            }
-        }
-
-        this.board[1][1].placePiece(new Piece(Piece.LIGHT));
-        this.board[1][3].placePiece(new Piece(Piece.LIGHT));
-        this.board[1][1].getPiece().makeKing();
-        this.board[1][3].getPiece().makeKing();
-        lightPieces.add(this.board[1][1].getPiece());
-        lightPieces.add(this.board[1][3].getPiece());
-
-        this.board[2][2].placePiece(new Piece(Piece.DARK));
-        this.board[2][2].getPiece().makeKing();
-        darkPieces.add(this.board[2][2].getPiece());
-    }
-
-    /*----------------*/
-    /*  TESTING - END */
-    /*----------------*/
-
-
-
-
-
-
     /**
      * Gets the Cell in the specified position
      * @param x x-coordinate of the cell
@@ -163,7 +84,6 @@ public class Board implements Serializable{
 
         return this.board[x][y];
     }
-
 
 
     /**
@@ -223,9 +143,6 @@ public class Board implements Serializable{
         changedCells.add(dstCell);
         return changedCells;
     }// End of move
-
-
-
 
 
     /**
@@ -331,7 +248,6 @@ public class Board implements Serializable{
 
 
         // if the piece is light-colored
-
         if(playerColor.equals(Piece.LIGHT)){
             //the next move will be one row ahead i.e in row number X+1
             int nextX = givenCell.getX()+1;
