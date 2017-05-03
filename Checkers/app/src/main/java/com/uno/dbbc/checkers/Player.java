@@ -39,22 +39,6 @@ public class Player implements Serializable{
         return false;
     }
 
-
-//	//TODO: make this more suitable as number of pieces might not be used in the model.
-//	public int getNumOfPieces(Board givenBoard){
-//		return givenBoard.getPieces(this.color).size();
-//	}
-//
-//
-//	public abstract int[] getMove(Board givenState);
-//
-//	public abstract int[] getMoveSrcCell(Board givenState);
-//
-//	public abstract int[] getMoveDstCell(Board givenState);
-
-
-
-
 	@Override
 	public boolean equals(Object obj){
 		if(! (obj instanceof Player)){
