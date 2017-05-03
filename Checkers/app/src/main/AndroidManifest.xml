@@ -10,21 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- SplashScreen.java -->
-        <activity android:name=".SplashScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
         <!-- MainActivity.java -->
         <activity
             android:name=".MainActivity"
             android:label="Checkers"
             android:theme="@style/MainMenuTheme">
             <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
