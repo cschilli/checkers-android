@@ -37,12 +37,6 @@
         </activity>
 
         <!-- ButtonBoardAI.java -->
-        <activity
-            android:name=".ButtonBoardAI"
-            android:label=""
-            android:theme="@style/ButtonBoardTheme"
-            android:configChanges="orientation|keyboardHidden|screenSize">
-        </activity>
 
     </application>
 

@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Random;
 
 /*
  * ButtonBoard.java - Handles the graphical user interface for the game cellBoard
@@ -46,6 +49,7 @@ public class ButtonBoard extends AppCompatActivity {
     private Player currentPlayer;
     private boolean srcCellFixed = false;
     int roundCounter = 0;
+    private boolean computerMode;
 
     // Game cellBoard layout of the black squares by square ID
     // 0-63  --> black button squares, used for indexing      _ -->  red button squares, are not used in indexing
@@ -67,16 +71,127 @@ public class ButtonBoard extends AppCompatActivity {
     private Cell dstCell = null;
 
     /*
-     * Creates listener to perform action when player clicks a game piece
-     * Handles when player wants to move a piece
+     * Creates the activity for the game cellBoard, then sets up game piece images on game cellBoard
+     * @param Bundle savedInstanceState
      */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        cellBoard.initialBoardSetup();
+        setContentView(R.layout.board);
+
+        // If device is in portrait mode
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            this.resizeBoardToScreenSizePortrait();
+        }
+        // If device is in landscape mode
+        else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            this.resizeBoardToScreenSizeLandscape();
+        }
+
+        buttons_id = getButtonArray();
+        buttonBoard = new Button[8][8];
+        fillButtonBoard(listener);
+        updateBoard(buttonBoard, cellBoard);
+        this.moves = new ArrayList<>();                  // init moves arraylist
+
+        // If the load message was loaded, we load the game, otherwise a new game is created
+        if (getIntent().getBooleanExtra("LOAD", false)) {
+            loadGame();
+            updateBoard(buttonBoard, cellBoard);
+            updateTurnTracker();
+        }
+        else{
+            chooseColorDialog();
+            choosePlayerDialog();
+        }
+    }
+
+    /*
+     * Creates dialog menu to let a user pick which player to be
+     */
+    public void choosePlayerDialog(){
+        final CharSequence gameMode[] = new CharSequence[]{"1 Player ", "2 Player"};
+        AlertDialog.Builder gameModeBuilder = new AlertDialog.Builder(ButtonBoard.this);
+        gameModeBuilder.setCancelable(false);
+        gameModeBuilder.setTitle("Select Game Mode:");
+        gameModeBuilder.setItems(gameMode, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int clickValue) {
+                // Computer mode
+                if(clickValue == 0) {
+                    computerMode = true;
+                }
+                // Player vs. Player mode
+                else if (clickValue == 1) {
+                    computerMode = false;
+                }
+                updateTurnTracker();
+            }
+        });
+        gameModeBuilder.show();
+    }
+
+    /*
+     * Creates dialog menu to let player 1 pick their color
+     */
+    public void chooseColorDialog(){
+        final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
+        builder.setCancelable(false);
+        builder.setTitle("Please select color for Player 1");
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int clickValue) {
+                // Light player starts first
+                if(clickValue == 0) {
+                    ButtonBoard.this.player1 = new Player(Piece.LIGHT);
+                    ButtonBoard.this.player2 = new Player(Piece.DARK);
+                    ButtonBoard.this.currentPlayer = ButtonBoard.this.player2;
+                    if(computerMode){
+                        updateTurnTracker();
+                        computersTurn();
+                    }
+                }
+                // Dark player starts first
+                else if (clickValue == 1) {
+                    ButtonBoard.this.player1 = new Player(Piece.DARK);
+                    ButtonBoard.this.player2 = new Player(Piece.LIGHT);
+                    ButtonBoard.this.currentPlayer = ButtonBoard.this.player1;
+                }
+                updateTurnTracker();
+            }
+        });
+
+        builder.show();
+    }
+
+    /*
+      * Creates listener to perform action when player clicks a game piece
+      * Handles when player wants to move a piece
+      */
     private View.OnClickListener listener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-        int tag = (Integer) v.getTag();
-        int xCord = tag / 10;
-        int yCord = tag % 10;
+            int tag = (Integer) v.getTag();
+            int xCord = tag / 10;
+            int yCord = tag % 10;
 
+            if(!computerMode) {
+                playerMode(xCord, yCord);
+            }
+            else{
+                computerMode(xCord, yCord);
+            }
+        }
+    };
+
+    /*
+     * Used for when game is player vs. player
+     * @param int xCord - X-Coordinate of cell
+     * @param int yCord - Y-Coordinate of cell
+     */
+    public void playerMode(int xCord, int yCord){
         // If both players have pieces, game IS RUNNING
         if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
 
@@ -113,95 +228,103 @@ public class ButtonBoard extends AppCompatActivity {
         }
 
         // If player who is light runs out of pieces, they lose
-        if ( (!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
-                (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))  ){
+        if ((!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
+                (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))) {
             gameOverDialog();
-        }
-        else if(!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)){
+        } else if (!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)) {
             Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
         }
         // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
         else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
             Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
         }
+    }
+
+    /*
+     * Used for when game is player vs. computer
+     * @param int xCord - X-Coordinate of cell
+     * @param int yCord - Y-Coordinate of cell
+     */
+    public void computerMode(int xCord, int yCord){
+        // If both players have pieces, game IS RUNNING
+        if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
+
+            // If current player is not computer
+            if (currentPlayer == player1) {
+                // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
+                if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
+                    unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
+                    srcCell = cellBoard.getCell(xCord, yCord);
+                    moves = cellBoard.possibleMoves(srcCell);
+
+                    //If the user taps the cell with no moves then show the message stating that
+                    if (moves.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
+                        srcCell = null;
+                        updateTurnTracker();
+                    }
+                    // Else, if player has possible moves THEN we can move piece
+                    else {
+                        showPossibleMoves(moves);
+                        srcCell = cellBoard.getCell(xCord, yCord);
+                        updatePiecePressed(srcCell);
+                    }
+                }
+
+                //If the user taps same cell twice then deselect the cell
+                else if (srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed) {
+                    srcCell = null;
+                    updatePieces(xCord, yCord); // updates the graphical pieces
+                    updateTurnTracker();
+                } else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
+                    dstCell = cellBoard.getCell(xCord, yCord);
+                    onSecondClick(srcCell, dstCell);
+                }
+            }
+
+            // Else for player 1 second click
+            else {
+
+                // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
+                if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
+                    unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
+                    srcCell = cellBoard.getCell(xCord, yCord);
+                    moves = cellBoard.possibleMoves(srcCell);
+
+                    //If the user taps the cell with no moves then show the message stating that
+                    if (moves.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
+                        srcCell = null;
+                        updateTurnTracker();
+                    }
+                    // Else, if player has possible moves THEN we can move piece
+                    else {
+                        showPossibleMoves(moves);
+                        srcCell = cellBoard.getCell(xCord, yCord);
+                        updatePiecePressed(srcCell);
+                    }
+                }
+            }
         }
-    };
+        // If player who is light runs out of pieces, they lose
+        if ((!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
+                (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))) {
+            Log.d("****", "onClick: game over ");
+            gameOverDialog();
+        } else if (!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)) {
+            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
+        }
+        // If BOTH players each have 1 piece left AND the round is over 40, call it a draw
+        else if (cellBoard.getPieces(Piece.LIGHT).size() == 1 && cellBoard.getPieces(Piece.DARK).size() == 1 && roundCounter > 40) {
+            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
+        }
+    }
 
     /*
      * When back button is pressed, do not restart activity
      */
     @Override
     public void onBackPressed() {}
-
-    /*
-     * Resizes the gameboard and pieces according to the screen size (Portrait)
-     * Scales the width & height according to the required dimensions
-     * Testing & working with:
-     *      - Galaxy S3 1280x720 (phone)
-     *      - Nexus 5  1080x1920 (phone)
-     *      - Nexus 9  2048x1536 (tablet)
-     *      - Pixel XL 1440x2560 (phone)
-     */
-    public void resizeBoardToScreenSizePortrait(){
-        // Gets the width of the current screen
-        WindowManager wm = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        double width = metrics.widthPixels;
-
-        // Sets the width & height for the game board image
-        ImageView imageView = (ImageView) findViewById(R.id.boardImageView);
-        LayoutParams imageParams = imageView.getLayoutParams();
-        imageParams.width =  (int) (width * 1.0028);
-        imageParams.height = (int) (width * 1.0085);
-        imageView.setLayoutParams(imageParams);
-
-        // Sets the width & height for the grid of game buttons in the layout
-        LinearLayout buttonLayout = (LinearLayout) findViewById(R.id.parent_layout);
-        LayoutParams buttonLayoutParams = buttonLayout.getLayoutParams();     // Gets the layout params that will allow you to resize the layout
-        buttonLayoutParams.width =  (int) (width * 0.967);
-        buttonLayoutParams.height = (int) (width * 0.9723);
-        buttonLayout.setLayoutParams(buttonLayoutParams);
-    }
-
-    /*
-     * Resizes the gameboard and pieces according to the screen size (Landscape)
-     * Scales the width & height according to the required dimensions
-     * Testing & working with:
-     *      - Galaxy S3 1280x720 (phone)
-     *      - Nexus 5  1080x1920 (phone)
-     *      - Nexus 9  2048x1536 (tablet)
-     *      - Pixel XL 1440x2560 (phone)
-     */
-    public void resizeBoardToScreenSizeLandscape(){
-        // Gets the height of the action bar, so we can prevent action bar from partially hiding the board
-        final TypedArray styledAttributes = getApplicationContext().getTheme().obtainStyledAttributes(
-                new int[] { android.R.attr.actionBarSize });
-        int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
-        styledAttributes.recycle();
-
-        // Gets the height of the current screen
-        WindowManager wm = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        double height = metrics.heightPixels - (actionBarHeight * 1.75);    // subtract size of top action bar so it doesn't partially hide board
-
-        // Sets the width & height for the game board image
-        ImageView imageView = (ImageView) findViewById(R.id.boardImageView);
-        LayoutParams imageParams = imageView.getLayoutParams();
-        imageParams.width =  (int) (height * 1.0028);
-        imageParams.height = (int) (height * 1.0085);
-        imageView.setLayoutParams(imageParams);
-
-        // Sets the width & height for the grid of game buttons in the layout
-        LinearLayout buttonLayout = (LinearLayout) findViewById(R.id.parent_layout);
-        LayoutParams buttonLayoutParams = buttonLayout.getLayoutParams();     // Gets the layout params that will allow you to resize the layout
-        buttonLayoutParams.width =  (int) (height * 0.967);
-        buttonLayoutParams.height = (int) (height * 0.9723);
-        buttonLayout.setLayoutParams(buttonLayoutParams);
-    }
 
     /*
      * If device orientation changes after activity is started, we want to change the board according
@@ -221,87 +344,6 @@ public class ButtonBoard extends AppCompatActivity {
     }
 
     /*
-     * Creates the activity for the game cellBoard, then sets up game piece images on game cellBoard
-     * @param Bundle savedInstanceState
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        cellBoard.initialBoardSetup();
-        setContentView(R.layout.board);
-
-        // If device is in portrait mode
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            this.resizeBoardToScreenSizePortrait();
-        }
-        // If device is in landscape mode
-        else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            this.resizeBoardToScreenSizeLandscape();
-        }
-
-        buttons_id = getButtonArray();
-        buttonBoard = new Button[8][8];
-        fillButtonBoard(listener);
-        updateBoard(buttonBoard, cellBoard);
-        this.moves = new ArrayList<>();                  // init moves arraylist
-
-        // If the load message was loaded, we load the game, otherwise a new game is created
-        if (getIntent().getBooleanExtra("LOAD", false)) {
-            loadGame();
-            updateBoard(buttonBoard, cellBoard);
-            updateTurnTracker();
-        }
-        else{
-            final Intent vsComputerIntent = new Intent(this, ButtonBoardAI.class);
-            final CharSequence gameMode[] = new CharSequence[]{"1 Player ", "2 Player"};
-            AlertDialog.Builder gameModeBuilder = new AlertDialog.Builder(ButtonBoard.this);
-            gameModeBuilder.setCancelable(false);
-            gameModeBuilder.setTitle("Select Game Mode:");
-            gameModeBuilder.setItems(gameMode, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int clickValue) {
-                    // Computer mode
-                    if(clickValue == 0) {
-                        startActivity(vsComputerIntent);
-                    }
-                    // Player vs. Player mode
-                    else if (clickValue == 1) {
-
-                    }
-                    updateTurnTracker();
-                }
-            });
-
-            final CharSequence choices[] = new CharSequence[]{"Light", "Dark"};
-            AlertDialog.Builder builder = new AlertDialog.Builder(ButtonBoard.this);
-            builder.setCancelable(false);
-            builder.setTitle("Please select color for Player 1");
-            builder.setItems(choices, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int clickValue) {
-                    // Light player starts first
-                    if(clickValue == 0) {
-                        ButtonBoard.this.player1 = new Player(Piece.LIGHT);
-                        ButtonBoard.this.player2 = new Player(Piece.DARK);
-                        ButtonBoard.this.currentPlayer = ButtonBoard.this.player2;
-                    }
-                    // Dark player starts first
-                    else if (clickValue == 1) {
-                        ButtonBoard.this.player1 = new Player(Piece.DARK);
-                        ButtonBoard.this.player2 = new Player(Piece.LIGHT);
-                        ButtonBoard.this.currentPlayer = ButtonBoard.this.player1;
-                    }
-                    updateTurnTracker();
-                }
-            });
-
-            builder.show();
-            gameModeBuilder.show();
-        }
-
-    }
-
-    /*
      * Method that gets the button ID's for mapping buttons to an arraylist
      * @ret int[] - Returns the array of button ID's
      */
@@ -315,43 +357,6 @@ public class ButtonBoard extends AppCompatActivity {
                 R.id.button48, R.id.button50, R.id.button52, R.id.button54,
                 R.id.button57, R.id.button59, R.id.button61, R.id.button63};
         return buttons_id;
-    }
-
-    /*
-     * Loads a saved game if the user chooses to do so
-     * Loads the game from a save file
-     */
-    public void loadGame() {
-        try {
-            InputStream inputStream = getApplicationContext().openFileInput("savedGame.dat");
-            if (inputStream != null) {
-                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-                State savedState = (State) objectInputStream.readObject();
-                this.cellBoard = savedState.getBoard();
-                this.player1 = savedState.getPlayer1();
-                this.player2 = savedState.getPlayer2();
-                this.currentPlayer = savedState.getCurrentPlayer();
-            }
-        } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), "No Game Saved!", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Error loading the game", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /*
-     * Saves the game when user chooses to do so
-     * Saves the game to a save game file
-     */
-    public void saveGame() {
-        try {
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(getApplicationContext().openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
-            objectOutputStream.writeObject(new State(this.cellBoard, this.player1, this.player2, this.currentPlayer));
-            objectOutputStream.close();
-            Toast.makeText(getApplicationContext(), "Game Saved", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "Error in saving the game! ", Toast.LENGTH_SHORT).show();
-        }
     }
 
     /*
@@ -526,6 +531,17 @@ public class ButtonBoard extends AppCompatActivity {
             if (this.currentPlayer.equals(player1)) {
                 this.currentPlayer = player2;
                 updateTurnTracker();
+
+                if(computerMode) {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            computersTurn();
+                        }
+                    }, 1000);
+                }
+
             } else {
                 this.currentPlayer = player1;
                 updateTurnTracker();
@@ -596,7 +612,6 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
-
     /*
      * When the player clicks an empty cell on the cellBoard to move source piece to, move the piece
      * If the players move captures a piece, we want to check if THAT piece has any more capture moves
@@ -617,7 +632,13 @@ public class ButtonBoard extends AppCompatActivity {
                 this.srcCell = null;
                 this.dstCell = null;
                 srcCellFixed = false;
-                changeTurn();
+
+                if(computerMode){
+                    changeTurn();
+                }
+                else {
+                    changeTurn();
+                }
             }
             // Else, we can go forward and let them capture another piece
             else {
@@ -625,6 +646,11 @@ public class ButtonBoard extends AppCompatActivity {
                 srcCellFixed = true;
                 updatePiecePressed(this.srcCell);
                 showPossibleMoves(moves);
+
+                //If current player is computer
+                if (currentPlayer == player2 && computerMode) {
+                    computerCaptureTurn(moves);
+                }
             }
         }
         // If player does not have another turn, change turns
@@ -632,8 +658,72 @@ public class ButtonBoard extends AppCompatActivity {
             srcCell = null;
             dstCell = null;
             srcCellFixed = false;
-            changeTurn();
+
+            if(computerMode){
+                changeTurn();
+            }
+            else {
+                changeTurn();
+            }
         }
+    }
+
+    /*
+     * Deals with handling the computers turn
+     * Simulates a real-life player making moves
+     */
+    public void computersTurn() {
+        ArrayList<Cell> cellsWithMoves = new ArrayList<>();
+        ArrayList<Cell> cellsWithCaptureMoves = new ArrayList<>();
+
+        ArrayList<Cell> captureMoves;
+
+        for (Cell cell : highlightedCells) {
+            captureMoves = cellBoard.getCaptureMoves(cell);
+            if (!captureMoves.isEmpty()) {
+                cellsWithCaptureMoves.add(cell);
+            } else {
+                cellsWithMoves.add(cell);
+            }
+        }
+        Random random = new Random();
+
+        if (!cellsWithCaptureMoves.isEmpty()) {
+            srcCell = cellsWithCaptureMoves.get(random.nextInt(cellsWithCaptureMoves.size()));
+            ArrayList<Cell> possibleMoves = cellBoard.getCaptureMoves(srcCell);
+            dstCell = possibleMoves.get(random.nextInt(possibleMoves.size()));
+        } else {
+            srcCell = cellsWithMoves.get(random.nextInt(cellsWithMoves.size()));
+            ArrayList<Cell> possibleMoves = cellBoard.possibleMoves(srcCell);
+            dstCell = possibleMoves.get(random.nextInt(possibleMoves.size()));
+        }
+
+        updatePiecePressed(srcCell);
+
+        buttonBoard[dstCell.getX()][dstCell.getY()].setBackgroundResource(R.drawable.possible_moves_image);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                onSecondClick(srcCell, dstCell);
+            }
+        }, 1000);
+    }
+
+    /*
+     * When a computer has a capture turn, this method allows him to make that move
+     * Uses timers to perform non-instant moves
+     * @param ArrayList<Cell> captureMoves - The moves that a computer can use for a capture
+     */
+    public void computerCaptureTurn(ArrayList<Cell> captureMoves) {
+        dstCell = captureMoves.get(new Random().nextInt(captureMoves.size()));
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                onSecondClick(srcCell, dstCell);
+            }
+        }, 1000);
     }
 
     /*
@@ -667,6 +757,43 @@ public class ButtonBoard extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    /*
+     * Loads a saved game if the user chooses to do so
+     * Loads the game from a save file
+     */
+    public void loadGame() {
+        try {
+            InputStream inputStream = getApplicationContext().openFileInput("savedGame.dat");
+            if (inputStream != null) {
+                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+                State savedState = (State) objectInputStream.readObject();
+                this.cellBoard = savedState.getBoard();
+                this.player1 = savedState.getPlayer1();
+                this.player2 = savedState.getPlayer2();
+                this.currentPlayer = savedState.getCurrentPlayer();
+            }
+        } catch (FileNotFoundException e) {
+            Toast.makeText(getApplicationContext(), "No Game Saved!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Error loading the game", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /*
+     * Saves the game when user chooses to do so
+     * Saves the game to a save game file
+     */
+    public void saveGame() {
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(getApplicationContext().openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
+            objectOutputStream.writeObject(new State(this.cellBoard, this.player1, this.player2, this.currentPlayer));
+            objectOutputStream.close();
+            Toast.makeText(getApplicationContext(), "Game Saved", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "Error in saving the game! ", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /*
@@ -735,7 +862,6 @@ public class ButtonBoard extends AppCompatActivity {
         builder.show();
     }
 
-
     /*
      * Restarts the match
      */
@@ -755,7 +881,7 @@ public class ButtonBoard extends AppCompatActivity {
         startActivity(exitGame);
     }
 
-    /*
+   /*
     * Adds Quick Menu at top-right corner with following options: Save, Load, Restart, Quit
     * @param Menu menu
     * @ret boolean
@@ -766,7 +892,6 @@ public class ButtonBoard extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.play_game_drop_down_menu, menu);//Menu Resource, Menu
         return true;
     }
-
 
     /*
      * Adds the following options: Save, Load, Restart, Quit to the Quick Menu with case on clicked
@@ -794,9 +919,74 @@ public class ButtonBoard extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    /*
+     * Resizes the gameboard and pieces according to the screen size (Portrait)
+     * Scales the width & height according to the required dimensions
+     * Testing & working with:
+     *      - Galaxy S3 1280x720 (phone)
+     *      - Nexus 5  1080x1920 (phone)
+     *      - Nexus 9  2048x1536 (tablet)
+     *      - Pixel XL 1440x2560 (phone)
+     */
+    public void resizeBoardToScreenSizePortrait(){
+        // Gets the width of the current screen
+        WindowManager wm = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        double width = metrics.widthPixels;
+
+        // Sets the width & height for the game board image
+        ImageView imageView = (ImageView) findViewById(R.id.boardImageView);
+        LayoutParams imageParams = imageView.getLayoutParams();
+        imageParams.width =  (int) (width * 1.0028);
+        imageParams.height = (int) (width * 1.0085);
+        imageView.setLayoutParams(imageParams);
+
+        // Sets the width & height for the grid of game buttons in the layout
+        LinearLayout buttonLayout = (LinearLayout) findViewById(R.id.parent_layout);
+        LayoutParams buttonLayoutParams = buttonLayout.getLayoutParams();     // Gets the layout params that will allow you to resize the layout
+        buttonLayoutParams.width =  (int) (width * 0.967);
+        buttonLayoutParams.height = (int) (width * 0.9723);
+        buttonLayout.setLayoutParams(buttonLayoutParams);
+    }
+
+    /*
+     * Resizes the gameboard and pieces according to the screen size (Landscape)
+     * Scales the width & height according to the required dimensions
+     * Testing & working with:
+     *      - Galaxy S3 1280x720 (phone)
+     *      - Nexus 5  1080x1920 (phone)
+     *      - Nexus 9  2048x1536 (tablet)
+     *      - Pixel XL 1440x2560 (phone)
+     */
+    public void resizeBoardToScreenSizeLandscape(){
+        // Gets the height of the action bar, so we can prevent action bar from partially hiding the board
+        final TypedArray styledAttributes = getApplicationContext().getTheme().obtainStyledAttributes(
+                new int[] { android.R.attr.actionBarSize });
+        int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+
+        // Gets the height of the current screen
+        WindowManager wm = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        double height = metrics.heightPixels - (actionBarHeight * 1.75);    // subtract size of top action bar so it doesn't partially hide board
+
+        // Sets the width & height for the game board image
+        ImageView imageView = (ImageView) findViewById(R.id.boardImageView);
+        LayoutParams imageParams = imageView.getLayoutParams();
+        imageParams.width =  (int) (height * 1.0028);
+        imageParams.height = (int) (height * 1.0085);
+        imageView.setLayoutParams(imageParams);
+
+        // Sets the width & height for the grid of game buttons in the layout
+        LinearLayout buttonLayout = (LinearLayout) findViewById(R.id.parent_layout);
+        LayoutParams buttonLayoutParams = buttonLayout.getLayoutParams();     // Gets the layout params that will allow you to resize the layout
+        buttonLayoutParams.width =  (int) (height * 0.967);
+        buttonLayoutParams.height = (int) (height * 0.9723);
+        buttonLayout.setLayoutParams(buttonLayoutParams);
+    }
 }
-
-
-
-
-
