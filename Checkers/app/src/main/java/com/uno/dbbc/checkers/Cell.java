@@ -5,8 +5,7 @@ import java.io.Serializable;
 public class Cell implements Serializable{
 
 
-	private int x;
-	private int y;
+	private int x, y;
 	private Piece placedPiece;
 
 	/**

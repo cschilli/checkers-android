@@ -5,9 +5,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Player implements Serializable{
+
 	private String color;
-
-
 
 	/**
 	 * @param givenColor of the piece that the player is associated to
