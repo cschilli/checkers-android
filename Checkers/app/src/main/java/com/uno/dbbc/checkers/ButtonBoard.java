@@ -40,17 +40,12 @@ import java.util.Random;
 public class ButtonBoard extends AppCompatActivity {
 
     private int[] buttons_id;
-    private Button[][] buttonBoard;        // stores the Button objects with their indexes
-    private ArrayList<Cell> moves;
-    private ArrayList<Cell> highlightedCells;
-    private Player player1;
-    private Player player2;
-    private Player currentPlayer;
-    private boolean computerMode;
-    private boolean srcCellFixed = false;
+    private Button[][] buttonBoard;
+    private ArrayList<Cell> moves, highlightedCells;
+    private Player player1, player2, currentPlayer;
+    private boolean computerMode, srcCellFixed;
     private Board cellBoard = new Board();
-    private Cell srcCell = null;
-    private Cell dstCell = null;
+    private Cell srcCell, dstCell;
     private Handler delayHandler;
 
     // Game cellBoard layout of the black squares by square ID
@@ -86,7 +81,9 @@ public class ButtonBoard extends AppCompatActivity {
         else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
             this.resizeBoardToScreenSizeLandscape();
         }
-
+        srcCell = null;
+        dstCell = null;
+        srcCellFixed = false;
         delayHandler = new Handler();
         highlightedCells = new ArrayList<>();
         buttons_id = getButtonArray();

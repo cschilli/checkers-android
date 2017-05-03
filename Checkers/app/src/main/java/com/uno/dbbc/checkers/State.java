@@ -9,14 +9,9 @@ import java.io.Serializable;
 public class State implements Serializable{
 
     private Board board;
-    private Player currentPlayer;
-    private Player player1;
-    private Player player2;
-    private boolean singlePlayerMode;
-    private Cell srcCell;
-    private Cell dstCell;
-    private boolean srcCellFixed;
-
+    private Player player1, player2, currentPlayer;
+    private boolean singlePlayerMode, srcCellFixed;;
+    private Cell srcCell, dstCell;
 
     public State(Board givenBoard, Player player1, Player player2, Player currentPlayer, boolean singlePlayerMode, Cell srcCell, Cell dstCell, boolean srcCellFixed){
         this.board = givenBoard;

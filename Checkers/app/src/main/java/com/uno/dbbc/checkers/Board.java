@@ -10,9 +10,7 @@ import java.util.ArrayList;
 public class Board implements Serializable{
 
     private Cell[][] board;
-    private ArrayList<Piece> lightPieces;
-    private ArrayList<Piece> darkPieces;
-
+    private ArrayList<Piece> lightPieces, darkPieces;
     private static int BOARD_SIZE = 8;
 
     /**
