@@ -632,13 +632,8 @@ public class ButtonBoard extends AppCompatActivity {
                 this.srcCell = null;
                 this.dstCell = null;
                 srcCellFixed = false;
+                changeTurn();
 
-                if(computerMode){
-                    changeTurn();
-                }
-                else {
-                    changeTurn();
-                }
             }
             // Else, we can go forward and let them capture another piece
             else {
@@ -658,13 +653,7 @@ public class ButtonBoard extends AppCompatActivity {
             srcCell = null;
             dstCell = null;
             srcCellFixed = false;
-
-            if(computerMode){
-                changeTurn();
-            }
-            else {
-                changeTurn();
-            }
+            changeTurn();
         }
     }
 
