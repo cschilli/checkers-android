@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -762,6 +763,7 @@ public class ButtonBoard extends AppCompatActivity {
                 this.player1 = savedState.getPlayer1();
                 this.player2 = savedState.getPlayer2();
                 this.currentPlayer = savedState.getCurrentPlayer();
+                this.computerMode = savedState.isSinglePlayerMode();
             }
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), "No Game Saved!", Toast.LENGTH_SHORT).show();
@@ -777,7 +779,7 @@ public class ButtonBoard extends AppCompatActivity {
     public void saveGame() {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(getApplicationContext().openFileOutput("savedGame.dat", Context.MODE_PRIVATE));
-            objectOutputStream.writeObject(new State(this.cellBoard, this.player1, this.player2, this.currentPlayer));
+            objectOutputStream.writeObject(new State(cellBoard, player1, player2, currentPlayer, computerMode));
             objectOutputStream.close();
             Toast.makeText(getApplicationContext(), "Game Saved", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
@@ -978,4 +980,6 @@ public class ButtonBoard extends AppCompatActivity {
         buttonLayoutParams.height = (int) (height * 0.9723);
         buttonLayout.setLayoutParams(buttonLayoutParams);
     }
+
+
 }

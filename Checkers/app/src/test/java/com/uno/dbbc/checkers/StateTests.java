@@ -17,12 +17,13 @@ public class StateTests {
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 
-        State state = new State(board, player1, player2, player1);
+        State state = new State(board, player1, player2, player1, false);
 
         assertEquals("Dark", state.getPlayer1().getColor());
         assertEquals("Light", state.getPlayer2().getColor());
         assertNotEquals("Dark", state.getPlayer2().getColor());
         assertNotEquals("Light", state.getPlayer1().getColor());
+        assertEquals(false, state.isSinglePlayerMode());
         assertEquals(player1, state.getCurrentPlayer());
     }
 
@@ -34,7 +35,7 @@ public class StateTests {
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 
-        State state = new State(board, player1, player2, player1);
+        State state = new State(board, player1, player2, player1, true);
 
         assertEquals(board, state.getBoard());
     }
@@ -47,7 +48,7 @@ public class StateTests {
         Player player1 = new Player("Dark");
         Player player2 = new Player("Light");
 
-        State state = new State(board, player1, player2, player1);
+        State state = new State(board, player1, player2, player1, true);
 
         assertEquals(player1, state.getPlayer1());
         assertNotEquals(player2, state.getPlayer1());
@@ -55,6 +56,7 @@ public class StateTests {
         assertNotEquals(player1, state.getPlayer2());
         assertEquals(player1, state.getCurrentPlayer());
         assertNotEquals(player2, state.getCurrentPlayer());
+        assertEquals(true, state.isSinglePlayerMode());
     }
 
 }
