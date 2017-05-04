@@ -339,29 +339,9 @@ public class ButtonBoard extends AppCompatActivity {
             }
         }, 1000);
     }
-    
-    /*
-     * When back button is pressed, do not restart activity
-     */
-    @Override
-    public void onBackPressed() {}
 
-    /*
-     * If device orientation changes after activity is started, we want to change the board according
-     * @param Configuration newConfig
-     */
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // If device is in portrait mode
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            this.resizeBoardToScreenSizePortrait();
-        }
-        // If device is in landscape mode
-        else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            this.resizeBoardToScreenSizeLandscape();
-        }
-    }
+
+
 
     /*
      * Method that gets the button ID's for mapping buttons to an arraylist
@@ -842,6 +822,23 @@ public class ButtonBoard extends AppCompatActivity {
     }
 
     /*
+         * If device orientation changes after activity is started, we want to change the board according
+         * @param Configuration newConfig
+         */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // If device is in portrait mode
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            this.resizeBoardToScreenSizePortrait();
+        }
+        // If device is in landscape mode
+        else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            this.resizeBoardToScreenSizeLandscape();
+        }
+    }
+
+    /*
      * Resizes the gameboard and pieces according to the screen size (Portrait)
      * Scales the width & height according to the required dimensions
      * Testing & working with:
@@ -910,4 +907,11 @@ public class ButtonBoard extends AppCompatActivity {
         buttonLayoutParams.height = (int) (height * 0.9723);
         buttonLayout.setLayoutParams(buttonLayoutParams);
     }
+
+    /*
+    * When back button is pressed, do not restart activity
+    */
+    @Override
+    public void onBackPressed() {}
+
 }
