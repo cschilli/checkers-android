@@ -17,7 +17,7 @@
     </style>
 
     <!-- MainMenu.java theme -->
-    <style name="MainMenuTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="MainMenuTheme" parent="AppTheme.NoActionBar">
         <item name="android:actionBarSize">35dp</item>
         <item name="actionBarSize">35dp</item>
         <item name="colorPrimary">@color/colorPrimary</item>

@@ -20,7 +20,7 @@
         android:layout_below="@+id/imageView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
-        
+
         <Button
             android:id="@+id/playButton"
             android:text="@string/play_game"
