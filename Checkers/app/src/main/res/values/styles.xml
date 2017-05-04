@@ -7,14 +7,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <!-- Main Menu theme -->
-    <style name="MainMenuTheme" parent="AppTheme.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-
     <!-- ButtonBoard.java theme -->
     <style name="ButtonBoardTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:actionBarSize">40dp</item>
@@ -24,9 +16,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-
-    <!-- Game Options theme -->
-    <style name="GameOptionsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- MainMenu.java theme -->
+    <style name="MainMenuTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="android:actionBarSize">35dp</item>
+        <item name="actionBarSize">35dp</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
