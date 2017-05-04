@@ -43,7 +43,7 @@ public class ButtonBoard extends AppCompatActivity {
     private Button[][] buttonBoard;
     private ArrayList<Cell> moves, highlightedCells;
     private Player player1, player2, currentPlayer;
-    private boolean computerMode, srcCellFixed;
+    private boolean computerMode, computerTurn, srcCellFixed;
     private Board cellBoard = new Board();
     private Cell srcCell, dstCell;
     private Handler delayHandler;
@@ -179,22 +179,17 @@ public class ButtonBoard extends AppCompatActivity {
             int tag = (Integer) v.getTag();
             int xCord = tag / 10;
             int yCord = tag % 10;
-
-            if(!computerMode) {
-                playerMode(xCord, yCord);
-            }
-            else{
-                computerMode(xCord, yCord);
-            }
+            playerTurn(xCord, yCord);
         }
     };
 
     /*
-     * Used for when game is player vs. player
+     * Used for letting player click a move
      * @param int xCord - X-Coordinate of cell
      * @param int yCord - Y-Coordinate of cell
      */
-    public void playerMode(int xCord, int yCord){
+    public void playerTurn(int xCord, int yCord){
+
         // If both players have pieces, game IS RUNNING
         if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
 
@@ -239,80 +234,6 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
-    /*
-     * Used for when game is player vs. computer
-     * @param int xCord - X-Coordinate of cell
-     * @param int yCord - Y-Coordinate of cell
-     */
-    public void computerMode(int xCord, int yCord){
-        // If both players have pieces, game IS RUNNING
-        if (player1.hasMoves(cellBoard) && player1.hasMoves(cellBoard)) {
-
-            // If current player is not computer
-            if (currentPlayer == player1) {
-                // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
-                if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
-                    unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
-                    srcCell = cellBoard.getCell(xCord, yCord);
-                    moves = cellBoard.possibleMoves(srcCell);
-
-                    //If the user taps the cell with no moves then show the message stating that
-                    if (moves.isEmpty()) {
-                        Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
-                        srcCell = null;
-                        updateTurnTracker();
-                    }
-                    // Else, if player has possible moves THEN we can move piece
-                    else {
-                        showPossibleMoves(moves);
-                        srcCell = cellBoard.getCell(xCord, yCord);
-                        updatePiecePressed(srcCell);
-                    }
-                }
-
-                //If the user taps same cell twice then deselect the cell
-                else if (srcCell != null && srcCell.equals(cellBoard.getCell(xCord, yCord)) && !srcCellFixed) {
-                    srcCell = null;
-                    updatePieces(xCord, yCord); // updates the graphical pieces
-                    updateTurnTracker();
-                } else if (!cellBoard.getCell(xCord, yCord).containsPiece() && moves.contains(cellBoard.getCell(xCord, yCord)) && srcCell != null) {
-                    dstCell = cellBoard.getCell(xCord, yCord);
-                    onSecondClick(srcCell, dstCell);
-                }
-            }
-
-            // Else for player 1 second click
-            else {
-
-                // If piece exists AND color of piece matches players piece AND counter == 0, let the player take a turn
-                if (cellBoard.getCell(xCord, yCord).containsPiece() && cellBoard.getCell(xCord, yCord).getPiece().getColor().equals(currentPlayer.getColor()) && srcCell == null) {
-                    unHighlightPieces();    // unhighlight other pieces if user clicks a source cell
-                    srcCell = cellBoard.getCell(xCord, yCord);
-                    moves = cellBoard.possibleMoves(srcCell);
-
-                    //If the user taps the cell with no moves then show the message stating that
-                    if (moves.isEmpty()) {
-                        Toast.makeText(getApplicationContext(), "No possible moves!", Toast.LENGTH_SHORT).show();
-                        srcCell = null;
-                        updateTurnTracker();
-                    }
-                    // Else, if player has possible moves THEN we can move piece
-                    else {
-                        showPossibleMoves(moves);
-                        srcCell = cellBoard.getCell(xCord, yCord);
-                        updatePiecePressed(srcCell);
-                    }
-                }
-            }
-        }
-        // If player who is light runs out of pieces, they lose
-        if ((!player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) ||
-                (player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard))) {
-            gameOverDialog();
-        } else if (!player1.hasMoves(cellBoard) && !player2.hasMoves(cellBoard)) {
-            Toast.makeText(getApplicationContext(), "DRAW, NO WINNERS!", Toast.LENGTH_LONG).show();
-        }
-    }
 
     /*
      * When back button is pressed, do not restart activity
