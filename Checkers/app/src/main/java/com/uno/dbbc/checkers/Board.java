@@ -323,11 +323,8 @@ public class Board implements Serializable{
                 }
             }
         }
-
-
-
+        
         //if the piece is dark-colored
-
         else if(givenPiece.getColor().equals(Piece.DARK)){
             //dark pieces are on the higher rows and to move it forward we have to move them to rows with lower row number.
             //So by assigning currentRow = currentRow -1, we are actually advancing the pieces
