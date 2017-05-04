@@ -146,9 +146,11 @@ public class ButtonBoard extends AppCompatActivity {
                     ButtonBoard.this.player2 = new Player(Piece.DARK);
                     ButtonBoard.this.currentPlayer = ButtonBoard.this.player2;
                     if(computerMode){
+                        computerTurn = true;
                             delayHandler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+
                                     updateTurnTracker();
                                     computersTurn();
                                 }
@@ -179,7 +181,10 @@ public class ButtonBoard extends AppCompatActivity {
             int tag = (Integer) v.getTag();
             int xCord = tag / 10;
             int yCord = tag % 10;
-            playerTurn(xCord, yCord);
+
+            if(!computerTurn){
+                playerTurn(xCord, yCord);
+            }
         }
     };
 
@@ -445,9 +450,9 @@ public class ButtonBoard extends AppCompatActivity {
         if (player1.hasMoves(cellBoard) && player2.hasMoves(cellBoard)) {
             if (this.currentPlayer.equals(player1)) {
                 this.currentPlayer = player2;
-                updateTurnTracker();
 
                 if(computerMode) {
+                    computerTurn = true;
                     delayHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -455,9 +460,14 @@ public class ButtonBoard extends AppCompatActivity {
                         }
                     }, 1000);
                 }
+                updateTurnTracker();
 
             } else {
                 this.currentPlayer = player1;
+
+                if(computerMode) {
+                    computerTurn = false;
+                }
                 updateTurnTracker();
             }
         } else{
