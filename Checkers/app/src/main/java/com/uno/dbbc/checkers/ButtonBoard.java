@@ -239,7 +239,107 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
+    /*
+    * When the player clicks an empty cell on the cellBoard to move source piece to, move the piece
+    * If the players move captures a piece, we want to check if THAT piece has any more capture moves
+    * Stores the new coordinates of the piece that made a capture (coordinates of the piece after capture)
+    * @param int xCord - Stores x-coordinate of the destination cell the user clicks
+    * @param int yCord - Stores the y-coordinate of the destination cell the user clicks
+    */
+    public void onSecondClick(Cell givenSrcCell, Cell givenDstCell) {
+        unHighlightPieces();
+        boolean captureMove = cellBoard.isCaptureMove(givenSrcCell, givenDstCell);
+        ArrayList<Cell> changedCells = cellBoard.movePiece(givenSrcCell.getCoords(), givenDstCell.getCoords());    // moves piece, store captured piece into array list
+        updatePieces(changedCells);
+        if (captureMove) {
+            moves = cellBoard.getCaptureMoves(givenDstCell);    // stores the future capture moves of the cell
 
+            // If the piece that captured opponents piece has no capture moves, end turn
+            if (moves.isEmpty()) {
+                this.srcCell = null;
+                this.dstCell = null;
+                srcCellFixed = false;
+                changeTurn();
+
+            }
+            // Else, we can go forward and let them capture another piece
+            else {
+                this.srcCell = this.dstCell;
+                srcCellFixed = true;
+                updatePiecePressed(this.srcCell);
+                showPossibleMoves(moves);
+
+                //If current player is computer
+                if (currentPlayer == player2 && computerMode) {
+                    computerCaptureTurn(moves);
+                }
+            }
+        }
+        // If player does not have another turn, change turns
+        else {
+            srcCell = null;
+            dstCell = null;
+            srcCellFixed = false;
+            changeTurn();
+        }
+    }
+
+    /*
+     * Deals with handling the computers turn
+     * Simulates a real-life player making moves
+     */
+    public void computersTurn() {
+        ArrayList<Cell> cellsWithMoves = new ArrayList<>();
+        ArrayList<Cell> cellsWithCaptureMoves = new ArrayList<>();
+
+        ArrayList<Cell> captureMoves;
+
+        for (Cell cell : highlightedCells) {
+            captureMoves = cellBoard.getCaptureMoves(cell);
+            if (!captureMoves.isEmpty()) {
+                cellsWithCaptureMoves.add(cell);
+            } else {
+                cellsWithMoves.add(cell);
+            }
+        }
+        Random random = new Random();
+
+        if (!cellsWithCaptureMoves.isEmpty()) {
+            srcCell = cellsWithCaptureMoves.get(random.nextInt(cellsWithCaptureMoves.size()));
+            ArrayList<Cell> possibleMoves = cellBoard.getCaptureMoves(srcCell);
+            dstCell = possibleMoves.get(random.nextInt(possibleMoves.size()));
+        } else {
+            srcCell = cellsWithMoves.get(random.nextInt(cellsWithMoves.size()));
+            ArrayList<Cell> possibleMoves = cellBoard.possibleMoves(srcCell);
+            dstCell = possibleMoves.get(random.nextInt(possibleMoves.size()));
+        }
+
+        updatePiecePressed(srcCell);
+
+        buttonBoard[dstCell.getX()][dstCell.getY()].setBackgroundResource(R.drawable.possible_moves_image);
+        delayHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                onSecondClick(srcCell, dstCell);
+            }
+        }, 1000);
+    }
+
+    /*
+     * When a computer has a capture turn, this method allows him to make that move
+     * Uses timers to perform non-instant moves
+     * @param ArrayList<Cell> captureMoves - The moves that a computer can use for a capture
+     */
+    public void computerCaptureTurn(ArrayList<Cell> captureMoves) {
+        dstCell = captureMoves.get(new Random().nextInt(captureMoves.size()));
+        delayHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                onSecondClick(srcCell, dstCell);
+            }
+        }, 1000);
+    }
+    
     /*
      * When back button is pressed, do not restart activity
      */
@@ -536,106 +636,6 @@ public class ButtonBoard extends AppCompatActivity {
         }
     }
 
-    /*
-     * When the player clicks an empty cell on the cellBoard to move source piece to, move the piece
-     * If the players move captures a piece, we want to check if THAT piece has any more capture moves
-     * Stores the new coordinates of the piece that made a capture (coordinates of the piece after capture)
-     * @param int xCord - Stores x-coordinate of the destination cell the user clicks
-     * @param int yCord - Stores the y-coordinate of the destination cell the user clicks
-     */
-    public void onSecondClick(Cell givenSrcCell, Cell givenDstCell) {
-        unHighlightPieces();
-        boolean captureMove = cellBoard.isCaptureMove(givenSrcCell, givenDstCell);
-        ArrayList<Cell> changedCells = cellBoard.movePiece(givenSrcCell.getCoords(), givenDstCell.getCoords());    // moves piece, store captured piece into array list
-        updatePieces(changedCells);
-        if (captureMove) {
-            moves = cellBoard.getCaptureMoves(givenDstCell);    // stores the future capture moves of the cell
-
-            // If the piece that captured opponents piece has no capture moves, end turn
-            if (moves.isEmpty()) {
-                this.srcCell = null;
-                this.dstCell = null;
-                srcCellFixed = false;
-                changeTurn();
-
-            }
-            // Else, we can go forward and let them capture another piece
-            else {
-                this.srcCell = this.dstCell;
-                srcCellFixed = true;
-                updatePiecePressed(this.srcCell);
-                showPossibleMoves(moves);
-
-                //If current player is computer
-                if (currentPlayer == player2 && computerMode) {
-                    computerCaptureTurn(moves);
-                }
-            }
-        }
-        // If player does not have another turn, change turns
-        else {
-            srcCell = null;
-            dstCell = null;
-            srcCellFixed = false;
-            changeTurn();
-        }
-    }
-
-    /*
-     * Deals with handling the computers turn
-     * Simulates a real-life player making moves
-     */
-    public void computersTurn() {
-        ArrayList<Cell> cellsWithMoves = new ArrayList<>();
-        ArrayList<Cell> cellsWithCaptureMoves = new ArrayList<>();
-
-        ArrayList<Cell> captureMoves;
-
-        for (Cell cell : highlightedCells) {
-            captureMoves = cellBoard.getCaptureMoves(cell);
-            if (!captureMoves.isEmpty()) {
-                cellsWithCaptureMoves.add(cell);
-            } else {
-                cellsWithMoves.add(cell);
-            }
-        }
-        Random random = new Random();
-
-        if (!cellsWithCaptureMoves.isEmpty()) {
-            srcCell = cellsWithCaptureMoves.get(random.nextInt(cellsWithCaptureMoves.size()));
-            ArrayList<Cell> possibleMoves = cellBoard.getCaptureMoves(srcCell);
-            dstCell = possibleMoves.get(random.nextInt(possibleMoves.size()));
-        } else {
-            srcCell = cellsWithMoves.get(random.nextInt(cellsWithMoves.size()));
-            ArrayList<Cell> possibleMoves = cellBoard.possibleMoves(srcCell);
-            dstCell = possibleMoves.get(random.nextInt(possibleMoves.size()));
-        }
-
-        updatePiecePressed(srcCell);
-
-        buttonBoard[dstCell.getX()][dstCell.getY()].setBackgroundResource(R.drawable.possible_moves_image);
-        delayHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                onSecondClick(srcCell, dstCell);
-            }
-        }, 1000);
-    }
-
-    /*
-     * When a computer has a capture turn, this method allows him to make that move
-     * Uses timers to perform non-instant moves
-     * @param ArrayList<Cell> captureMoves - The moves that a computer can use for a capture
-     */
-    public void computerCaptureTurn(ArrayList<Cell> captureMoves) {
-        dstCell = captureMoves.get(new Random().nextInt(captureMoves.size()));
-        delayHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                onSecondClick(srcCell, dstCell);
-            }
-        }, 1000);
-    }
 
     /*
      * The dialog menu that pops up after a game has ended
